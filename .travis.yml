@@ -1,0 +1,11 @@
+language: java
+jdk:
+- oraclejdk8
+script:
+- mvn clean install sonar:sonar
+after_success:
+- bash <(curl -s https://codecov.io/bash)
+addons:
+  sonarqube:
+    token:
+      secure: dl1hw9jqVjQdo3tC8QfakwOVuVsigqeNS3Q1ULpKbw74+fTYqL+b3IxmlDWdzZ0PIcxmp5fiT7okdKGguIHDImMqk/cigFitQf6fMBRmhlIl0ddZK07DLVYYj4OF8cqLqFPKwLVeanFvIWXlXDVCaKuljfKU95Shqi5MQ/H7t7y1CeCihWQ4J8yxzRw/6WPFvm/TRU9JX3KLdl3aM8ipe8+DqQLxTLCFQoTgyOG7buoRemH3bEx4pD0rWiBxA6hCyYFowuElUh1q8w/UC2WfIdLh8D6K8IhjsJHDnrLVNGaNf4iYyDL3V6LlXUgCL6sIQSjiqmZiAWVRWJOpvE+XyyOoN+y7ewv4KWoYUzKTjywEdIUn7fdOtqSspBALHELVtYI2kXjFsuu5RZyWdzU5NIYvrj4egeKycbsr8/6cu8oEoUdNH6uVdSwVajHgROJRuMF+lkmj/H/oX7LVBcqWI+HgLx+3ckHV61F51jXQKUgsw03v/qiociCQ5Sox1VLBWpBBVzQaZ91OQj57Z+GjnzC4JdR04S3EkRlFg17MYGqT5ix0sQel9LNVyNhneEIxTfHG0B1/SdiQbNhZPN3WmisvO5JZEpVkwxd6vOUsRJ7+NWRU/A+ImGMAbPdJdz3oaz/T5xVvENflTdk7D2cLYww95QNZFpHc8Hygsl0RmjQ=

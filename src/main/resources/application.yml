@@ -1,0 +1,11 @@
+logging:
+  level:
+    org.codenergic.theskeleton: DEBUG
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mariadb://localhost/theskeleton
+    username: root
+    password: root
