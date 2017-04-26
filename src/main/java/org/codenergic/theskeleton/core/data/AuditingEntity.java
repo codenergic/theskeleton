@@ -20,10 +20,10 @@ import java.io.Serializable;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public interface AuditingEntity<DATE> extends Serializable {
-	DATE getCreatedDate();
+public interface AuditingEntity<D> extends Serializable {
+	D getCreatedDate();
 
-	DATE getLastModifiedDate();
+	D getLastModifiedDate();
 
 	AuditInformation getCreatedBy();
 
