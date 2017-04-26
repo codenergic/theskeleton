@@ -6,6 +6,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
+		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
 		<jacoco.version>0.7.9</jacoco.version>
 		<spring-boot.version>1.5.3.RELEASE</spring-boot.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,6 +21,7 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Web MVC, Servlet Container, and Security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -35,7 +37,7 @@
 			<artifactId>spring-boot-starter-undertow</artifactId>
 		</dependency>
 
-		<!-- Database -->
+		<!-- Database, ORM, and Connection Pool -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -67,6 +69,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
