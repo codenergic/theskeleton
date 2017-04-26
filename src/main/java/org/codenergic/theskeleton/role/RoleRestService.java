@@ -1,7 +1,7 @@
-package org.codenergic.theskeleton.role.rest;
+package org.codenergic.theskeleton.role;
 
-import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RoleService;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,22 +18,26 @@ public class RoleRestService {
 	private RoleService roleService;
 
 	@RequestMapping(path = "/{code}", method = RequestMethod.GET)
-	public RoleEntity findRoleByCode(@PathVariable("code") String code) {
-		return roleService.findRoleByCode(code);
+	public RoleRestData findRoleByCode(@PathVariable("code") final String code) {
+		RoleEntity role = roleService.findRoleByCode(code);
+		return role == null ? null : RoleRestData.builder(role).build();
 	}
 
 	@RequestMapping(method = RequestMethod.GET)
-	public Page<RoleEntity> findRoles(Pageable pageable) {
-		return roleService.findRoles(pageable);
+	public Page<RoleRestData> findRoles(final Pageable pageable) {
+		return roleService.findRoles(pageable)
+				.map(s -> RoleRestData.builder(s).build());
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
-	public RoleEntity saveRole(@RequestBody RoleEntity role) {
-		return roleService.saveRole(role);
+	public RoleRestData saveRole(@RequestBody @Valid final RoleRestData role) {
+		return RoleRestData.builder(roleService.saveRole(role.toEntity()))
+				.build();
 	}
 
 	@RequestMapping(path = "/{code}", method = RequestMethod.PUT)
-	public RoleEntity updateRole(@PathVariable("code") String code, @RequestBody RoleEntity role) {
-		return roleService.updateRole(code, role);
+	public RoleRestData updateRole(@PathVariable("code") String code, @RequestBody @Valid final RoleRestData role) {
+		return RoleRestData.builder(roleService.updateRole(code, role.toEntity()))
+				.build();
 	}
 }
