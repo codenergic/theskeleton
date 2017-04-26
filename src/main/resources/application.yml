@@ -4,7 +4,15 @@ logging:
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
+    properties:
+      javax:
+        persistence:
+          schema-generation:
+            create-source: metadata
+            scripts:
+              action: create
+              create-target: target/generated-sources/database-schema.sql
   datasource:
     url: jdbc:mariadb://localhost/theskeleton
     username: root
