@@ -1,15 +1,14 @@
 package org.codenergic.theskeleton.core.data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public interface AuditingEntity extends Serializable {
-	Date getCreatedDate();
+public interface AuditingEntity<DATE> extends Serializable {
+	DATE getCreatedDate();
 
-	Date getLastModifiedDate();
+	DATE getLastModifiedDate();
 
 	AuditInformation getCreatedBy();
 

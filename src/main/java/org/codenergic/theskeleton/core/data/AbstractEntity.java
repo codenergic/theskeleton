@@ -25,13 +25,14 @@ import org.hibernate.annotations.GenericGenerator;
 
 @MappedSuperclass
 @SuppressWarnings("serial")
-public abstract class AbstractEntity implements Activeable, Serializable {
+public abstract class AbstractEntity implements Activeable, Identifiable<String>, Serializable {
 	@Id
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
 	private String id;
 	private int status = Activeable.Status.ACTIVE.getStatus();
 
+	@Override
 	public String getId() {
 		return id;
 	}

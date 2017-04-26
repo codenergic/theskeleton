@@ -35,7 +35,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 @EntityListeners({ AuditingEntityListener.class })
 @SuppressWarnings("serial")
-public abstract class AbstractAuditingEntity extends AbstractEntity implements AuditingEntity {
+public abstract class AbstractAuditingEntity extends AbstractEntity implements AuditingEntity<Date> {
 	@CreatedDate
 	@Column(name = "created_date")
 	@Temporal(TemporalType.TIMESTAMP)
