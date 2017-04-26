@@ -24,5 +24,7 @@ import org.springframework.stereotype.Repository;
 public interface UserRoleRepository extends AuditingEntityRepository<UserRoleEntity> {
 	Set<UserRoleEntity> findByUserUsername(String username);
 
+	UserRoleEntity findByUserUsernameAndRoleCode(String username, String roleCode);
+
 	Set<UserRoleEntity> findByRoleCode(String code);
 }

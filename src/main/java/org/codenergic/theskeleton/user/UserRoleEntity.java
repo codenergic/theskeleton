@@ -42,6 +42,15 @@ public class UserRoleEntity extends AbstractAuditingEntity implements GrantedAut
 	@JoinColumn(name = "role_id")
 	private RoleEntity role;
 
+	public UserRoleEntity() {
+		// initialize UserRoleEntity
+	}
+
+	public UserRoleEntity(UserEntity user, RoleEntity role) {
+		this.user = user;
+		this.role = role;
+	}
+
 	public UserEntity getUser() {
 		return user;
 	}

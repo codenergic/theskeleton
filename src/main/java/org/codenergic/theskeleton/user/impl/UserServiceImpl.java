@@ -23,6 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.role.RoleEntity;
+import org.codenergic.theskeleton.role.RoleRepository;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.codenergic.theskeleton.user.UserRoleEntity;
@@ -38,14 +39,24 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 	private PasswordEncoder passwordEncoder;
+	private RoleRepository roleRepository;
 	private UserRepository userRepository;
 	private UserRoleRepository userRoleRepository;
 
-	public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository,
+	public UserServiceImpl(PasswordEncoder passwordEncoder, RoleRepository roleRepository, UserRepository userRepository,
 			UserRoleRepository userRoleRepository) {
 		this.passwordEncoder = passwordEncoder;
+		this.roleRepository = roleRepository;
 		this.userRepository = userRepository;
 		this.userRoleRepository = userRoleRepository;
+	}
+
+	@Override
+	@Transactional
+	public UserEntity addRoleToUser(String username, String roleCode) {
+		UserEntity user = findUserByUsername(username);
+		RoleEntity role = roleRepository.findByCode(roleCode);
+		return userRoleRepository.save(new UserRoleEntity(user, role)).getUser();
 	}
 
 	@Override
@@ -99,6 +110,14 @@ public class UserServiceImpl implements UserService {
 		UserEntity user = findUserByUsername(username);
 		user.setAccountNonLocked(unlocked);
 		return user;
+	}
+
+	@Override
+	@Transactional
+	public UserEntity removeRoleFromUser(String username, String roleCode) {
+		UserRoleEntity userRole = userRoleRepository.findByUserUsernameAndRoleCode(username, roleCode);
+		userRoleRepository.delete(userRole);
+		return findUserByUsername(username);
 	}
 
 	@Override

@@ -19,16 +19,19 @@ import java.util.Date;
 import java.util.Set;
 
 import org.codenergic.theskeleton.role.RoleEntity;
+import org.codenergic.theskeleton.role.RoleRepository;
 import org.codenergic.theskeleton.user.impl.UserServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface UserService {
-	static UserService newInstance(PasswordEncoder passwordEncoder, UserRepository userRepository,
-			UserRoleRepository userRoleRepository) {
-		return new UserServiceImpl(passwordEncoder, userRepository, userRoleRepository);
+	static UserService newInstance(PasswordEncoder passwordEncoder, RoleRepository roleRepository,
+			UserRepository userRepository, UserRoleRepository userRoleRepository) {
+		return new UserServiceImpl(passwordEncoder, roleRepository, userRepository, userRoleRepository);
 	}
+
+	UserEntity addRoleToUser(String username, String roleCode);
 
 	UserEntity enableOrDisableUser(String username, boolean enabled);
 
@@ -45,6 +48,8 @@ public interface UserService {
 	Page<UserEntity> findUsersByUsernameStartingWith(String username, Pageable pageable);
 
 	UserEntity lockOrUnlockUser(String username, boolean unlocked);
+
+	UserEntity removeRoleFromUser(String username, String roleCode);
 
 	UserEntity saveUser(UserEntity userEntity);
 
