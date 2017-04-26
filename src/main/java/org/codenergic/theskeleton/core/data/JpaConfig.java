@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.core.config;
+package org.codenergic.theskeleton.core.data;
 
 import org.codenergic.theskeleton.Application;
-import org.codenergic.theskeleton.core.data.UTCDateTimeProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.auditing.DateTimeProvider;

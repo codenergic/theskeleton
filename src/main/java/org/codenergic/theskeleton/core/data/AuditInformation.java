@@ -15,10 +15,13 @@
  */
 package org.codenergic.theskeleton.core.data;
 
+import java.io.Serializable;
+
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class AuditInformation {
+@SuppressWarnings("serial")
+public class AuditInformation implements Serializable {
 	private String username;
 	private String clientId;
 

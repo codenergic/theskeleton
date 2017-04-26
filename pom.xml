@@ -8,6 +8,7 @@
 	<properties>
 		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
 		<jacoco.version>0.7.9</jacoco.version>
+		<libphonenumber.version>8.4.2</libphonenumber.version>
 		<spring-boot.version>1.5.3.RELEASE</spring-boot.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -36,6 +37,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-undertow</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
 
 		<!-- Database, ORM, and Connection Pool -->
 		<dependency>
@@ -49,6 +54,13 @@
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
+		</dependency>
+
+		<!-- Utilities -->
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<version>${libphonenumber.version}</version>
 		</dependency>
 	</dependencies>
 

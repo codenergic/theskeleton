@@ -18,7 +18,6 @@ package org.codenergic.theskeleton.role.impl;
 import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RoleRepository;
 import org.codenergic.theskeleton.role.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,8 +27,11 @@ import org.springframework.util.Assert;
 @Service
 @Transactional(readOnly = true)
 public class RoleServiceImpl implements RoleService {
-	@Autowired
 	private RoleRepository roleRepository;
+
+	public RoleServiceImpl(RoleRepository roleRepository) {
+		this.roleRepository = roleRepository;
+	}
 
 	@Override
 	public RoleEntity findRoleByCode(String code) {

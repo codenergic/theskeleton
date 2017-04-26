@@ -24,9 +24,9 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.UUID;
 
+import org.codenergic.theskeleton.role.impl.RoleServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
@@ -35,14 +35,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 public class RoleServiceTest {
-	@InjectMocks
-	private RoleService roleService = RoleService.newInstance();
+	private RoleService roleService;
 	@Mock
 	private RoleRepository roleRepository;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
+		this.roleService = new RoleServiceImpl(roleRepository);
 	}
 
 	@Test

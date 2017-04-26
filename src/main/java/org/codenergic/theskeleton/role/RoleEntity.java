@@ -20,15 +20,17 @@ import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
+import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "ts_role")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
-public class RoleEntity extends AbstractAuditingEntity {
+public class RoleEntity extends AbstractAuditingEntity implements GrantedAuthority {
 	@NotNull
 	@Column(length = 200, unique = true)
 	private String code;
@@ -49,5 +51,11 @@ public class RoleEntity extends AbstractAuditingEntity {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	@Transient
+	public String getAuthority() {
+		return code;
 	}
 }

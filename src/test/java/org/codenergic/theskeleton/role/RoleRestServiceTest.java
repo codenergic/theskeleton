@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-@WebMvcTest({ RoleRestService.class })
+@WebMvcTest(controllers = { RoleRestService.class }, secure = false)
 public class RoleRestServiceTest {
 	@Autowired
 	private MockMvc mockMvc;

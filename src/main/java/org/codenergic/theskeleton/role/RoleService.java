@@ -23,8 +23,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface RoleService {
-	static RoleService newInstance() {
-		return new RoleServiceImpl();
+	static RoleService newInstance(RoleRepository roleRepository) {
+		return new RoleServiceImpl(roleRepository);
 	}
 
 	RoleEntity findRoleByCode(@NotNull String code);
