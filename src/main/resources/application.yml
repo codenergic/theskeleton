@@ -1,6 +1,21 @@
+info:
+  app:
+    encoding: "@project.build.sourceEncoding@"
+    artifact:
+      artifactId: "@project.artifactId@"
+      groupId: "@project.groupId@"
+      version: "@project.version@"
+    java:
+      source: "@java.version@"
+      target: "@java.version@"
 logging:
   level:
     org.codenergic.theskeleton: DEBUG
+management:
+  context-path: /manage
+  info:
+    git:
+      mode: full
 spring:
   jpa:
     hibernate:
