@@ -37,8 +37,9 @@ public abstract class AbstractEntity implements Activeable, Identifiable<String>
 		return id;
 	}
 
-	public void setId(String id) {
+	public AbstractEntity setId(String id) {
 		this.id = id;
+		return this;
 	}
 
 	@Override
@@ -46,7 +47,8 @@ public abstract class AbstractEntity implements Activeable, Identifiable<String>
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public AbstractEntity setStatus(int status) {
 		this.status = status;
+		return this;
 	}
 }

@@ -69,8 +69,9 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 		return authorities;
 	}
 
-	public void setAuthorities(Set<UserRoleEntity> authorities) {
+	public UserEntity setAuthorities(Set<UserRoleEntity> authorities) {
 		this.authorities = authorities;
+		return this;
 	}
 
 	@Override
@@ -78,8 +79,9 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	public UserEntity setPassword(String password) {
 		this.password = password;
+		return this;
 	}
 
 	@Override
@@ -87,8 +89,9 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	public UserEntity setUsername(String username) {
 		this.username = username;
+		return this;
 	}
 
 	@Override
@@ -102,8 +105,9 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 		return accountNonLocked;
 	}
 
-	public void setAccountNonLocked(boolean accountNonLocked) {
+	public UserEntity setAccountNonLocked(boolean accountNonLocked) {
 		this.accountNonLocked = accountNonLocked;
+		return this;
 	}
 
 	@Override
@@ -111,8 +115,9 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 		return credentialsNonExpired;
 	}
 
-	public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+	public UserEntity setCredentialsNonExpired(boolean credentialsNonExpired) {
 		this.credentialsNonExpired = credentialsNonExpired;
+		return this;
 	}
 
 	@Override
@@ -120,31 +125,35 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 		return enabled;
 	}
 
-	public void setEnabled(boolean enabled) {
+	public UserEntity setEnabled(boolean enabled) {
 		this.enabled = enabled;
+		return this;
 	}
 
 	public String getEmail() {
 		return email;
 	}
 
-	public void setEmail(String email) {
+	public UserEntity setEmail(String email) {
 		this.email = email;
+		return this;
 	}
 
 	public Date getExpiredAt() {
 		return expiredAt;
 	}
 
-	public void setExpiredAt(Date expiredAt) {
+	public UserEntity setExpiredAt(Date expiredAt) {
 		this.expiredAt = expiredAt;
+		return this;
 	}
 
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
 
-	public void setPhoneNumber(String phoneNumber) {
+	public UserEntity setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+		return this;
 	}
 }

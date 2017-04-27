@@ -58,10 +58,9 @@ public class RoleServiceTest {
 	}
 
 	@Test
+	@SuppressWarnings("serial")
 	public void testFindRoleById() {
-		RoleEntity result = new RoleEntity();
-		result.setId("123");
-		result.setCode("user");
+		RoleEntity result = new RoleEntity() {{ setId("123"); }}.setCode("user");
 		when(roleRepository.findOne(eq("123"))).thenReturn(result);
 		assertThat(roleService.findRoleById("123")).isEqualTo(result);
 		verify(roleRepository).findOne(eq("123"));
@@ -71,10 +70,9 @@ public class RoleServiceTest {
 	}
 
 	@Test
+	@SuppressWarnings("serial")
 	public void testFindRoles() {
-		RoleEntity result = new RoleEntity();
-		result.setId("123");
-		result.setCode("user");
+		RoleEntity result = new RoleEntity() {{ setId("123"); }}.setCode("user");
 		Page<RoleEntity> page = new PageImpl<>(Arrays.asList(result));
 		when(roleRepository.findAll(any(Pageable.class))).thenReturn(page);
 		assertThat(roleService.findRoles(new PageRequest(1, 10))).isEqualTo(page);
@@ -82,12 +80,10 @@ public class RoleServiceTest {
 	}
 
 	@Test
+	@SuppressWarnings("serial")
 	public void testSaveRole() {
-		RoleEntity input = new RoleEntity();
-		input.setId("123");
-		input.setCode("user");
-		RoleEntity result = new RoleEntity();
-		result.setCode(UUID.randomUUID().toString());
+		RoleEntity input = new RoleEntity() {{ setId("123"); }}.setCode("user");
+		RoleEntity result = new RoleEntity().setCode(UUID.randomUUID().toString());
 		when(roleRepository.save(eq(input))).thenReturn(result);
 		assertThat(roleService.saveRole(input)).isEqualTo(result);
 		assertThat(input.getId()).isNull();
@@ -95,13 +91,10 @@ public class RoleServiceTest {
 	}
 
 	@Test
+	@SuppressWarnings("serial")
 	public void testUpdateRole() {
-		RoleEntity input = new RoleEntity();
-		input.setId("123");
-		input.setCode("user");
-		RoleEntity result = new RoleEntity();
-		result.setId("123");
-		result.setCode(UUID.randomUUID().toString());
+		RoleEntity input = new RoleEntity() {{ setId("123"); }}.setCode("user");
+		RoleEntity result = new RoleEntity() {{ setId("123"); }}.setCode(UUID.randomUUID().toString());
 		when(roleRepository.findByCode(eq("123"))).thenReturn(result);
 		when(roleRepository.save(eq(input))).thenReturn(input);
 		assertThat(roleService.updateRole("123", input)).isEqualTo(result);

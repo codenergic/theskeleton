@@ -56,13 +56,9 @@ public class RoleRestServiceTest {
 	@Test
 	@SuppressWarnings("serial")
 	public void testFindRoleByCode() throws Exception {
-		RoleEntity dbResult = new RoleEntity() {
-			{
-				setId("123");
-				setCode("12345");
-				setDescription("Description 12345");
-			}
-		};
+		RoleEntity dbResult = new RoleEntity() {{ setId("123"); }}
+				.setCode("12345")
+				.setDescription("Description 12345");
 		when(roleService.findRoleByCode("123")).thenReturn(dbResult);
 		MockHttpServletResponse response = mockMvc.perform(get("/api/roles/123"))
 				.andReturn()
@@ -87,13 +83,9 @@ public class RoleRestServiceTest {
 	@Test
 	@SuppressWarnings("serial")
 	public void testFindRoles() throws Exception {
-		RoleEntity dbResult = new RoleEntity() {
-			{
-				setId("123");
-				setCode("12345");
-				setDescription("Description 12345");
-			}
-		};
+		RoleEntity dbResult = new RoleEntity() {{ setId("123"); }}
+				.setCode("12345")
+				.setDescription("Description 12345");
 		Page<RoleEntity> pageResponseBody = new PageImpl<>(Arrays.asList(dbResult));
 		Page<RoleRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(RoleRestData.builder(dbResult).build()));
 		when(roleService.findRoles(any())).thenReturn(pageResponseBody);
@@ -108,20 +100,12 @@ public class RoleRestServiceTest {
 	@Test
 	@SuppressWarnings("serial")
 	public void testSaveRole() throws Exception {
-		RoleEntity input = new RoleEntity() {
-			{
-				setId("123");
-				setCode("12345");
-				setDescription("Description 12345");
-			}
-		};
-		RoleEntity dbResult = new RoleEntity() {
-			{
-				setId(UUID.randomUUID().toString());
-				setCode("12345");
-				setDescription("Description 12345");
-			}
-		};
+		RoleEntity input = new RoleEntity() {{ setId("123"); }}
+				.setCode("12345")
+				.setDescription("Description 12345");
+		RoleEntity dbResult = new RoleEntity() {{ setId(UUID.randomUUID().toString()); }}
+				.setCode("12345")
+				.setDescription("Description 12345");
 		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder(input).build());
 		when(roleService.saveRole(any())).thenReturn(dbResult);
 		MockHttpServletResponse response = mockMvc.perform(post("/api/roles")
@@ -138,20 +122,12 @@ public class RoleRestServiceTest {
 	@Test
 	@SuppressWarnings("serial")
 	public void testUpdateRole() throws Exception {
-		RoleEntity input = new RoleEntity() {
-			{
-				setId("123");
-				setCode("12345");
-				setDescription("Description 12345");
-			}
-		};
-		RoleEntity dbResult = new RoleEntity() {
-			{
-				setId(UUID.randomUUID().toString());
-				setCode("12345");
-				setDescription("Description 12345");
-			}
-		};
+		RoleEntity input = new RoleEntity() {{ setId("123"); }}
+				.setCode("12345")
+				.setDescription("Description 12345");
+		RoleEntity dbResult = new RoleEntity() {{ setId(UUID.randomUUID().toString()); }}
+				.setCode("12345")
+				.setDescription("Description 12345");
 		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder(input).build());
 		when(roleService.updateRole(eq("123"), any())).thenReturn(dbResult);
 		MockHttpServletResponse response = mockMvc.perform(put("/api/roles/123")

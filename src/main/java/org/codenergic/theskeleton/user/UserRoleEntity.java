@@ -21,6 +21,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
@@ -55,19 +56,22 @@ public class UserRoleEntity extends AbstractAuditingEntity implements GrantedAut
 		return user;
 	}
 
-	public void setUser(UserEntity user) {
+	public UserRoleEntity setUser(UserEntity user) {
 		this.user = user;
+		return this;
 	}
 
 	public RoleEntity getRole() {
 		return role;
 	}
 
-	public void setRole(RoleEntity role) {
+	public UserRoleEntity setRole(RoleEntity role) {
 		this.role = role;
+		return this;
 	}
 
 	@Override
+	@Transient
 	public String getAuthority() {
 		return role.getAuthority();
 	}

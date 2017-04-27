@@ -15,8 +15,10 @@
  */
 package org.codenergic.theskeleton.core.data;
 
+import java.io.Serializable;
+
 @FunctionalInterface
-public interface Activeable {
+public interface Activeable extends Serializable {
 	enum Status {
 		INACTIVE(0), ACTIVE(1);
 

@@ -41,16 +41,18 @@ public class RoleEntity extends AbstractAuditingEntity implements GrantedAuthori
 		return code;
 	}
 
-	public void setCode(String code) {
+	public RoleEntity setCode(String code) {
 		this.code = code;
+		return this;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public void setDescription(String description) {
+	public RoleEntity setDescription(String description) {
 		this.description = description;
+		return this;
 	}
 
 	@Override
