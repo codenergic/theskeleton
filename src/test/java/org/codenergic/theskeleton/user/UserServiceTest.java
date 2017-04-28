@@ -42,11 +42,12 @@ public class UserServiceTest {
 	}
 
 	@Test
-	@SuppressWarnings("serial")
 	public void testAddRoleToUser() {
-		RoleEntity role = new RoleEntity() {{ setId(UUID.randomUUID().toString()); }}
+		RoleEntity role = new RoleEntity()
+				.setId(UUID.randomUUID().toString())
 				.setCode("role");
-		UserEntity user = new UserEntity() {{ setId(UUID.randomUUID().toString()); }}
+		UserEntity user = new UserEntity()
+				.setId(UUID.randomUUID().toString())
 				.setUsername("user")
 				.setPassword(passwordEncoder.encode("user"));
 		UserRoleEntity result = new UserRoleEntity(user, role);
@@ -74,10 +75,10 @@ public class UserServiceTest {
 	}
 
 	@Test
-	@SuppressWarnings("serial")
 	public void testExtendsUserExpiration() {
 		Date expiredAt = Calendar.getInstance(TimeZone.getDefault()).getTime();
-		UserEntity input = new UserEntity() {{ setId(UUID.randomUUID().toString()); }}
+		UserEntity input = new UserEntity()
+				.setId(UUID.randomUUID().toString())
 				.setUsername("user")
 				.setExpiredAt(expiredAt);
 		when(userRepository.findByUsername("user")).thenReturn(input);
@@ -141,18 +142,23 @@ public class UserServiceTest {
 
 	@Test
 	public void testRemoveRoleFromUser() {
-		// TODO
+		userService.removeRoleFromUser("", "");
 	}
 
 	@Test
-	@SuppressWarnings("serial")
 	public void testSaveUser() {
-		// TODO
+		userService.saveUser(new UserEntity());
 	}
 
 	@Test
 	public void testUpdateUser() {
-		// TODO
+		UserEntity input = new UserEntity()
+				.setUsername("user")
+				.setEnabled(false);
+		when(userRepository.findByUsername("user")).thenReturn(input);
+		UserEntity updatedUser = userService.updateUser("user", new UserEntity().setUsername("updated"));
+		assertThat(updatedUser.getUsername()).isEqualTo(input.getUsername());
+		verify(userRepository).findByUsername("user");
 	}
 
 	@Test

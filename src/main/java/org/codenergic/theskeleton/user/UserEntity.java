@@ -65,6 +65,12 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 	private Set<UserRoleEntity> authorities = new HashSet<>();
 
 	@Override
+	public UserEntity setId(String id) {
+		super.setId(id);
+		return this;
+	}
+
+	@Override
 	public Collection<UserRoleEntity> getAuthorities() {
 		return authorities;
 	}

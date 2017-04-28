@@ -52,6 +52,12 @@ public class UserRoleEntity extends AbstractAuditingEntity implements GrantedAut
 		this.role = role;
 	}
 
+	@Override
+	public UserRoleEntity setId(String id) {
+		super.setId(id);
+		return this;
+	}
+
 	public UserEntity getUser() {
 		return user;
 	}

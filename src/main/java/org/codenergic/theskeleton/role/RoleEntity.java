@@ -37,6 +37,12 @@ public class RoleEntity extends AbstractAuditingEntity implements GrantedAuthori
 	@Column(length = 500)
 	private String description;
 
+	@Override
+	public RoleEntity setId(String id) {
+		super.setId(id);
+		return this;
+	}
+
 	public String getCode() {
 		return code;
 	}
