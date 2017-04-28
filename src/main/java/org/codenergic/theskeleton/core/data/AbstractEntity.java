@@ -27,8 +27,8 @@ import org.hibernate.annotations.GenericGenerator;
 @SuppressWarnings("serial")
 public abstract class AbstractEntity implements Activeable, Identifiable<String>, Serializable {
 	@Id
-	@GeneratedValue(generator = "uuid")
-	@GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+	@GeneratedValue(generator = "flake")
+	@GenericGenerator(name = "flake", strategy = "org.codenergic.theskeleton.core.data.FlakeIdGenerator")
 	private String id;
 	private int status = Activeable.Status.ACTIVE.getStatus();
 
