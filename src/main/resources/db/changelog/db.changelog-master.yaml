@@ -1,4 +1,12 @@
 databaseChangeLog:
+  - property:
+      name: now
+      value: sysdate
+      dbms: oracle
+  - property:
+      name: now
+      value: now()
+      dbms: mysql,postgresql,h2
   - include:
       file: changelogs/0001_create_table_role.sql
       relativeToChangelogFile: true
@@ -7,4 +15,7 @@ databaseChangeLog:
       relativeToChangelogFile: true
   - include:
       file: changelogs/0003_create_table_user_role.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changelogs/0004_initialize_users_and_roles.sql
       relativeToChangelogFile: true

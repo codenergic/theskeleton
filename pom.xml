@@ -78,6 +78,11 @@
 			<artifactId>libphonenumber</artifactId>
 			<version>${libphonenumber.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.rholder.fauxflake</groupId>
+			<artifactId>fauxflake-core</artifactId>
+			<version>1.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -166,6 +171,16 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
+				<includes>
+					<include>application.yml</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
 			</resource>
 		</resources>
 	</build>
