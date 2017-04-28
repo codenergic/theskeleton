@@ -12,8 +12,8 @@ insert into ts_user
    credentials_non_expired, enabled, expired_at, status, created_date, last_modified_date)
 values
   ('0000015bb4a150750007bf0700000002', 'system', 'unhackable', 'system@server', null, 1, 1, 1, null, 1, ${now}, ${now}),
-  ('0000015bb4a150750007bf0700000003', 'admin', '$2y$10$zpSon7SQecnMNQbWIyRqpeIo2cu0ahAgRogi.MHU7ZOC02hOOLD0C', 'admin@server', null, 1, 1, 1, null, 1, ${now}, ${now}),
-  ('0000015bb4a150750007bf0700000004', 'user', '$2y$10$yAtKrf1wz7nyK7TG7WXbK.M4EDtfSMVFpncnlx3NtAi/arRf0nvGW', 'user@server', null, 1, 1, 1, null, 1, ${now}, ${now});
+  ('0000015bb4a150750007bf0700000003', 'admin', '$2a$06$k8dwqs6rUqim1Gyi8dqEcuF2gHlrgw0SBAsOTnKI9MdSh1zWypjPq', 'admin@server', null, 1, 1, 1, null, 1, ${now}, ${now}),
+  ('0000015bb4a150750007bf0700000004', 'user', '$2a$06$uqnfWQJ.Y3H9ymvFJb96seaxpec6FbaSnrxxqX1Lk9vVr4PkBPQwi', 'user@server', null, 1, 1, 1, null, 1, ${now}, ${now});
 
 insert into ts_user_role (id, role_id, user_id, status, created_date, last_modified_date)
 values

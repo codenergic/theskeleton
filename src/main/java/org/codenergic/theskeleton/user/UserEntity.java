@@ -24,6 +24,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -54,7 +55,8 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date expiredAt;
 	@NotNull
-	@Column(length = 500)
+	@Column
+	@Lob
 	private String password;
 	@Column(name = "phone_number")
 	private String phoneNumber;
