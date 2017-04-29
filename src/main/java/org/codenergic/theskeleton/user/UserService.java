@@ -23,9 +23,10 @@ import org.codenergic.theskeleton.role.RoleRepository;
 import org.codenergic.theskeleton.user.impl.UserServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
 	static UserService newInstance(PasswordEncoder passwordEncoder, RoleRepository roleRepository,
 			UserRepository userRepository, UserRoleRepository userRoleRepository) {
 		return new UserServiceImpl(passwordEncoder, roleRepository, userRepository, userRoleRepository);

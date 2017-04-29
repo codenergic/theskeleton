@@ -54,9 +54,9 @@ public class RoleRestServiceTest {
 	private RoleService roleService;
 
 	@Test
-	@SuppressWarnings("serial")
 	public void testFindRoleByCode() throws Exception {
-		RoleEntity dbResult = new RoleEntity() {{ setId("123"); }}
+		RoleEntity dbResult = new RoleEntity()
+				.setId("123")
 				.setCode("12345")
 				.setDescription("Description 12345");
 		when(roleService.findRoleByCode("123")).thenReturn(dbResult);
@@ -81,9 +81,9 @@ public class RoleRestServiceTest {
 	}
 
 	@Test
-	@SuppressWarnings("serial")
 	public void testFindRoles() throws Exception {
-		RoleEntity dbResult = new RoleEntity() {{ setId("123"); }}
+		RoleEntity dbResult = new RoleEntity()
+				.setId("123")
 				.setCode("12345")
 				.setDescription("Description 12345");
 		Page<RoleEntity> pageResponseBody = new PageImpl<>(Arrays.asList(dbResult));
@@ -98,12 +98,13 @@ public class RoleRestServiceTest {
 	}
 
 	@Test
-	@SuppressWarnings("serial")
 	public void testSaveRole() throws Exception {
-		RoleEntity input = new RoleEntity() {{ setId("123"); }}
+		RoleEntity input = new RoleEntity()
+				.setId("123")
 				.setCode("12345")
 				.setDescription("Description 12345");
-		RoleEntity dbResult = new RoleEntity() {{ setId(UUID.randomUUID().toString()); }}
+		RoleEntity dbResult = new RoleEntity()
+				.setId(UUID.randomUUID().toString())
 				.setCode("12345")
 				.setDescription("Description 12345");
 		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder(input).build());
@@ -120,12 +121,13 @@ public class RoleRestServiceTest {
 	}
 
 	@Test
-	@SuppressWarnings("serial")
 	public void testUpdateRole() throws Exception {
-		RoleEntity input = new RoleEntity() {{ setId("123"); }}
+		RoleEntity input = new RoleEntity()
+				.setId("123")
 				.setCode("12345")
 				.setDescription("Description 12345");
-		RoleEntity dbResult = new RoleEntity() {{ setId(UUID.randomUUID().toString()); }}
+		RoleEntity dbResult = new RoleEntity()
+				.setId(UUID.randomUUID().toString())
 				.setCode("12345")
 				.setDescription("Description 12345");
 		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder(input).build());

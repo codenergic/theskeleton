@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import org.codenergic.theskeleton.core.data.RestData;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @SuppressWarnings("serial")
 public class UserRestData implements RestData {
@@ -35,7 +36,7 @@ public class UserRestData implements RestData {
 	private String phoneNumber;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password;
-	@JsonProperty
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private Set<String> authorities = new HashSet<>();
 
 	private UserRestData() {

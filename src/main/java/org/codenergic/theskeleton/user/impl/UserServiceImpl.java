@@ -31,6 +31,8 @@ import org.codenergic.theskeleton.user.UserRoleRepository;
 import org.codenergic.theskeleton.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -158,4 +160,13 @@ public class UserServiceImpl implements UserService {
 		return user;
 	}
 
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		UserEntity user = findUserByUsername(username);
+		if (user == null)
+			user = findUserByEmail(username);
+		if (user == null)
+			throw new UsernameNotFoundException("Cannot find user with username or email of " + username);
+		return user.setAuthorities(userRoleRepository.findByUserUsername(username));
+	}
 }
