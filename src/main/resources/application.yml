@@ -23,11 +23,18 @@ spring:
     properties:
       javax:
         persistence:
+          sharedCache:
+            mode: DISABLE_SELECTIVE
           schema-generation:
             create-source: metadata
             scripts:
               action: create
               create-target: target/generated-sources/database-schema.sql
+      hibernate:
+        cache:
+          region:
+            factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+          use_second_level_cache: true
   datasource:
     url: jdbc:h2:~/.theskeleton
     username: sa
