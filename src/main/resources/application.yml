@@ -29,6 +29,17 @@ spring:
               action: create
               create-target: target/generated-sources/database-schema.sql
   datasource:
+    url: jdbc:h2:~/.theskeleton
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /manage/database
+---
+spring:
+  profiles: mariadb
+  datasource:
     url: jdbc:mariadb://localhost/theskeleton
     username: root
     password: root

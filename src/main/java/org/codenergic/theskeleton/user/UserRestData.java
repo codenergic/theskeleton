@@ -95,7 +95,7 @@ public class UserRestData implements RestData {
 	}
 
 	public static Builder builder(UserEntity user) {
-		return builder().withId(user.getId()).withUsername(user.getUsername()).withEmail(user.getUsername())
+		return builder().withId(user.getId()).withUsername(user.getUsername()).withEmail(user.getEmail())
 				.withPhoneNumber(user.getPhoneNumber()).withAuthorities(
 						user.getAuthorities().stream().map(UserRoleEntity::getAuthority).collect(Collectors.toSet()));
 	}
