@@ -19,11 +19,28 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 @Configuration
 public class SecurityConfig {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(10);
+	}
+
+ 	/**
+	 * Token converter and enhancer
+	 * @return
+	 */
+	@Bean
+	public JwtAccessTokenConverter jwtAccessTokenConverter() {
+		return new JwtAccessTokenConverter();
+	}
+
+	@Bean
+	public TokenStore tokenStore() {
+		return new JwtTokenStore(jwtAccessTokenConverter());
 	}
 }
