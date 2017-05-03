@@ -19,3 +19,6 @@ databaseChangeLog:
   - include:
       file: changelogs/0004_initialize_users_and_roles.sql
       relativeToChangelogFile: true
+  - include:
+      file: changelogs/0005_create_table_oauth2_client.sql
+      relativeToChangelogFile: true
