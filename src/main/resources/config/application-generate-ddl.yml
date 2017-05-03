@@ -1,0 +1,19 @@
+spring:
+  profiles: generate-ddl
+  main:
+    web-environment: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      javax:
+        persistence:
+          schema-generation:
+            create-source: metadata
+            scripts:
+              action: create
+              create-target: target/generated-sources/database-schema.sql
+  datasource:
+    url: jdbc:h2:mem:theskeleton
+    username: sa
+    password:
