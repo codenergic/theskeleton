@@ -46,12 +46,12 @@ public abstract class AbstractAuditingEntity extends AbstractEntity implements A
 	private Date lastModifiedDate;
 	@Embedded
 	@CreatedBy
-	@AttributeOverrides({ @AttributeOverride(name = "username", column = @Column(name = "created_by")),
+	@AttributeOverrides({ @AttributeOverride(name = "userId", column = @Column(name = "created_by")),
 			@AttributeOverride(name = "clientId", column = @Column(name = "created_by_client")) })
 	private AuditInformation createdBy;
 	@Embedded
 	@LastModifiedBy
-	@AttributeOverrides({ @AttributeOverride(name = "username", column = @Column(name = "last_modified_by")),
+	@AttributeOverrides({ @AttributeOverride(name = "userId", column = @Column(name = "last_modified_by")),
 			@AttributeOverride(name = "clientId", column = @Column(name = "last_modified_by_client")) })
 	private AuditInformation lastModifiedBy;
 

@@ -22,15 +22,15 @@ import javax.persistence.Embeddable;
 @Embeddable
 @SuppressWarnings("serial")
 public class AuditInformation implements Serializable {
-	private String username;
+	private String userId;
 	private String clientId;
 
-	public String getUsername() {
-		return username;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public String getClientId() {
