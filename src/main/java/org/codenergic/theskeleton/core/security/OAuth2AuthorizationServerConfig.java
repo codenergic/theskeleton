@@ -15,12 +15,7 @@
  */
 package org.codenergic.theskeleton.core.security;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-
-import org.apache.commons.codec.binary.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.codenergic.theskeleton.client.OAuth2ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,12 +30,12 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 @Configuration
 @EnableAuthorizationServer
 public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-
 	@Autowired
 	private AccessTokenConverter accessTokenConverter;
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	@Autowired
+	private OAuth2ClientService clientService;
 	@Autowired
 	private TokenEnhancer tokenEnhancer;
 	@Autowired
@@ -48,16 +43,7 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
-		KeyPair keyPair = keyPairGenerator.generateKeyPair();
-		String clientId = Base64.encodeBase64URLSafeString(keyPair.getPublic().getEncoded());
-		String clientSecret = Base64.encodeBase64URLSafeString(keyPair.getPrivate().getEncoded());
-		logger.info("\n\n\tDefault OAuth2 Client:\n\tID \t: {}\n\tSecret \t: {}\n", clientId, clientSecret);
-		clients.inMemory()
-				.withClient(clientId)
-				.secret(clientSecret)
-				.authorizedGrantTypes("password", "implicit", "authorization_code", "refresh_token")
-				.autoApprove(true);
+		clients.withClientDetails(clientService);
 	}
 
 	@Override
