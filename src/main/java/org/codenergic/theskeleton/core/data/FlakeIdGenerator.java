@@ -25,7 +25,7 @@ import com.github.rholder.fauxflake.IdGenerators;
 import com.github.rholder.fauxflake.api.IdGenerator;
 
 public class FlakeIdGenerator implements IdentifierGenerator {
-	private IdGenerator flake = IdGenerators.newSnowflakeIdGenerator();
+	private IdGenerator flake = IdGenerators.newFlakeIdGenerator();
 
 	@Override
 	public Serializable generate(SessionImplementor session, Object object) throws HibernateException {

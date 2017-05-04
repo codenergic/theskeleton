@@ -29,15 +29,17 @@ public class AuditInformation implements Serializable {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public AuditInformation setUserId(String userId) {
 		this.userId = userId;
+		return this;
 	}
 
 	public String getClientId() {
 		return clientId;
 	}
 
-	public void setClientId(String clientId) {
+	public AuditInformation setClientId(String clientId) {
 		this.clientId = clientId;
+		return this;
 	}
 }

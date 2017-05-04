@@ -15,10 +15,13 @@
  */
 package org.codenergic.theskeleton.core.security;
 
+import org.codenergic.theskeleton.user.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
+import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -35,12 +38,21 @@ public class SecurityConfig {
 	 * @return
 	 */
 	@Bean
-	public JwtAccessTokenConverter jwtAccessTokenConverter() {
-		return new JwtAccessTokenConverter();
+	public JwtAccessTokenConverter jwtAccessTokenConverter(AccessTokenConverter accessTokenConverter) {
+		JwtAccessTokenConverter tokenConverter = new JwtAccessTokenConverter();
+		tokenConverter.setAccessTokenConverter(accessTokenConverter);
+		return tokenConverter;
 	}
 
 	@Bean
-	public TokenStore tokenStore() {
-		return new JwtTokenStore(jwtAccessTokenConverter());
+	public AccessTokenConverter accessTokenConverter(UserService userService) {
+		DefaultAccessTokenConverter accessTokenConverter = new DefaultAccessTokenConverter();
+		accessTokenConverter.setUserTokenConverter(new UserAccessTokenAuthenticationConverter());
+		return accessTokenConverter;
+	}
+
+	@Bean
+	public TokenStore tokenStore(JwtAccessTokenConverter accessTokenConverter) {
+		return new JwtTokenStore(accessTokenConverter);
 	}
 }

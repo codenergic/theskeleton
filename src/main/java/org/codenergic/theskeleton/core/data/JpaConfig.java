@@ -19,15 +19,21 @@ import org.codenergic.theskeleton.Application;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.auditing.DateTimeProvider;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
-@EnableJpaAuditing(dateTimeProviderRef = "dateTimeProvider")
+@EnableJpaAuditing(auditorAwareRef = "auditorAware", dateTimeProviderRef = "dateTimeProvider")
 @EnableJpaRepositories(basePackageClasses = Application.class)
 public class JpaConfig {
 	@Bean
 	public DateTimeProvider dateTimeProvider() {
 		return new UTCDateTimeProvider();
+	}
+
+	@Bean
+	public AuditorAware<AuditInformation> auditorAware() {
+		return new AuditInformationAuditor();
 	}
 }
