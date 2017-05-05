@@ -16,6 +16,7 @@
 package org.codenergic.theskeleton.core.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -28,6 +29,7 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 
 @Configuration
 @EnableResourceServer
+@ConditionalOnWebApplication
 public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	@Autowired
 	private AuthenticationManager authenticationManager;
