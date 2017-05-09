@@ -13,7 +13,7 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/target/*.jar build@tlsfree.org:/home/build/theskeleton-$TRAVIS_BUILD_ID.jar && ssh -t build@tlsfree.org 'if pgrep theskeleton &> /dev/null ; then kill `pgrep theskeleton` ; fi' && ssh -t build@tlsfree.org 'nohup /home/build/theskeleton-$TRAVIS_BUILD_ID.jar --logging.file=/home/build/theskeleton-$TRAVIS_BUILD_ID.log &'
+  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/target/*.jar build@tlsfree.org:/home/build/theskeleton-$TRAVIS_BUILD_ID.jar && ssh -t build@tlsfree.org 'if pgrep -f theskeleton &> /dev/null ; then kill `pgrep -f theskeleton` ; fi' && ssh -t build@tlsfree.org 'nohup /home/build/theskeleton-$TRAVIS_BUILD_ID.jar --logging.file=/home/build/theskeleton-$TRAVIS_BUILD_ID.log &'
 addons:
   sonarqube:
     organization: codenergic
