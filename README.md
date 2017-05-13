@@ -20,7 +20,7 @@ You can find the ```.jar``` file in the ```target``` directory.
 
 ## License
 ```
-Copyright 2016 Dian Aditya
+Copyright 2016 Codenergic
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
