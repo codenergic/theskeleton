@@ -22,6 +22,7 @@ public class AuthorizationApprovalController {
 	public ModelAndView authorizationApproval(AuthorizationRequest request) {
 		ModelAndView modelAndView = new ModelAndView(AUTHORIZATION_APPROVAL);
 		modelAndView.addObject("client", clientService.findClientById(request.getClientId()));
+		modelAndView.addObject("authorizationRequest", request);
 
 		return modelAndView;
 	}

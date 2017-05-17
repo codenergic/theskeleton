@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Login - TheSkeleton</title>
+  <title>Approval - TheSkeleton</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -38,6 +38,14 @@
             </p>
             <form th:action="@{/oauth/authorize}" method="POST">
               <input type="hidden" name="user_oauth_approval" value="true" />
+              <div th:each="scope : ${authorizationRequest.scope}">
+                <label class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" th:name="'scope.' + ${scope}" value="true" checked="checked" />
+                  <span class="custom-control-indicator"></span>
+                  <span class="custom-control-description" th:text="${scope.toUpperCase()}"></span>
+                </label>
+              </div>
+              <hr />
               <button class="btn btn-lg btn-success btn-block" type="submit">Authorize</button>
             </form>
             <form th:action="@{/oauth/authorize}" method="POST">
