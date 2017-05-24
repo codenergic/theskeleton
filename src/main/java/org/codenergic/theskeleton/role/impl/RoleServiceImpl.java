@@ -34,6 +34,14 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
+	@Transactional
+	public void deleteRole(String idOrCode) {
+		RoleEntity e = findRoleByIdOrCode(idOrCode);
+		Assert.notNull(e, "Role not found");
+		roleRepository.delete(e);
+	}
+
+	@Override
 	public RoleEntity findRoleByCode(String code) {
 		return roleRepository.findByCode(code);
 	}
@@ -44,8 +52,19 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
+	public RoleEntity findRoleByIdOrCode(String idOrCode) {
+		RoleEntity role = findRoleById(idOrCode);
+		return role != null ? role : findRoleByCode(idOrCode);
+	}
+
+	@Override
 	public Page<RoleEntity> findRoles(Pageable pageable) {
 		return roleRepository.findAll(pageable);
+	}
+
+	@Override
+	public Page<RoleEntity> findRoles(String keywords, Pageable pageable) {
+		return roleRepository.findByCodeOrDescriptionStartsWith(keywords, pageable);
 	}
 
 	@Override
@@ -57,12 +76,11 @@ public class RoleServiceImpl implements RoleService {
 
 	@Override
 	@Transactional
-	public RoleEntity updateRole(String code, RoleEntity role) {
-		RoleEntity e = findRoleByCode(code);
+	public RoleEntity updateRole(String id, RoleEntity role) {
+		RoleEntity e = findRoleByIdOrCode(id);
 		Assert.notNull(e, "Role not found");
 		e.setCode(role.getCode());
 		e.setDescription(role.getDescription());
-
 		return e;
 	}
 }

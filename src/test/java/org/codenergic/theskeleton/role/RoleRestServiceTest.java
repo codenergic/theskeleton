@@ -17,6 +17,7 @@ package org.codenergic.theskeleton.role;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,11 +60,11 @@ public class RoleRestServiceTest {
 				.setId("123")
 				.setCode("12345")
 				.setDescription("Description 12345");
-		when(roleService.findRoleByCode("123")).thenReturn(dbResult);
+		when(roleService.findRoleByIdOrCode("123")).thenReturn(dbResult);
 		MockHttpServletResponse response = mockMvc.perform(get("/api/roles/123"))
 				.andReturn()
 				.getResponse();
-		verify(roleService).findRoleByCode("123");
+		verify(roleService).findRoleByIdOrCode("123");
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder(dbResult).build()));
@@ -71,11 +72,11 @@ public class RoleRestServiceTest {
 
 	@Test
 	public void testFindRoleByCodeNotFound() throws Exception {
-		when(roleService.findRoleByCode("123")).thenReturn(null);
+		when(roleService.findRoleByIdOrCode("123")).thenReturn(null);
 		MockHttpServletResponse response = mockMvc.perform(get("/api/roles/123"))
 				.andReturn()
 				.getResponse();
-		verify(roleService).findRoleByCode("123");
+		verify(roleService).findRoleByIdOrCode("123");
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray()).isEqualTo(new byte[0]);
 	}
@@ -88,11 +89,11 @@ public class RoleRestServiceTest {
 				.setDescription("Description 12345");
 		Page<RoleEntity> pageResponseBody = new PageImpl<>(Arrays.asList(dbResult));
 		Page<RoleRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(RoleRestData.builder(dbResult).build()));
-		when(roleService.findRoles(any())).thenReturn(pageResponseBody);
+		when(roleService.findRoles(anyString(), any())).thenReturn(pageResponseBody);
 		MockHttpServletResponse response = mockMvc.perform(get("/api/roles"))
 				.andReturn()
 				.getResponse();
-		verify(roleService).findRoles(any());
+		verify(roleService).findRoles(anyString(), any());
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expectedResponseBody));
 	}

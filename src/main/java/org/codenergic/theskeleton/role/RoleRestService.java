@@ -20,12 +20,14 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -34,15 +36,21 @@ public class RoleRestService {
 	@Autowired
 	private RoleService roleService;
 
-	@GetMapping("/{code}")
-	public RoleRestData findRoleByCode(@PathVariable("code") final String code) {
-		RoleEntity role = roleService.findRoleByCode(code);
+	@DeleteMapping("/{idOrCode}")
+	public void deleteRole(@PathVariable("idOrCode") final String idOrCode) {
+		roleService.deleteRole(idOrCode);
+	}
+
+	@GetMapping("/{idOrCode}")
+	public RoleRestData findRoleByIdOrCode(@PathVariable("idOrCode") final String idOrCode) {
+		RoleEntity role = roleService.findRoleByIdOrCode(idOrCode);
 		return role == null ? null : RoleRestData.builder(role).build();
 	}
 
 	@GetMapping
-	public Page<RoleRestData> findRoles(final Pageable pageable) {
-		return roleService.findRoles(pageable)
+	public Page<RoleRestData> findRoles(@RequestParam(name = "q", defaultValue = "") final String keywords,
+			final Pageable pageable) {
+		return roleService.findRoles(keywords, pageable)
 				.map(s -> RoleRestData.builder(s).build());
 	}
 

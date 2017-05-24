@@ -17,6 +17,7 @@ package org.codenergic.theskeleton.role;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -95,6 +96,7 @@ public class RoleServiceTest {
 	public void testUpdateRole() {
 		RoleEntity input = new RoleEntity() {{ setId("123"); }}.setCode("user");
 		RoleEntity result = new RoleEntity() {{ setId("123"); }}.setCode(UUID.randomUUID().toString());
+		when(roleRepository.findOne(anyString())).thenReturn(null);
 		when(roleRepository.findByCode(eq("123"))).thenReturn(result);
 		when(roleRepository.save(eq(input))).thenReturn(input);
 		assertThat(roleService.updateRole("123", input)).isEqualTo(result);

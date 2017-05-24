@@ -27,13 +27,19 @@ public interface RoleService {
 		return new RoleServiceImpl(roleRepository);
 	}
 
+	void deleteRole(@NotNull String idOrCode);
+
 	RoleEntity findRoleByCode(@NotNull String code);
 
 	RoleEntity findRoleById(@NotNull String id);
 
+	RoleEntity findRoleByIdOrCode(@NotNull String idOrCode);
+
 	Page<RoleEntity> findRoles(Pageable pageable);
+
+	Page<RoleEntity> findRoles(String keyword, Pageable pageable);
 
 	RoleEntity saveRole(@NotNull @Valid RoleEntity role);
 
-	RoleEntity updateRole(@NotNull String cpde, @NotNull @Valid RoleEntity role);
+	RoleEntity updateRole(@NotNull String id, @NotNull @Valid RoleEntity role);
 }
