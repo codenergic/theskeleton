@@ -17,6 +17,7 @@ package org.codenergic.theskeleton.user.impl;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -59,6 +60,14 @@ public class UserServiceImpl implements UserService {
 		UserEntity user = findUserByUsername(username);
 		RoleEntity role = roleRepository.findByCode(roleCode);
 		return userRoleRepository.save(new UserRoleEntity(user, role)).getUser();
+	}
+
+	@Override
+	@Transactional
+	public void deleteUser(String username) {
+		UserEntity user = findUserByUsername(username);
+		Objects.requireNonNull(user, "User not found");
+		userRepository.delete(user);
 	}
 
 	@Override

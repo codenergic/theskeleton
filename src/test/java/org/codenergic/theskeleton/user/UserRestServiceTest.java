@@ -65,6 +65,16 @@ public class UserRestServiceTest {
 	}
 
 	@Test
+	public void testDeleteUser() throws Exception {
+		MockHttpServletRequestBuilder request = delete("/api/users/user123")
+				.contentType(MediaType.APPLICATION_JSON);
+		MockHttpServletResponse response = mockMvc.perform(request)
+				.andReturn()
+				.getResponse();
+		assertThat(response.getStatus()).isEqualTo(200);
+	}
+
+	@Test
 	public void testEnableOrDisableUser() throws Exception {
 		final UserEntity user = new UserEntity()
 				.setEnabled(true);

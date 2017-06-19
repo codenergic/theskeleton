@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.role.impl;
 
+import java.util.Objects;
+
 import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RoleRepository;
 import org.codenergic.theskeleton.role.RoleService;
@@ -22,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,11 +34,15 @@ public class RoleServiceImpl implements RoleService {
 		this.roleRepository = roleRepository;
 	}
 
+	private void assertRoleNotNull(RoleEntity role) {
+		Objects.requireNonNull(role, "Role not found");
+	}
+
 	@Override
 	@Transactional
 	public void deleteRole(String idOrCode) {
 		RoleEntity e = findRoleByIdOrCode(idOrCode);
-		Assert.notNull(e, "Role not found");
+		assertRoleNotNull(e);
 		roleRepository.delete(e);
 	}
 
@@ -78,7 +83,7 @@ public class RoleServiceImpl implements RoleService {
 	@Transactional
 	public RoleEntity updateRole(String id, RoleEntity role) {
 		RoleEntity e = findRoleByIdOrCode(id);
-		Assert.notNull(e, "Role not found");
+		assertRoleNotNull(e);
 		e.setCode(role.getCode());
 		e.setDescription(role.getDescription());
 		return e;

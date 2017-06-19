@@ -62,6 +62,18 @@ public class UserServiceTest {
 	}
 
 	@Test
+	public void testDeleteUser() {
+		UserEntity user = new UserEntity()
+				.setId(UUID.randomUUID().toString())
+				.setUsername("user")
+				.setPassword(passwordEncoder.encode("user"));
+		when(userRepository.findByUsername("user")).thenReturn(user);
+		userService.deleteUser("user");
+		verify(userRepository).findByUsername("user");
+		verify(userRepository).delete(user);
+	}
+
+	@Test
 	@SuppressWarnings("serial")
 	public void testEnableOrDisableUser() {
 		UserEntity input = new UserEntity() {{ setId(UUID.randomUUID().toString()); }}

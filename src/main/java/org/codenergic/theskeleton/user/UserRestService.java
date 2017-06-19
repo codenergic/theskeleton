@@ -46,6 +46,11 @@ public class UserRestService {
 		return convertEntityToRestData(userService.addRoleToUser(username, body.get("role")));
 	}
 
+	@DeleteMapping("/{username}")
+	public void deleteUser(@PathVariable("username") String username) {
+		userService.deleteUser(username);
+	}
+
 	@PutMapping("/{username}/enable")
 	public UserRestData enableOrDisableUser(@PathVariable("username") String username, @RequestBody Map<String, Boolean> body) {
 		return convertEntityToRestData(userService.enableOrDisableUser(username, body.getOrDefault("enabled", true)));

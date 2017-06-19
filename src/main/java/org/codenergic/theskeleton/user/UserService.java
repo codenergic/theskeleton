@@ -18,6 +18,9 @@ package org.codenergic.theskeleton.user;
 import java.util.Date;
 import java.util.Set;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RoleRepository;
 import org.codenergic.theskeleton.user.impl.UserServiceImpl;
@@ -32,31 +35,33 @@ public interface UserService extends UserDetailsService {
 		return new UserServiceImpl(passwordEncoder, roleRepository, userRepository, userRoleRepository);
 	}
 
-	UserEntity addRoleToUser(String username, String roleCode);
+	UserEntity addRoleToUser(@NotNull String username, @NotNull String roleCode);
 
-	UserEntity enableOrDisableUser(String username, boolean enabled);
+	void deleteUser(@NotNull String username);
 
-	UserEntity extendsUserExpiration(String username, int amountInMinutes);
+	UserEntity enableOrDisableUser(@NotNull String username, boolean enabled);
 
-	Set<RoleEntity> findRolesByUserUsername(String username);
+	UserEntity extendsUserExpiration(@NotNull String username, int amountInMinutes);
 
-	UserEntity findUserByEmail(String email);
+	Set<RoleEntity> findRolesByUserUsername(@NotNull String username);
 
-	UserEntity findUserByUsername(String username);
+	UserEntity findUserByEmail(@NotNull String email);
 
-	Set<UserEntity> findUsersByRoleCode(String code);
+	UserEntity findUserByUsername(@NotNull String username);
 
-	Page<UserEntity> findUsersByUsernameStartingWith(String username, Pageable pageable);
+	Set<UserEntity> findUsersByRoleCode(@NotNull String code);
 
-	UserEntity lockOrUnlockUser(String username, boolean unlocked);
+	Page<UserEntity> findUsersByUsernameStartingWith(@NotNull String username, Pageable pageable);
 
-	UserEntity removeRoleFromUser(String username, String roleCode);
+	UserEntity lockOrUnlockUser(@NotNull String username, boolean unlocked);
 
-	UserEntity saveUser(UserEntity userEntity);
+	UserEntity removeRoleFromUser(@NotNull String username, @NotNull String roleCode);
 
-	UserEntity updateUser(String username, UserEntity newUser);
+	UserEntity saveUser(@NotNull @Valid UserEntity userEntity);
 
-	UserEntity updateUserExpirationDate(String username, Date date);
+	UserEntity updateUser(@NotNull String username, @NotNull @Valid UserEntity newUser);
 
-	UserEntity updateUserPassword(String username, String rawPassword);
+	UserEntity updateUserExpirationDate(@NotNull String username, Date date);
+
+	UserEntity updateUserPassword(@NotNull String username, @NotNull String rawPassword);
 }
