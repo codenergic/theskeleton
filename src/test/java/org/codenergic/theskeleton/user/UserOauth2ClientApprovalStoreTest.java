@@ -54,7 +54,7 @@ public class UserOauth2ClientApprovalStoreTest {
 				.thenReturn(null);
 		approvalStore.addApprovals(Arrays.asList(new Approval("1", "2", "write", new Date(), ApprovalStatus.APPROVED)));
 		verify(approvalRepository).findByUserUsernameAndClientIdAndScope(anyString(), anyString(), eq("write"));
-		verify(approvalRepository).save(any(UserOAuth2ClientApprovalEntity.class));
+		verify(approvalRepository, times(2)).save(any(UserOAuth2ClientApprovalEntity.class));
 	}
 
 	@Test

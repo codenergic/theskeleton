@@ -46,16 +46,18 @@ public class UserOAuth2ClientApprovalStore implements ApprovalStore {
 		approvals.forEach(a -> {
 			UserOAuth2ClientApprovalEntity approval = approvalRepository.findByUserUsernameAndClientIdAndScope(a.getUserId(),
 					a.getClientId(), a.getScope());
-			if (approval == null) {
-				approval = new UserOAuth2ClientApprovalEntity()
-						.setUser(userRepository.findByUsername(a.getUserId()))
-						.setClient(new OAuth2ClientEntity().setId(a.getClientId()))
-						.setScope(a.getScope())
-						.setApprovalStatus(a.getStatus());
-				approvalRepository.save(approval);
-			} else {
-				approval.setApprovalStatus(a.getStatus());
+			UserOAuth2ClientApprovalEntity newApproval = new UserOAuth2ClientApprovalEntity();
+			if (approval != null) {
+				newApproval.setId(approval.getId());
+				newApproval.setCreatedBy(approval.getCreatedBy());
+				newApproval.setCreatedDate(approval.getCreatedDate());
 			}
+			newApproval
+					.setUser(userRepository.findByUsername(a.getUserId()))
+					.setClient(new OAuth2ClientEntity().setId(a.getClientId()))
+					.setScope(a.getScope())
+					.setApprovalStatus(a.getStatus());
+			approvalRepository.save(newApproval);
 		});
 
 		return true;
