@@ -32,6 +32,7 @@ public class RoleRestData implements RestData {
 	private String description;
 
 	private RoleRestData() {
+		this.code = "";
 	}
 
 	private RoleRestData(Builder builder) {
