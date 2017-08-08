@@ -42,3 +42,15 @@ spring:
           region:
             factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
           use_second_level_cache: true
+  mail:
+    host: localhost
+    port: 25
+    username:
+    password:
+    mail:
+      transport:
+        protocol: smtp
+      smtp:
+        auth: false
+        starttls:
+          enable: false
