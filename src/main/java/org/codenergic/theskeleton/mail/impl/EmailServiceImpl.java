@@ -2,10 +2,8 @@ package org.codenergic.theskeleton.mail.impl;
 
 import org.codenergic.theskeleton.mail.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -21,14 +19,10 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	@Async
 	public void sendSimpleMessage(String to, String subject, String text) {
-		MimeMessagePreparator messagePreparator = mimeMessage -> {
-		MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-		messageHelper.setTo(to);
-		messageHelper.setSubject(subject);
-		messageHelper.setText(text);
-		};
-		try {
-			emailSender.send(messagePreparator);
-		} catch (MailException e) {}
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(to);
+		message.setSubject(subject);
+		message.setText(text);
+		emailSender.send(message);
 	}
 }
