@@ -16,6 +16,12 @@ management:
   info:
     git:
       mode: full
+s3:
+  client:
+    endpoint: http://localhost:8081
+  server:
+    port: 8081
+    storageLocation: ${HOME}/.theskeleton-s3
 security:
   oauth2:
     resource:

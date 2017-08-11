@@ -14,6 +14,8 @@
 		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
 		<maven-git-commit-id-plugin.version>2.2.2</maven-git-commit-id-plugin.version>
 		<maven-resources-plugin.version>2.7</maven-resources-plugin.version>
+		<minio.version>3.0.6</minio.version>
+		<s3mock.version>0.2.3</s3mock.version>
 		<spring-boot.version>1.5.3.RELEASE</spring-boot.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -97,6 +99,12 @@
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>${minio.version}</version>
+		</dependency>
+
 		<!-- Utilities -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -131,6 +139,33 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<profiles>
+		<profile>
+			<id>dev-build</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>io.findify</groupId>
+					<artifactId>s3mock_2.12</artifactId>
+					<version>${s3mock.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>prod-build</id>
+			<dependencies>
+				<dependency>
+					<groupId>io.findify</groupId>
+					<artifactId>s3mock_2.12</artifactId>
+					<version>${s3mock.version}</version>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
