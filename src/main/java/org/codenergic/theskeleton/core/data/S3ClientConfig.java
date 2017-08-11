@@ -15,25 +15,13 @@
  */
 package org.codenergic.theskeleton.core.data;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.xmlpull.v1.XmlPullParserException;
 
 import io.minio.MinioClient;
-import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidBucketNameException;
 import io.minio.errors.InvalidEndpointException;
 import io.minio.errors.InvalidPortException;
-import io.minio.errors.NoResponseException;
-import io.minio.errors.RegionConflictException;
 
 @Configuration
 public class S3ClientConfig {
@@ -46,14 +34,6 @@ public class S3ClientConfig {
 	@ConfigurationProperties("s3.client")
 	public S3ClientProperties s3ClientProperties() {
 		return new S3ClientProperties();
-	}
-
-	@Autowired
-	public void initializeBucket(MinioClient client) throws InvalidKeyException, InvalidBucketNameException,
-			RegionConflictException, NoSuchAlgorithmException, InsufficientDataException, NoResponseException,
-			ErrorResponseException, InternalException, IOException, XmlPullParserException {
-		if (!client.bucketExists("theskeleton"))
-			client.makeBucket("theskeleton");
 	}
 
 	protected static class S3ClientProperties {
