@@ -16,5 +16,9 @@
 package org.codenergic.theskeleton.core.mail;
 
 public interface EmailService {
-	void sendSimpleMessage(String to, String subject, String text);
+	default void sendSimpleMessage(String to, String subject, String text) {
+		sendSimpleMessage(new String[] { to }, subject, text);
+	}
+
+	void sendSimpleMessage(String[] to, String subject, String text);
 }
