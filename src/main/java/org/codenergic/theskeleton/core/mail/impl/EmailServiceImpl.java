@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.mail.impl;
+package org.codenergic.theskeleton.core.mail.impl;
 
-import org.codenergic.theskeleton.mail.EmailService;
+import org.codenergic.theskeleton.core.mail.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.mail;
+package org.codenergic.theskeleton.core.mail;
 
 public interface EmailService {
 	void sendSimpleMessage(String to, String subject, String text);
