@@ -1,8 +1,9 @@
-package org.codenergic.theskeleton.mail;
+package org.codenergic.theskeleton.core.mail;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
-import org.codenergic.theskeleton.mail.impl.EmailServiceImpl;
+import org.codenergic.theskeleton.core.mail.EmailService;
+import org.codenergic.theskeleton.core.mail.impl.EmailServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
