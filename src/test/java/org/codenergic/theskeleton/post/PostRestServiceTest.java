@@ -1,4 +1,19 @@
-package org.codenergic.theskeleton.article;
+/*
+ * Copyright 2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.codenergic.theskeleton.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -26,44 +41,44 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-@WebMvcTest(controllers = { ArticleRestService.class }, secure = false)
-public class ArticleRestServiceTest {
+@WebMvcTest(controllers = { PostRestService.class }, secure = false)
+public class PostRestServiceTest {
 	@Autowired
 	private MockMvc mockMvc;
 	@Autowired
 	private ObjectMapper objectMapper;
 	@MockBean
-	private ArticleService articleService;
+	private PostService postService;
 
 	@Test
-	public void testSaveArticle() throws Exception {
-		when(articleService.saveArticle(any())).thenReturn(ArticleServiceTest.DUMMY_ARTICLE);
-		MockHttpServletRequestBuilder request = post("/api/articles")
+	public void testSavePost() throws Exception {
+		when(postService.savePost(any())).thenReturn(PostServiceTest.DUMMY_POST);
+		MockHttpServletRequestBuilder request = post("/api/post")
 			.content("{\"title\": \"It's a disastah\"}")
 			.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 			.andReturn()
 			.getResponse();
-		verify(articleService).saveArticle(any());
+		verify(postService).savePost(any());
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(
-				ArticleRestData.builder(ArticleServiceTest.DUMMY_ARTICLE).build())
+				PostRestData.builder(PostServiceTest.DUMMY_POST).build())
 			);
 	}
 
 	@Test
-	public void testFindArticlesByTitleContaining() throws Exception {
-		final Page<ArticleEntity> articles = new PageImpl<>(Arrays.asList(ArticleServiceTest.DUMMY_ARTICLE));
-		when(articleService.findArticlesByTitleContaining(contains("disastah"), any())).thenReturn(articles);
-		MockHttpServletRequestBuilder request = get("/api/articles?title=disastah")
+	public void testFindPostByTitleContaining() throws Exception {
+		final Page<PostEntity> post = new PageImpl<>(Arrays.asList(PostServiceTest.DUMMY_POST));
+		when(postService.findPostByTitleContaining(contains("disastah"), any())).thenReturn(post);
+		MockHttpServletRequestBuilder request = get("/api/post?title=disastah")
 			.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 			.andReturn()
 			.getResponse();
-		verify(articleService).findArticlesByTitleContaining(eq("disastah"), any());
+		verify(postService).findPostByTitleContaining(eq("disastah"), any());
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(articles.map(a -> ArticleRestData.builder(a).build())));
+			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder(a).build())));
 	}
 }
