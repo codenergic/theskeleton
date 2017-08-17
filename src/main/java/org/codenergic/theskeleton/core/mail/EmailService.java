@@ -15,10 +15,15 @@
  */
 package org.codenergic.theskeleton.core.mail;
 
+import java.util.Map;
+
 public interface EmailService {
 	default void sendSimpleMessage(String to, String subject, String text) {
 		sendSimpleMessage(new String[] { to }, subject, text);
 	}
 
 	void sendSimpleMessage(String[] to, String subject, String text);
+
+	void sendMessage(String[] to, String subject, Map<String, Object> messages, 
+			String mailTemplate);
 }
