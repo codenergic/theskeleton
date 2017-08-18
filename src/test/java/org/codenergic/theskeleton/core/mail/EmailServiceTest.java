@@ -4,6 +4,7 @@ import static org.mockito.Mockito.verify;
 
 import org.codenergic.theskeleton.core.mail.EmailService;
 import org.codenergic.theskeleton.core.mail.impl.EmailServiceImpl;
+import org.codenergic.theskeleton.core.mail.impl.MailContentBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -17,6 +18,8 @@ public class EmailServiceTest {
 	private EmailService emailService;
 	@Mock
 	private JavaMailSender mailSender;
+	@Mock
+	private MailContentBuilder mailContentBuilder;
 	@Value("${spring.mail.username}")
 	private String fromEmail;
 	private ArgumentCaptor<SimpleMailMessage> simpleMailMessageCaptor;
@@ -24,7 +27,7 @@ public class EmailServiceTest {
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.emailService = new EmailServiceImpl(mailSender);
+		this.emailService = new EmailServiceImpl(mailSender, mailContentBuilder);
 		this.simpleMailMessageCaptor = ArgumentCaptor.forClass(SimpleMailMessage.class);
 	}
 	
