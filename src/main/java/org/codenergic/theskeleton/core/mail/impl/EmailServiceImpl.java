@@ -30,10 +30,6 @@ public class EmailServiceImpl implements EmailService {
 	private JavaMailSender emailSender;
 	private MailContentBuilder mailContentBuilder;
 
-	public EmailServiceImpl(JavaMailSender emailSender) {
-		this.emailSender = emailSender;
-	}
-
 	public EmailServiceImpl(JavaMailSender emailSender, MailContentBuilder mailContentBuilder) {
 		this.emailSender = emailSender;
 		this.mailContentBuilder = mailContentBuilder;
