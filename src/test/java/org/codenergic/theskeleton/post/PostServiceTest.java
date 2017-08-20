@@ -23,14 +23,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 public class PostServiceTest {
 
@@ -40,9 +38,14 @@ public class PostServiceTest {
 	private PostService postService;
 
 	public static final PostEntity DUMMY_POST = new PostEntity()
-		.setId(UUID.randomUUID().toString())
+		.setId("123")
 		.setTitle("It's a disastah")
 		.setContent("some text are <b>bold</b>,<i>italic</i> or <u>underline</u>");
+
+	public static final PostEntity DUMMY_POST2 = new PostEntity()
+		.setId("12345")
+		.setTitle("Minas Tirith")
+		.setContent("Pippin looked out from the shelter of Gandalf\"s cloak. He wondered if he was awake");
 
 	@Before
 	public void init() {
@@ -56,11 +59,26 @@ public class PostServiceTest {
 	}
 
 	@Test
+	public void testUpdatePost() {
+		when(postRepository.findOne(anyString())).thenReturn(null);
+		when(postRepository.findOne(eq("123"))).thenReturn(DUMMY_POST2);
+		when(postRepository.save(eq(DUMMY_POST))).thenReturn(DUMMY_POST);
+		assertThat(postService.updatePost("123", DUMMY_POST2)).isEqualTo(DUMMY_POST2);
+	}
+
+	@Test
+	public void testDeletePost() {
+		when(postRepository.findOne("123")).thenReturn(DUMMY_POST);
+		postService.deletePost("123");
+		verify(postRepository).delete(DUMMY_POST);
+	}
+
+	@Test
 	public void testFindPostByTitleContaining() {
 		Page<PostEntity> dbResult = new PageImpl<>(Arrays.asList(DUMMY_POST));
 		when(postRepository.findByTitleContaining(eq("disastah"), any()))
 			.thenReturn(dbResult);
-		Page<PostEntity> result = postRepository.findByTitleContaining("disastah", null);
+		Page<PostEntity> result = postService.findPostByTitleContaining("disastah", null);
 		assertThat(result.getNumberOfElements()).isEqualTo(1);
 		assertThat(result).isEqualTo(dbResult);
 		verify(postRepository).findByTitleContaining(eq("disastah"), any());

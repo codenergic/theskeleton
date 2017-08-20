@@ -16,6 +16,7 @@
 package org.codenergic.theskeleton.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.codenergic.theskeleton.role.RoleRestData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
@@ -65,6 +65,31 @@ public class PostRestServiceTest {
 			.isEqualTo(objectMapper.writeValueAsBytes(
 				PostRestData.builder(PostServiceTest.DUMMY_POST).build())
 			);
+	}
+
+	@Test
+	public void testUpdatePost() throws Exception {
+		byte[] jsonInput = objectMapper.writeValueAsBytes(PostRestData.builder(PostServiceTest.DUMMY_POST).build());
+		when(postService.updatePost(eq("123"), any())).thenReturn(PostServiceTest.DUMMY_POST2);
+		MockHttpServletResponse response = mockMvc.perform(put("/api/post/123")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(jsonInput))
+			.andReturn()
+			.getResponse();
+		verify(postService).updatePost(eq("123"), any());
+		assertThat(response.getStatus()).isEqualTo(200);
+		assertThat(response.getContentAsByteArray())
+			.isEqualTo(objectMapper.writeValueAsBytes(PostRestData.builder(PostServiceTest.DUMMY_POST2).build()));
+	}
+
+	@Test
+	public void testDeletePost() throws Exception {
+		MockHttpServletRequestBuilder request = delete("/api/post/123")
+			.contentType(MediaType.APPLICATION_JSON);
+		MockHttpServletResponse response = mockMvc.perform(request)
+			.andReturn()
+			.getResponse();
+		assertThat(response.getStatus()).isEqualTo(200);
 	}
 
 	@Test

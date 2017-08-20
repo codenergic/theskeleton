@@ -67,7 +67,7 @@ public class PostRestData {
 	}
 
 	public static Builder builder(PostEntity post) {
-		return newBuilder().title(post.getTitle()).content(post.getContent());
+		return newBuilder().title(post.getTitle()).content(post.getContent()).id(post.getId());
 	}
 
 

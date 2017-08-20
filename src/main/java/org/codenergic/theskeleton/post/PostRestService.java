@@ -34,6 +34,15 @@ public class PostRestService {
 		return convertEntityToRestData(postService.savePost(postRestData.toEntity()));
 	}
 
+	@PutMapping("/{id}")
+	public PostRestData updatePost(@PathVariable("id") String id, @RequestBody @Valid final PostRestData post) {
+		return PostRestData.builder(postService.updatePost(id, post.toEntity()))
+			.build();
+	}
+
+	@DeleteMapping("/{id}")
+	public void deleteRole(@PathVariable("id") final String id) { postService.deletePost(id); }
+
 	@GetMapping
 	public Page<PostRestData> findPostByTitleContaining(
 		@RequestParam(name = "title", defaultValue = "") String title, Pageable pageable) {

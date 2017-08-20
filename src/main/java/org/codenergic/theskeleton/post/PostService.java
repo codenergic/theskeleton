@@ -16,6 +16,7 @@
 package org.codenergic.theskeleton.post;
 
 import org.codenergic.theskeleton.post.impl.PostServiceImpl;
+import org.codenergic.theskeleton.role.RoleEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -28,6 +29,10 @@ public interface PostService {
 	}
 
 	PostEntity savePost(@NotNull @Valid PostEntity post);
+
+	PostEntity updatePost(@NotNull String id, @NotNull @Valid PostEntity post);
+
+	void deletePost(@NotNull String id);
 
 	Page<PostEntity> findPostByTitleContaining(@NotNull String title, Pageable pageable);
 }

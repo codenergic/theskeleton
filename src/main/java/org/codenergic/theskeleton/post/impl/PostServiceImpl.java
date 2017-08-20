@@ -23,6 +23,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
@@ -33,10 +35,31 @@ public class PostServiceImpl implements PostService {
 		this.postRepository = postRepository;
 	}
 
+	private void assertPostNotNull(PostEntity post) {
+		Objects.requireNonNull(post, "Post not found");
+	}
+
 	@Override
 	@Transactional
 	public PostEntity savePost(PostEntity post) {
 		return postRepository.save(post);
+	}
+
+	@Override
+	@Transactional
+	public PostEntity updatePost(String id, PostEntity post) {
+		PostEntity p = postRepository.findOne(id);
+		assertPostNotNull(p);
+		p.setTitle(post.getTitle());
+		p.setContent(post.getContent());
+		return p;
+	}
+
+	@Override
+	public void deletePost(String id) {
+		PostEntity e = postRepository.findOne(id);
+		assertPostNotNull(e);
+		postRepository.delete(e);
 	}
 
 	@Override
