@@ -15,18 +15,24 @@
  */
 package org.codenergic.theskeleton.core.mail.impl;
 
+import java.util.Map;
+
 import org.codenergic.theskeleton.core.mail.EmailService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailServiceImpl implements EmailService {
 	private JavaMailSender emailSender;
+	private MailContentBuilder mailContentBuilder;
 
-	public EmailServiceImpl(JavaMailSender emailSender) {
+	public EmailServiceImpl(JavaMailSender emailSender, MailContentBuilder mailContentBuilder) {
 		this.emailSender = emailSender;
+		this.mailContentBuilder = mailContentBuilder;
 	}
 
 	@Override
@@ -37,5 +43,19 @@ public class EmailServiceImpl implements EmailService {
 		message.setSubject(subject);
 		message.setText(text);
 		emailSender.send(message);
+	}
+
+	@Override
+	@Async
+	public void sendMessage(String[] to, String subject, Map<String, Object> messages, 
+			String mailTemplate) {
+		MimeMessagePreparator messagePreparator = mimeMessage -> {
+			MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+			messageHelper.setTo(to);
+			messageHelper.setSubject(subject);
+			String content = mailContentBuilder.build(messages, mailTemplate);
+			messageHelper.setText(content, true);
+		};
+		emailSender.send(messagePreparator);
 	}
 }
