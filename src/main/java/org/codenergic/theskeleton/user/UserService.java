@@ -21,8 +21,9 @@ import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RoleRepository;
+import org.codenergic.theskeleton.privilege.role.RoleEntity;
+import org.codenergic.theskeleton.privilege.role.RolePrivilegeRepository;
+import org.codenergic.theskeleton.privilege.role.RoleRepository;
 import org.codenergic.theskeleton.user.impl.UserServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,8 +32,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface UserService extends UserDetailsService {
 	static UserService newInstance(PasswordEncoder passwordEncoder, RoleRepository roleRepository,
-			UserRepository userRepository, UserRoleRepository userRoleRepository) {
-		return new UserServiceImpl(passwordEncoder, roleRepository, userRepository, userRoleRepository);
+			UserRepository userRepository, UserRoleRepository userRoleRepository,
+			RolePrivilegeRepository rolePrivilegeRepository) {
+		return new UserServiceImpl(passwordEncoder, roleRepository, userRepository, 
+				userRoleRepository, rolePrivilegeRepository);
 	}
 
 	UserEntity addRoleToUser(@NotNull String username, @NotNull String roleCode);

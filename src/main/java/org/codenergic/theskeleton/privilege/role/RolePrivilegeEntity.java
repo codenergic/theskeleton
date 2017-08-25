@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.user;
+package org.codenergic.theskeleton.privilege.role;
 
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -21,56 +21,59 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
-import org.codenergic.theskeleton.privilege.role.RoleEntity;
+import org.codenergic.theskeleton.privilege.PrivilegeEntity;
+import org.springframework.security.core.GrantedAuthority;
 
-@SuppressWarnings("serial")
 @Entity
-@Table(name = "ts_user_role", uniqueConstraints = { @UniqueConstraint(columnNames = { "user_id", "role_id" }) })
+@Table(name = "ts_role_privilege", uniqueConstraints = { @UniqueConstraint(columnNames = { "role_id","privilege_id" }) })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class UserRoleEntity extends AbstractAuditingEntity {
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	private UserEntity user;
+@SuppressWarnings("serial")
+public class RolePrivilegeEntity extends AbstractAuditingEntity implements GrantedAuthority {
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "role_id")
 	private RoleEntity role;
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "privilege_id")
+	private PrivilegeEntity privilege;
 
-	public UserRoleEntity() {
-		// initialize UserRoleEntity
-	}
+	public RolePrivilegeEntity() {}
 
-	public UserRoleEntity(UserEntity user, RoleEntity role) {
-		this.user = user;
+	public RolePrivilegeEntity(RoleEntity role, PrivilegeEntity privilege) {
 		this.role = role;
+		this.privilege = privilege;
 	}
 
 	@Override
-	public UserRoleEntity setId(String id) {
+	public RolePrivilegeEntity setId(String id) {
 		super.setId(id);
-		return this;
-	}
-
-	public UserEntity getUser() {
-		return user;
-	}
-
-	public UserRoleEntity setUser(UserEntity user) {
-		this.user = user;
 		return this;
 	}
 
 	public RoleEntity getRole() {
 		return role;
 	}
-
-	public UserRoleEntity setRole(RoleEntity role) {
+	public RolePrivilegeEntity setRole(RoleEntity role) {
 		this.role = role;
 		return this;
+	}
+	public PrivilegeEntity getPrivilege() {
+		return privilege;
+	}
+	public RolePrivilegeEntity setPrivilege(PrivilegeEntity privilege) {
+		this.privilege = privilege;
+		return this;
+	}
+
+	@Override
+	@Transient
+	public String getAuthority() {
+		return privilege.getAuthority();
 	}
 }

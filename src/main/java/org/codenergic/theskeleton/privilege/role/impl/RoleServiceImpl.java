@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.role.impl;
+package org.codenergic.theskeleton.privilege.role.impl;
 
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RoleRepository;
-import org.codenergic.theskeleton.role.RoleService;
+import org.codenergic.theskeleton.privilege.PrivilegeEntity;
+import org.codenergic.theskeleton.privilege.PrivilegeRepository;
+import org.codenergic.theskeleton.privilege.role.RoleEntity;
+import org.codenergic.theskeleton.privilege.role.RolePrivilegeEntity;
+import org.codenergic.theskeleton.privilege.role.RolePrivilegeRepository;
+import org.codenergic.theskeleton.privilege.role.RoleRepository;
+import org.codenergic.theskeleton.privilege.role.RoleService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,9 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class RoleServiceImpl implements RoleService {
 	private RoleRepository roleRepository;
+	private PrivilegeRepository privilegeRepository;
+	private RolePrivilegeRepository rolePrivilegeRepository;
 
-	public RoleServiceImpl(RoleRepository roleRepository) {
+	public RoleServiceImpl(RoleRepository roleRepository, PrivilegeRepository privilegeRepository,
+			RolePrivilegeRepository rolePrivilegeRepository) {
 		this.roleRepository = roleRepository;
+		this.privilegeRepository = privilegeRepository;
+		this.rolePrivilegeRepository = rolePrivilegeRepository;
 	}
 
 	private void assertRoleNotNull(RoleEntity role) {
@@ -87,5 +98,35 @@ public class RoleServiceImpl implements RoleService {
 		e.setCode(role.getCode());
 		e.setDescription(role.getDescription());
 		return e;
+	}
+
+	@Override
+	@Transactional
+	public RoleEntity addPrivilegeToRole(String code, String privilegeName) {
+		RoleEntity role = findRoleByCode(code);
+		PrivilegeEntity privilege = privilegeRepository.findByName(privilegeName);
+		return rolePrivilegeRepository.save(new RolePrivilegeEntity(role, privilege)).getRole();
+	}
+
+	@Override
+	@Transactional
+	public RoleEntity removePrivilegeFromRole(String code, String privilegeName) {
+		RolePrivilegeEntity userRole = rolePrivilegeRepository.findByRoleCodeAndPrivilegeName(code, privilegeName);
+		rolePrivilegeRepository.delete(userRole);
+		return findRoleByCode(code);
+	}
+
+	@Override
+	public Set<PrivilegeEntity> findPrivilegesByRoleCode(String code) {
+		return rolePrivilegeRepository.findByRoleCode(code).stream()
+				.map(RolePrivilegeEntity::getPrivilege)
+				.collect(Collectors.toSet());
+	}
+
+	@Override
+	public Set<RoleEntity> findRolesByPrivilegeName(String name) {
+		return rolePrivilegeRepository.findByPrivilegeName(name).stream()
+				.map(RolePrivilegeEntity::getRole)
+				.collect(Collectors.toSet());
 	}
 }

@@ -14,8 +14,9 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RoleRepository;
+import org.codenergic.theskeleton.privilege.role.RoleEntity;
+import org.codenergic.theskeleton.privilege.role.RolePrivilegeRepository;
+import org.codenergic.theskeleton.privilege.role.RoleRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -33,12 +34,15 @@ public class UserServiceTest {
 	private UserRepository userRepository;
 	@Mock
 	private UserRoleRepository userRoleRepository;
+	@Mock
+	private RolePrivilegeRepository rolePrivilegeRepository;
 	private UserService userService;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.userService = UserService.newInstance(passwordEncoder, roleRepository, userRepository, userRoleRepository);
+		this.userService = UserService.newInstance(passwordEncoder, roleRepository, userRepository,
+				userRoleRepository, rolePrivilegeRepository);
 	}
 
 	@Test

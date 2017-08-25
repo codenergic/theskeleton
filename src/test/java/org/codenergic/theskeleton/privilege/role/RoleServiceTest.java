@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.role;
+package org.codenergic.theskeleton.privilege.role;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -23,9 +23,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
-import org.codenergic.theskeleton.role.impl.RoleServiceImpl;
+import org.codenergic.theskeleton.privilege.PrivilegeEntity;
+import org.codenergic.theskeleton.privilege.PrivilegeRepository;
+import org.codenergic.theskeleton.privilege.role.impl.RoleServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -39,11 +43,15 @@ public class RoleServiceTest {
 	private RoleService roleService;
 	@Mock
 	private RoleRepository roleRepository;
+	@Mock
+	private PrivilegeRepository privilegeRepository;
+	@Mock
+	private RolePrivilegeRepository rolePrivilegeRepository;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.roleService = new RoleServiceImpl(roleRepository);
+		this.roleService = new RoleServiceImpl(roleRepository, privilegeRepository, rolePrivilegeRepository);
 	}
 
 	@Test
@@ -103,5 +111,51 @@ public class RoleServiceTest {
 		assertThat(result.getId()).isEqualTo(input.getId());
 		assertThat(result.getCode()).isEqualTo(input.getCode());
 		verify(roleRepository).findByCode(eq("123"));
+	}
+
+	@Test
+	public void testAddPrivilegeToRole() {
+		RoleEntity role = new RoleEntity()
+				.setId(UUID.randomUUID().toString())
+				.setCode("role");
+		PrivilegeEntity privilege = new PrivilegeEntity()
+				.setId(UUID.randomUUID().toString())
+				.setName("privilege");
+		RolePrivilegeEntity result = new RolePrivilegeEntity(role, privilege);
+		result.setId(UUID.randomUUID().toString());
+		when(roleRepository.findByCode("role")).thenReturn(role);
+		when(privilegeRepository.findByName("privilege")).thenReturn(privilege);
+		when(rolePrivilegeRepository.save(any(RolePrivilegeEntity.class))).thenReturn(result);
+		assertThat(roleService.addPrivilegeToRole("role", "privilege")).isEqualTo(role);
+		verify(roleRepository).findByCode("role");
+		verify(privilegeRepository).findByName("privilege");
+		verify(rolePrivilegeRepository).save(any(RolePrivilegeEntity.class));
+	}
+
+	@Test
+	public void testRemovePrivilegeFromRole() {
+		roleService.removePrivilegeFromRole("", "");
+	}
+
+	@Test
+	public void testFindPrivilegesByRoleCode() {
+		Set<RolePrivilegeEntity> dbResult =
+				new HashSet<>(Arrays.asList(new RolePrivilegeEntity().setPrivilege(new PrivilegeEntity().setName("privilege"))));
+		when(rolePrivilegeRepository.findByRoleCode("role")).thenReturn(dbResult);
+		Set<PrivilegeEntity> result = roleService.findPrivilegesByRoleCode("role");
+		assertThat(result.size()).isEqualTo(1);
+		assertThat(result.iterator().next()).isEqualTo(dbResult.iterator().next().getPrivilege());
+		verify(rolePrivilegeRepository).findByRoleCode("role");
+	}
+
+	@Test
+	public void testFindRolesByPrivilegeName() {
+		Set<RolePrivilegeEntity> dbResult =
+				new HashSet<>(Arrays.asList(new RolePrivilegeEntity().setRole(new RoleEntity().setCode("role"))));
+		when(rolePrivilegeRepository.findByPrivilegeName("privilege")).thenReturn(dbResult);
+		Set<RoleEntity> result = roleService.findRolesByPrivilegeName("privilege");
+		assertThat(result.size()).isEqualTo(1);
+		assertThat(result.iterator().next()).isEqualTo(dbResult.iterator().next().getRole());
+		verify(rolePrivilegeRepository).findByPrivilegeName("privilege");
 	}
 }

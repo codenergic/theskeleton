@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.role;
+package org.codenergic.theskeleton.privilege.role;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.codenergic.theskeleton.privilege.PrivilegeRestData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -64,5 +69,26 @@ public class RoleRestService {
 	public RoleRestData updateRole(@PathVariable("code") String code, @RequestBody @Valid final RoleRestData role) {
 		return RoleRestData.builder(roleService.updateRole(code, role.toEntity()))
 				.build();
+	}
+
+	@PutMapping("/{code}/privileges")
+	public RoleRestData addRoleToUser(@PathVariable("code") String code, @RequestBody Map<String, String> body) {
+		return convertEntityToRestData(roleService.addPrivilegeToRole(code, body.get("privilege")));
+	}
+
+	@GetMapping("/{code}/privileges")
+	public Set<PrivilegeRestData> findRolesByUserUsername(@PathVariable("code") String code) {
+		return roleService.findPrivilegesByRoleCode(code).stream()
+				.map(r -> PrivilegeRestData.builder(r).build())
+				.collect(Collectors.toSet());
+	}
+
+	@DeleteMapping("/{code}/privileges")
+	public RoleRestData removeRoleFromUser(@PathVariable("code") String code, @RequestBody Map<String, String> body) {
+		return convertEntityToRestData(roleService.removePrivilegeFromRole(code, body.get("privilege")));
+	}
+
+	private RoleRestData convertEntityToRestData(RoleEntity role) {
+		return role == null ? null : RoleRestData.builder(role).build();
 	}
 }

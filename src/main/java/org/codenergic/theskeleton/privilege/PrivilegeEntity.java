@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.role;
+package org.codenergic.theskeleton.privilege;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,36 +27,33 @@ import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
-@Table(name = "ts_role")
+@Table(name = "ts_privilege")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @SuppressWarnings("serial")
-public class RoleEntity extends AbstractAuditingEntity implements GrantedAuthority {
+public class PrivilegeEntity extends AbstractAuditingEntity implements GrantedAuthority {
 	@NotNull
 	@Column(length = 200, unique = true)
-	private String code;
+	private String name;
 	@Column(length = 500)
 	private String description;
 
 	@Override
-	public RoleEntity setId(String id) {
+	public PrivilegeEntity setId(String id) {
 		super.setId(id);
 		return this;
 	}
 
-	public String getCode() {
-		return code;
+	public String getName() {
+		return name;
 	}
-
-	public RoleEntity setCode(String code) {
-		this.code = code;
+	public PrivilegeEntity setName(String name) {
+		this.name = name;
 		return this;
 	}
-
 	public String getDescription() {
 		return description;
 	}
-
-	public RoleEntity setDescription(String description) {
+	public PrivilegeEntity setDescription(String description) {
 		this.description = description;
 		return this;
 	}
@@ -64,6 +61,6 @@ public class RoleEntity extends AbstractAuditingEntity implements GrantedAuthori
 	@Override
 	@Transient
 	public String getAuthority() {
-		return code;
+		return name;
 	}
 }

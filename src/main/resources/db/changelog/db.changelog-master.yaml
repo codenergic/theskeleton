@@ -34,3 +34,12 @@ databaseChangeLog:
   - include:
       file: changelogs/0009_rename_table_article_to_post.sql
       relativeToChangelogFile: true
+  - include:
+      file: changelogs/0010_create_table_privilege.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changelogs/0011_create_table_role_privilege.sql
+      relativeToChangelogFile: true
+  - include:
+      file: changelogs/0012_initialize_role_privileges_and_user_privileges.sql
+      relativeToChangelogFile: true

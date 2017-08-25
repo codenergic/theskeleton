@@ -17,14 +17,17 @@ package org.codenergic.theskeleton.user.impl;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RoleRepository;
+import org.codenergic.theskeleton.privilege.role.RoleEntity;
+import org.codenergic.theskeleton.privilege.role.RolePrivilegeEntity;
+import org.codenergic.theskeleton.privilege.role.RolePrivilegeRepository;
+import org.codenergic.theskeleton.privilege.role.RoleRepository;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.codenergic.theskeleton.user.UserRoleEntity;
@@ -45,13 +48,15 @@ public class UserServiceImpl implements UserService {
 	private RoleRepository roleRepository;
 	private UserRepository userRepository;
 	private UserRoleRepository userRoleRepository;
+	private RolePrivilegeRepository rolePrivilegeRepository;
 
 	public UserServiceImpl(PasswordEncoder passwordEncoder, RoleRepository roleRepository, UserRepository userRepository,
-			UserRoleRepository userRoleRepository) {
+			UserRoleRepository userRoleRepository, RolePrivilegeRepository rolePrivilegeRepository) {
 		this.passwordEncoder = passwordEncoder;
 		this.roleRepository = roleRepository;
 		this.userRepository = userRepository;
 		this.userRoleRepository = userRoleRepository;
+		this.rolePrivilegeRepository = rolePrivilegeRepository;
 	}
 
 	@Override
@@ -176,6 +181,8 @@ public class UserServiceImpl implements UserService {
 			user = findUserByEmail(username);
 		if (user == null)
 			throw new UsernameNotFoundException("Cannot find user with username or email of " + username);
-		return user.setAuthorities(userRoleRepository.findByUserUsername(username));
+		Set<RolePrivilegeEntity> rolePrivileges = new HashSet<>();
+		user.getRoles().forEach(role -> rolePrivileges.addAll(rolePrivilegeRepository.findByRoleCode(role.getRole().getCode())));
+		return user.setAuthorities(rolePrivileges);
 	}
 }

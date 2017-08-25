@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.post;
+package org.codenergic.theskeleton.privilege;
 
-import org.codenergic.theskeleton.post.impl.PostServiceImpl;
+import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+@Repository
+public interface PrivilegeRepository extends AuditingEntityRepository<PrivilegeEntity> {
+	PrivilegeEntity findByName(String name);
 
-public interface PostService {
-	static PostService newInstance(PostRepository postRepository) {
-		return new PostServiceImpl(postRepository);
-	}
-
-	PostEntity savePost(@NotNull @Valid PostEntity post);
-
-	PostEntity updatePost(@NotNull String id, @NotNull @Valid PostEntity post);
-
-	void deletePost(@NotNull String id);
-
-	Page<PostEntity> findPostByTitleContaining(@NotNull String title, Pageable pageable);
+	@Query("FROM PrivilegeEntity p WHERE p.name LIKE ?1% OR p.description LIKE ?1%")
+	Page<PrivilegeEntity> findByNameOrDescriptionStartsWith(String keyword, Pageable pageable);
 }

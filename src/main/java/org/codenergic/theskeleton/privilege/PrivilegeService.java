@@ -13,25 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.post;
+package org.codenergic.theskeleton.privilege;
 
-import org.codenergic.theskeleton.post.impl.PostServiceImpl;
+import javax.validation.constraints.NotNull;
+
+import org.codenergic.theskeleton.privilege.impl.PrivilegeServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-public interface PostService {
-	static PostService newInstance(PostRepository postRepository) {
-		return new PostServiceImpl(postRepository);
+public interface PrivilegeService {
+	static PrivilegeService newInstance(PrivilegeRepository privilegeRepository) {
+		return new PrivilegeServiceImpl(privilegeRepository);
 	}
 
-	PostEntity savePost(@NotNull @Valid PostEntity post);
+	PrivilegeEntity findPrivilegeByName(@NotNull String name);
 
-	PostEntity updatePost(@NotNull String id, @NotNull @Valid PostEntity post);
+	PrivilegeEntity findPrivilegeById(@NotNull String id);
 
-	void deletePost(@NotNull String id);
+	PrivilegeEntity findPrivilegeByIdOrName(@NotNull String idOrName);
 
-	Page<PostEntity> findPostByTitleContaining(@NotNull String title, Pageable pageable);
+	Page<PrivilegeEntity> findPrivileges(Pageable pageable);
+
+	Page<PrivilegeEntity> findPrivileges(String keyword, Pageable pageable);
+
 }

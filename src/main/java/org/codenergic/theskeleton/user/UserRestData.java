@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.core.data.RestData;
+import org.springframework.security.core.GrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
@@ -97,7 +98,7 @@ public class UserRestData implements RestData {
 	public static Builder builder(UserEntity user) {
 		return builder().withId(user.getId()).withUsername(user.getUsername()).withEmail(user.getEmail())
 				.withPhoneNumber(user.getPhoneNumber()).withAuthorities(
-						user.getAuthorities().stream().map(UserRoleEntity::getAuthority).collect(Collectors.toSet()));
+						user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()));
 	}
 
 	/**

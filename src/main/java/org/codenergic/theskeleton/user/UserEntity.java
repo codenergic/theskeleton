@@ -33,6 +33,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
+import org.codenergic.theskeleton.privilege.role.RolePrivilegeEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
@@ -64,7 +65,9 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 	@Column(unique = true)
 	private String username;
 	@OneToMany(mappedBy = "user")
-	private Set<UserRoleEntity> authorities = new HashSet<>();
+	private Set<UserRoleEntity> roles = new HashSet<>();
+	@Transient
+	private Set<RolePrivilegeEntity> authorities = new HashSet<>();
 
 	@Override
 	public UserEntity setId(String id) {
@@ -73,11 +76,11 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 	}
 
 	@Override
-	public Collection<UserRoleEntity> getAuthorities() {
+	public Collection<RolePrivilegeEntity> getAuthorities() {
 		return authorities;
 	}
 
-	public UserEntity setAuthorities(Set<UserRoleEntity> authorities) {
+	public UserEntity setAuthorities(Set<RolePrivilegeEntity> authorities) {
 		this.authorities = authorities;
 		return this;
 	}
@@ -162,6 +165,15 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 
 	public UserEntity setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+		return this;
+	}
+
+	public Set<UserRoleEntity> getRoles() {
+		return roles;
+	}
+
+	public UserEntity setRoles(Set<UserRoleEntity> roles) {
+		this.roles = roles;
 		return this;
 	}
 }

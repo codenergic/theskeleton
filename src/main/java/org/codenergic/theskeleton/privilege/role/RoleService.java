@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.role;
+package org.codenergic.theskeleton.privilege.role;
+
+import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.codenergic.theskeleton.role.impl.RoleServiceImpl;
+import org.codenergic.theskeleton.privilege.PrivilegeEntity;
+import org.codenergic.theskeleton.privilege.PrivilegeRepository;
+import org.codenergic.theskeleton.privilege.role.impl.RoleServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface RoleService {
-	static RoleService newInstance(RoleRepository roleRepository) {
-		return new RoleServiceImpl(roleRepository);
+	static RoleService newInstance(RoleRepository roleRepository, PrivilegeRepository privilegeRepository,
+			RolePrivilegeRepository rolePrivilegeRepository) {
+		return new RoleServiceImpl(roleRepository, privilegeRepository, rolePrivilegeRepository);
 	}
 
 	void deleteRole(@NotNull String idOrCode);
@@ -42,4 +47,12 @@ public interface RoleService {
 	RoleEntity saveRole(@NotNull @Valid RoleEntity role);
 
 	RoleEntity updateRole(@NotNull String id, @NotNull @Valid RoleEntity role);
+
+	RoleEntity addPrivilegeToRole(@NotNull String code, @NotNull String privilegeName);
+
+	RoleEntity removePrivilegeFromRole(@NotNull String code, @NotNull String privilegeName);
+
+	Set<PrivilegeEntity> findPrivilegesByRoleCode(@NotNull String code);
+
+	Set<RoleEntity> findRolesByPrivilegeName(@NotNull String name);
 }
