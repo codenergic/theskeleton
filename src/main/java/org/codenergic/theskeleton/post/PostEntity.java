@@ -15,23 +15,23 @@
  */
 package org.codenergic.theskeleton.post;
 
-import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
-import org.hibernate.annotations.Type;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
+
+@SuppressWarnings("serial")
 @Entity
 @Table(name = "ts_post")
 public class PostEntity extends AbstractAuditingEntity {
-
 	@NotNull
 	@Column(name = "title")
 	private String title;
+	@Lob
 	@Column(name = "content")
-	@Type(type = "text")
 	private String content;
 
 	@Override
