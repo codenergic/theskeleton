@@ -20,20 +20,26 @@ import javax.validation.constraints.NotNull;
 import org.codenergic.theskeleton.privilege.impl.PrivilegeServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface PrivilegeService {
 	static PrivilegeService newInstance(PrivilegeRepository privilegeRepository) {
 		return new PrivilegeServiceImpl(privilegeRepository);
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	PrivilegeEntity findPrivilegeByName(@NotNull String name);
 
+	@PreAuthorize("isAuthenticated()")
 	PrivilegeEntity findPrivilegeById(@NotNull String id);
 
+	@PreAuthorize("isAuthenticated()")
 	PrivilegeEntity findPrivilegeByIdOrName(@NotNull String idOrName);
 
+	@PreAuthorize("isAuthenticated()")
 	Page<PrivilegeEntity> findPrivileges(Pageable pageable);
 
+	@PreAuthorize("isAuthenticated()")
 	Page<PrivilegeEntity> findPrivileges(String keyword, Pageable pageable);
 
 }

@@ -122,16 +122,18 @@
 		<sql>
 			insert into ts_privilege (id, name, description, status, created_date, last_modified_date)
 			values
-				('0000015bb4a150730007bf4700000000', 'user_write', 'User Write', true, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000001', 'user_update', 'User Update', true, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000002', 'user_read', 'User Read', true, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000003', 'user_read_all', 'User Read All', true, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000004', 'user_delete', 'User Delete', true, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000005', 'role_write', 'Role Write', true, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000006', 'role_update', 'Role Update', true, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000007', 'role_read', 'Role Read', true, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000008', 'role_read_all', 'Role Read All', true, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000009', 'role_delete', 'Role Delete', true, ${now}, ${now});
+				('0000015bb4a150730007bf4700000000', 'user_write', 'User Write', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000001', 'user_update', 'User Update', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000002', 'user_read', 'User Read', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000003', 'user_read_all', 'User Read All', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000004', 'user_delete', 'User Delete', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000005', 'user_assign_role', 'User Assign Role', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000006', 'role_write', 'Role Write', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000007', 'role_update', 'Role Update', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000008', 'role_read', 'Role Read', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000009', 'role_read_all', 'Role Read All', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000010', 'role_delete', 'Role Delete', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000011', 'role_assign_privilege', 'Role Assign Privilege', 1, ${now}, ${now});
 		</sql>
 		<createTable tableName="ts_role_privilege">
 			<column name="id" type="varchar(255)">
@@ -157,6 +159,22 @@
 		</createTable>
 		<addUniqueConstraint constraintName="uk_role_privilege_privilege_id_role_id"
 			tableName="ts_role_privilege" columnNames="privilege_id, role_id" />
+		<sql>
+			insert into ts_role_privilege (id, role_id, privilege_id, status, created_date, last_modified_date)
+			values
+				('0000015bb4a150730007bf4700000000', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000000', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000001', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000001', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000002', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000002', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000003', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000003', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000004', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000004', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000005', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000005', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000006', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000006', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000007', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000007', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000008', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000008', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000009', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000009', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000010', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000010', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000011', '0000015bb4a150750007bf0700000000', '0000015bb4a150730007bf4700000011', 1, ${now}, ${now});
+		</sql>
 	</changeSet>
 	<changeSet id="0002" author="dianw">
 		<createTable tableName="ts_oauth2_client">
