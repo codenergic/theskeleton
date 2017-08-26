@@ -8,38 +8,5 @@ databaseChangeLog:
       value: now()
       dbms: mysql,postgresql,h2
   - include:
-      file: changelogs/0001_create_table_role.sql
-      relativeToChangelogFile: true
-  - include:
-      file: changelogs/0002_create_table_user.sql
-      relativeToChangelogFile: true
-  - include:
-      file: changelogs/0003_create_table_user_role.sql
-      relativeToChangelogFile: true
-  - include:
-      file: changelogs/0004_initialize_users_and_roles.sql
-      relativeToChangelogFile: true
-  - include:
-      file: changelogs/0005_create_table_oauth2_client.sql
-      relativeToChangelogFile: true
-  - include:
-      file: changelogs/0006_initialize_oauth2_clients.sql
-      relativeToChangelogFile: true
-  - include:
-      file: changelogs/0007_create_table_user_oauth2_client_approval.sql
-      relativeToChangelogFile: true
-  - include:
-      file: changelogs/0008_create_table_article.sql
-      relativeToChangelogFile: true
-  - include:
-      file: changelogs/0009_rename_table_article_to_post.sql
-      relativeToChangelogFile: true
-  - include:
-      file: changelogs/0010_create_table_privilege.sql
-      relativeToChangelogFile: true
-  - include:
-      file: changelogs/0011_create_table_role_privilege.sql
-      relativeToChangelogFile: true
-  - include:
-      file: changelogs/0012_initialize_role_privileges_and_user_privileges.sql
+      file: db.changelog-0.1.0.xml
       relativeToChangelogFile: true
