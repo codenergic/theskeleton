@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/theskeleton
+    username: vicky
+    password: vicky
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.codenergic.theskeleton.core.data.PostgreSQLDialectCustom

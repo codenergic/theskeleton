@@ -41,9 +41,9 @@
 			(id, username, password, email, phone_number, account_non_locked, 
 			 credentials_non_expired, enabled, expired_at, status, created_date, last_modified_date)
 		values
-			('0000015bb4a150750007bf0700000002', 'system', 'unhackable', 'system@server', null, true, true, true, null, true, ${now}, ${now}),
-			('0000015bb4a150750007bf0700000003', 'admin', '$2a$06$k8dwqs6rUqim1Gyi8dqEcuF2gHlrgw0SBAsOTnKI9MdSh1zWypjPq', 'admin@server', null, true, true, true, null, true, ${now}, ${now}),
-			('0000015bb4a150750007bf0700000004', 'user', '$2a$06$uqnfWQJ.Y3H9ymvFJb96seaxpec6FbaSnrxxqX1Lk9vVr4PkBPQwi', 'user@server', null, true, true, true, null, true, ${now}, ${now});
+			('0000015bb4a150750007bf0700000002', 'system', 'unhackable', 'system@server', null, true, true, true, null, 1, ${now}, ${now}),
+			('0000015bb4a150750007bf0700000003', 'admin', '$2a$06$k8dwqs6rUqim1Gyi8dqEcuF2gHlrgw0SBAsOTnKI9MdSh1zWypjPq', 'admin@server', null, true, true, true, null, 1, ${now}, ${now}),
+			('0000015bb4a150750007bf0700000004', 'user', '$2a$06$uqnfWQJ.Y3H9ymvFJb96seaxpec6FbaSnrxxqX1Lk9vVr4PkBPQwi', 'user@server', null, true, true, true, null, 1, ${now}, ${now});
 		</sql>
 		<createTable tableName="ts_role">
 			<column name="id" type="varchar(255)">
@@ -66,9 +66,9 @@
 		<sql>
 		insert into ts_role (id, code, description, status, created_date, last_modified_date)
 		values
-			('0000015bb4a150730007bf0700000000', 'system', 'System', true, ${now}, ${now}),
-			('0000015bb4a150750007bf0700000000', 'admin', 'Administrator', true, ${now}, ${now}),
-			('0000015bb4a150750007bf0700000001', 'user', 'User', true, ${now}, ${now});
+			('0000015bb4a150730007bf0700000000', 'system', 'System', 1, ${now}, ${now}),
+			('0000015bb4a150750007bf0700000000', 'admin', 'Administrator', 1, ${now}, ${now}),
+			('0000015bb4a150750007bf0700000001', 'user', 'User', 1, ${now}, ${now});
 		</sql>
 		<createTable tableName="ts_user_role">
 			<column name="id" type="varchar(255)">
@@ -97,9 +97,9 @@
 		<sql>
 		insert into ts_user_role (id, role_id, user_id, status, created_date, last_modified_date)
 		values
-			('0000015bb4a150750007bf0700000005', '0000015bb4a150730007bf0700000000', '0000015bb4a150750007bf0700000002', true, ${now}, ${now}),
-			('0000015bb4a150760007bf0700000000', '0000015bb4a150750007bf0700000000', '0000015bb4a150750007bf0700000003', true, ${now}, ${now}),
-			('0000015bb4a150760007bf0700000001', '0000015bb4a150750007bf0700000001', '0000015bb4a150750007bf0700000004', true, ${now}, ${now});
+			('0000015bb4a150750007bf0700000005', '0000015bb4a150730007bf0700000000', '0000015bb4a150750007bf0700000002', 1, ${now}, ${now}),
+			('0000015bb4a150760007bf0700000000', '0000015bb4a150750007bf0700000000', '0000015bb4a150750007bf0700000003', 1, ${now}, ${now}),
+			('0000015bb4a150760007bf0700000001', '0000015bb4a150750007bf0700000001', '0000015bb4a150750007bf0700000004', 1, ${now}, ${now});
 		</sql>
 		<createTable tableName="ts_privilege">
 			<column name="id" type="varchar(255)">
@@ -213,9 +213,10 @@
 			registered_redirect_uris, scopes, scoped, secret_required, status, created_date,
 			last_modified_date)
 		values
-			('0000015bb4a150850007bf0700000000', 'password,authorization_code,implicit,refresh_token', 0,
+			('0000015bb4a150850007bf0700000000', 'password,authorization_code,implicit,refresh_token', false,
 			'$2a$06$F0YQTRPvG8M9SPzIgk49GOgwOH7jcHaT2elonRrs9mSCftNtEgMmi', 'Default client', 'default',
-			'http://localhost:9000/,http://localhost:9000/oauth', 'read,write', true, true, true, ${now}, ${now});
+			'http://localhost:9000/,http://localhost:9000/oauth,https://theskeleton.codenergic.org,https://theskeleton.codenergic.org/oauth', 
+			'read,write', true, true, 1, ${now}, ${now});
 		</sql>
 		<createTable tableName="ts_user_oauth2_client_approval">
 			<column name="id" type="varchar(255)">
