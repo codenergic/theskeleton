@@ -1,0 +1,12 @@
+spring:
+  mail:
+    host: localhost
+    port: 3025
+    properties:
+      sender: theskeleton-test@codenergic.org
+      senderAlias: TheSkeleton Test
+  autoconfigure:
+    exclude:
+    - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
+    - org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration
+    - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration

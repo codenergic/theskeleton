@@ -15,47 +15,65 @@
  */
 package org.codenergic.theskeleton.core.mail.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 
+import javax.mail.internet.InternetAddress;
+
 import org.codenergic.theskeleton.core.mail.EmailService;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import it.ozimov.springboot.mail.model.Email;
+import it.ozimov.springboot.mail.model.defaultimpl.DefaultEmail;
+import it.ozimov.springboot.mail.service.exception.CannotSendEmailException;
+
 @Service
+@Async
 public class EmailServiceImpl implements EmailService {
-	private JavaMailSender emailSender;
-	private MailContentBuilder mailContentBuilder;
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private it.ozimov.springboot.mail.service.EmailService emailSender;
+	private String sender;
+	private String senderAlias;
 
-	public EmailServiceImpl(JavaMailSender emailSender, MailContentBuilder mailContentBuilder) {
-		this.emailSender = emailSender;
-		this.mailContentBuilder = mailContentBuilder;
+	public EmailServiceImpl(it.ozimov.springboot.mail.service.EmailService emailService, MailProperties mailProps) {
+		this.emailSender = emailService;
+		Map<String, String> mailProperties = mailProps.getProperties();
+		this.sender = mailProperties.get("sender");
+		this.senderAlias = mailProperties.get("senderAlias");
 	}
 
 	@Override
-	@Async
-	public void sendSimpleMessage(String[] to, String subject, String text) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(to);
-		message.setSubject(subject);
-		message.setText(text);
-		emailSender.send(message);
+	public void sendSimpleEmail(String alias, List<InternetAddress> to, String subject, String text) {
+		try {
+			emailSender.send(buildEmail(new InternetAddress(sender, alias == null ? senderAlias : alias), to, subject, text));
+		} catch (UnsupportedEncodingException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 
 	@Override
-	@Async
-	public void sendMessage(String[] to, String subject, Map<String, Object> messages, 
+	public void sendEmail(String alias, List<InternetAddress> to, String subject, Map<String, Object> templateParams,
 			String mailTemplate) {
-		MimeMessagePreparator messagePreparator = mimeMessage -> {
-			MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
-			messageHelper.setTo(to);
-			messageHelper.setSubject(subject);
-			String content = mailContentBuilder.build(messages, mailTemplate);
-			messageHelper.setText(content, true);
-		};
-		emailSender.send(messagePreparator);
+		try {
+			emailSender.send(buildEmail(new InternetAddress(sender, alias == null ? senderAlias : alias), to, subject, ""),
+					mailTemplate, templateParams);
+		} catch (CannotSendEmailException | UnsupportedEncodingException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	private Email buildEmail(InternetAddress from, List<InternetAddress> to, String subject, String text) {
+		return DefaultEmail.builder()
+				.from(from)
+				.to(to)
+				.subject(subject)
+				.body(text)
+				.encoding("UTF-8")
+				.build();
 	}
 }

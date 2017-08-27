@@ -15,15 +15,24 @@
  */
 package org.codenergic.theskeleton.core.mail;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import javax.mail.internet.InternetAddress;
+
 public interface EmailService {
-	default void sendSimpleMessage(String to, String subject, String text) {
-		sendSimpleMessage(new String[] { to }, subject, text);
+	default void sendEmail(String alias, InternetAddress to, String subject, Map<String, Object> templateParams,
+			String mailTemplate) {
+		sendEmail(alias, Arrays.asList(to), subject, templateParams, mailTemplate);
 	}
 
-	void sendSimpleMessage(String[] to, String subject, String text);
-
-	void sendMessage(String[] to, String subject, Map<String, Object> messages, 
+	void sendEmail(String alias, List<InternetAddress> to, String subject, Map<String, Object> templateParams,
 			String mailTemplate);
+
+	default void sendSimpleEmail(String alias, InternetAddress to, String subject, String text) {
+		sendSimpleEmail(alias, Arrays.asList(to), subject, text);
+	}
+
+	void sendSimpleEmail(String alias, List<InternetAddress> to, String subject, String text);
 }

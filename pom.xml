@@ -9,6 +9,7 @@
 		<bootstrap.version>4.0.0-alpha.6-1</bootstrap.version>
 		<commons-lang3.version>3.5</commons-lang3.version>
 		<fauxflake-core.version>1.1.0</fauxflake-core.version>
+		<guava.version>21.0</guava.version>
 		<jacoco.version>0.7.9</jacoco.version>
 		<libphonenumber.version>8.4.2</libphonenumber.version>
 		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
@@ -17,6 +18,7 @@
 		<minio.version>3.0.6</minio.version>
 		<s3mock.version>0.2.3</s3mock.version>
 		<spring-boot.version>1.5.6.RELEASE</spring-boot.version>
+		<spring-boot-email.version>0.6.3</spring-boot-email.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
@@ -71,6 +73,12 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- Database, ORM, and Connection Pool -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -89,14 +97,17 @@
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.zaxxer</groupId>
@@ -107,10 +118,36 @@
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
 
+		<!-- S3 Client -->
 		<dependency>
 			<groupId>io.minio</groupId>
 			<artifactId>minio</artifactId>
 			<version>${minio.version}</version>
+		</dependency>
+
+		<!-- Email -->
+		<dependency>
+			<groupId>it.ozimov</groupId>
+			<artifactId>spring-boot-thymeleaf-email</artifactId>
+			<version>${spring-boot-email.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>it.ozimov</groupId>
+					<artifactId>embedded-redis</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>
+						spring-boot-starter-data-redis
+					</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.icegreen</groupId>
+			<artifactId>greenmail</artifactId>
+			<version>1.5.5</version>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- Utilities -->
@@ -120,9 +157,19 @@
 			<version>${commons-lang3.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.5</version>
+		</dependency>
+		<dependency>
 			<groupId>com.googlecode.libphonenumber</groupId>
 			<artifactId>libphonenumber</artifactId>
 			<version>${libphonenumber.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.rholder.fauxflake</groupId>

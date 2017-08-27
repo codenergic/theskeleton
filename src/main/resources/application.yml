@@ -50,13 +50,15 @@ spring:
           use_second_level_cache: true
   mail:
     host: localhost
-    port: 25
+    port: 1025
     username:
     password:
-    mail:
-      transport:
-        protocol: smtp
-      smtp:
-        auth: false
-        starttls:
-          enable: false
+    properties:
+      sender: theskeleton@codenergic.org
+      senderAlias: TheSkeleton
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: false
+            required: false
