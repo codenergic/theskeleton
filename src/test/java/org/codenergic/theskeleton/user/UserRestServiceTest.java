@@ -43,6 +43,8 @@ public class UserRestServiceTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 	@MockBean
+	private UserAdminService userAdminService;
+	@MockBean
 	private UserService userService;
 
 	@Test
@@ -51,14 +53,14 @@ public class UserRestServiceTest {
 				.setId("123")
 				.setUsername("user123")
 				.setPassword("123456");
-		when(userService.addRoleToUser("user123", "role123")).thenReturn(user);
+		when(userAdminService.addRoleToUser("user123", "role123")).thenReturn(user);
 		MockHttpServletRequestBuilder request = put("/api/users/user123/roles")
 				.content("{\"role\": \"role123\"}")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()
 				.getResponse();
-		verify(userService).addRoleToUser("user123", "role123");
+		verify(userAdminService).addRoleToUser("user123", "role123");
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
@@ -78,14 +80,14 @@ public class UserRestServiceTest {
 	public void testEnableOrDisableUser() throws Exception {
 		final UserEntity user = new UserEntity()
 				.setEnabled(true);
-		when(userService.enableOrDisableUser("user123", true)).thenReturn(user);
+		when(userAdminService.enableOrDisableUser("user123", true)).thenReturn(user);
 		MockHttpServletRequestBuilder request = put("/api/users/user123/enable")
 				.content("{\"enabled\": true}")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()
 				.getResponse();
-		verify(userService).enableOrDisableUser("user123", true);
+		verify(userAdminService).enableOrDisableUser("user123", true);
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
@@ -95,14 +97,14 @@ public class UserRestServiceTest {
 	public void testExtendsUserExpiration() throws Exception {
 		final UserEntity user = new UserEntity()
 				.setExpiredAt(new Date());
-		when(userService.extendsUserExpiration("user123", 60)).thenReturn(user);
+		when(userAdminService.extendsUserExpiration("user123", 60)).thenReturn(user);
 		MockHttpServletRequestBuilder request = put("/api/users/user123/exp")
 				.content("{\"amount\": 60}")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()
 				.getResponse();
-		verify(userService).extendsUserExpiration("user123", 60);
+		verify(userAdminService).extendsUserExpiration("user123", 60);
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
@@ -117,13 +119,13 @@ public class UserRestServiceTest {
 		final Set<RoleRestData> expected = roles.stream()
 				.map(r -> RoleRestData.builder(r).build())
 				.collect(Collectors.toSet());
-		when(userService.findRolesByUserUsername("user123")).thenReturn(roles);
+		when(userAdminService.findRolesByUserUsername("user123")).thenReturn(roles);
 		MockHttpServletRequestBuilder request = get("/api/users/user123/roles")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()
 				.getResponse();
-		verify(userService).findRolesByUserUsername("user123");
+		verify(userAdminService).findRolesByUserUsername("user123");
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expected));
 	}
@@ -168,13 +170,13 @@ public class UserRestServiceTest {
 				.setId("user123")
 				.setEmail("user@server");
 		final Page<UserEntity> users = new PageImpl<>(Arrays.asList(user));
-		when(userService.findUsersByUsernameStartingWith(eq("user123"), any())).thenReturn(users);
+		when(userAdminService.findUsersByUsernameStartingWith(eq("user123"), any())).thenReturn(users);
 		MockHttpServletRequestBuilder request = get("/api/users?username=user123")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()
 				.getResponse();
-		verify(userService).findUsersByUsernameStartingWith(eq("user123"), any());
+		verify(userAdminService).findUsersByUsernameStartingWith(eq("user123"), any());
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(users.map(u -> UserRestData.builder(u).build())));
@@ -184,14 +186,14 @@ public class UserRestServiceTest {
 	public void testLockOrUnlockUser() throws Exception {
 		final UserEntity user = new UserEntity()
 				.setAccountNonLocked(true);
-		when(userService.lockOrUnlockUser("user123", true)).thenReturn(user);
+		when(userAdminService.lockOrUnlockUser("user123", true)).thenReturn(user);
 		MockHttpServletRequestBuilder request = put("/api/users/user123/lock")
 				.content("{\"enabled\": true}")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()
 				.getResponse();
-		verify(userService).lockOrUnlockUser("user123", true);
+		verify(userAdminService).lockOrUnlockUser("user123", true);
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
@@ -201,14 +203,14 @@ public class UserRestServiceTest {
 	public void testRemoveRoleFromUser() throws Exception {
 		final UserEntity user = new UserEntity()
 				.setId("user123");
-		when(userService.removeRoleFromUser("user123", "role123")).thenReturn(user);
+		when(userAdminService.removeRoleFromUser("user123", "role123")).thenReturn(user);
 		MockHttpServletRequestBuilder request = delete("/api/users/user123/roles")
 				.content("{\"role\": \"role123\"}")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()
 				.getResponse();
-		verify(userService).removeRoleFromUser("user123", "role123");
+		verify(userAdminService).removeRoleFromUser("user123", "role123");
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
@@ -218,14 +220,14 @@ public class UserRestServiceTest {
 	public void testSaveUser() throws Exception {
 		final UserEntity user = new UserEntity()
 				.setId("user123");
-		when(userService.saveUser(any())).thenReturn(user);
+		when(userAdminService.saveUser(any())).thenReturn(user);
 		MockHttpServletRequestBuilder request = post("/api/users")
 				.content("{\"username\": \"user123\"}")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()
 				.getResponse();
-		verify(userService).saveUser(any());
+		verify(userAdminService).saveUser(any());
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
@@ -235,14 +237,14 @@ public class UserRestServiceTest {
 	public void testUpdateUser() throws Exception {
 		final UserEntity user = new UserEntity()
 				.setId("user123");
-		when(userService.updateUser(eq("user123"), any())).thenReturn(user);
+		when(userAdminService.updateUser(eq("user123"), any())).thenReturn(user);
 		MockHttpServletRequestBuilder request = put("/api/users/user123")
 				.content("{\"username\": \"user123\"}")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()
 				.getResponse();
-		verify(userService).updateUser(eq("user123"), any());
+		verify(userAdminService).updateUser(eq("user123"), any());
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
@@ -252,14 +254,14 @@ public class UserRestServiceTest {
 	public void testUpdateUserPassword() throws Exception {
 		final UserEntity user = new UserEntity()
 				.setId("user123");
-		when(userService.updateUserPassword(eq("user123"), any())).thenReturn(user);
+		when(userAdminService.updateUserPassword(eq("user123"), any())).thenReturn(user);
 		MockHttpServletRequestBuilder request = put("/api/users/user123/password")
 				.content("{\"username\": \"user123\"}")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()
 				.getResponse();
-		verify(userService).updateUserPassword(eq("user123"), any());
+		verify(userAdminService).updateUserPassword(eq("user123"), any());
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));

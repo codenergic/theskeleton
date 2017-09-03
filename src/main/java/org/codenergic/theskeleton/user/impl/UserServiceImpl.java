@@ -28,6 +28,7 @@ import org.codenergic.theskeleton.privilege.role.RoleEntity;
 import org.codenergic.theskeleton.privilege.role.RolePrivilegeEntity;
 import org.codenergic.theskeleton.privilege.role.RolePrivilegeRepository;
 import org.codenergic.theskeleton.privilege.role.RoleRepository;
+import org.codenergic.theskeleton.user.UserAdminService;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.codenergic.theskeleton.user.UserRoleEntity;
@@ -43,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserAdminService {
 	private PasswordEncoder passwordEncoder;
 	private RoleRepository roleRepository;
 	private UserRepository userRepository;
@@ -106,13 +107,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserEntity findUserByUsername(String username) {
 		return userRepository.findByUsername(username);
-	}
-
-	@Override
-	public Set<UserEntity> findUsersByRoleCode(String code) {
-		return userRoleRepository.findByRoleCode(code).stream()
-				.map(UserRoleEntity::getUser)
-				.collect(Collectors.toSet());
 	}
 
 	@Override

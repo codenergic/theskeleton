@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.codenergic.theskeleton.privilege.role.RoleRestData;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,32 +37,37 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/users")
 public class UserRestService {
-	@Autowired
 	private UserService userService;
+	private UserAdminService userAdminService;
+
+	public UserRestService(UserService userService, UserAdminService userAdminService) {
+		this.userService = userService;
+		this.userAdminService = userAdminService;
+	}
 
 	@PutMapping("/{username}/roles")
 	public UserRestData addRoleToUser(@PathVariable("username") String username, @RequestBody Map<String, String> body) {
-		return convertEntityToRestData(userService.addRoleToUser(username, body.get("role")));
+		return convertEntityToRestData(userAdminService.addRoleToUser(username, body.get("role")));
 	}
 
 	@DeleteMapping("/{username}")
 	public void deleteUser(@PathVariable("username") String username) {
-		userService.deleteUser(username);
+		userAdminService.deleteUser(username);
 	}
 
 	@PutMapping("/{username}/enable")
 	public UserRestData enableOrDisableUser(@PathVariable("username") String username, @RequestBody Map<String, Boolean> body) {
-		return convertEntityToRestData(userService.enableOrDisableUser(username, body.getOrDefault("enabled", true)));
+		return convertEntityToRestData(userAdminService.enableOrDisableUser(username, body.getOrDefault("enabled", true)));
 	}
 
 	@PutMapping("/{username}/exp")
 	public UserRestData extendsUserExpiration(@PathVariable("username") String username, @RequestBody Map<String, Integer> body) {
-		return convertEntityToRestData(userService.extendsUserExpiration(username, body.getOrDefault("amount", 180)));
+		return convertEntityToRestData(userAdminService.extendsUserExpiration(username, body.getOrDefault("amount", 180)));
 	}
 
 	@GetMapping("/{username}/roles")
 	public Set<RoleRestData> findRolesByUserUsername(@PathVariable("username") String username) {
-		return userService.findRolesByUserUsername(username).stream()
+		return userAdminService.findRolesByUserUsername(username).stream()
 				.map(r -> RoleRestData.builder(r).build())
 				.collect(Collectors.toSet());
 	}
@@ -81,33 +85,33 @@ public class UserRestService {
 	@GetMapping
 	public Page<UserRestData> findUsersByUsernameStartingWith(
 			@RequestParam(name = "username", defaultValue = "") String username, Pageable pageable) {
-		return userService.findUsersByUsernameStartingWith(username, pageable)
+		return userAdminService.findUsersByUsernameStartingWith(username, pageable)
 				.map(this::convertEntityToRestData);
 	}
 
 	@PutMapping("/{username}/lock")
 	public UserRestData lockOrUnlockUser(@PathVariable("username") String username, @RequestBody Map<String, Boolean> body) {
-		return convertEntityToRestData(userService.lockOrUnlockUser(username, body.getOrDefault("unlocked", true)));
+		return convertEntityToRestData(userAdminService.lockOrUnlockUser(username, body.getOrDefault("unlocked", true)));
 	}
 
 	@DeleteMapping("/{username}/roles")
 	public UserRestData removeRoleFromUser(@PathVariable("username") String username, @RequestBody Map<String, String> body) {
-		return convertEntityToRestData(userService.removeRoleFromUser(username, body.get("role")));
+		return convertEntityToRestData(userAdminService.removeRoleFromUser(username, body.get("role")));
 	}
 
 	@PostMapping
 	public UserRestData saveUser(@RequestBody @Valid UserRestData userData) {
-		return convertEntityToRestData(userService.saveUser(userData.toEntity()));
+		return convertEntityToRestData(userAdminService.saveUser(userData.toEntity()));
 	}
 
 	@PutMapping("/{username}")
 	public UserRestData updateUser(@PathVariable("username") String username, @RequestBody @Valid UserRestData userData) {
-		return convertEntityToRestData(userService.updateUser(username, userData.toEntity()));
+		return convertEntityToRestData(userAdminService.updateUser(username, userData.toEntity()));
 	}
 
 	@PutMapping("/{username}/password")
 	public UserRestData updateUserPassword(@PathVariable("username") String username, @RequestBody Map<String, String> body) {
-		return convertEntityToRestData(userService.updateUserPassword(username, body.get("password")));
+		return convertEntityToRestData(userAdminService.updateUserPassword(username, body.get("password")));
 	}
 
 	private UserRestData convertEntityToRestData(UserEntity user) {

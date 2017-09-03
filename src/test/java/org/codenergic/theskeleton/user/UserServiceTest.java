@@ -36,13 +36,14 @@ public class UserServiceTest {
 	private UserRoleRepository userRoleRepository;
 	@Mock
 	private RolePrivilegeRepository rolePrivilegeRepository;
+	private UserAdminService userAdminService;
 	private UserService userService;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.userService = UserService.newInstance(passwordEncoder, roleRepository, userRepository,
-				userRoleRepository, rolePrivilegeRepository);
+		this.userAdminService = UserAdminService.newInstance(passwordEncoder, roleRepository, userRepository, userRoleRepository, rolePrivilegeRepository);
+		this.userService = UserService.newInstance(passwordEncoder, roleRepository, userRepository, userRoleRepository, rolePrivilegeRepository);
 	}
 
 	@Test
@@ -59,7 +60,7 @@ public class UserServiceTest {
 		when(roleRepository.findByCode("role")).thenReturn(role);
 		when(userRepository.findByUsername("user")).thenReturn(user);
 		when(userRoleRepository.save(any(UserRoleEntity.class))).thenReturn(result);
-		assertThat(userService.addRoleToUser("user", "role")).isEqualTo(user);
+		assertThat(userAdminService.addRoleToUser("user", "role")).isEqualTo(user);
 		verify(roleRepository).findByCode("role");
 		verify(userRepository).findByUsername("user");
 		verify(userRoleRepository).save(any(UserRoleEntity.class));
@@ -72,7 +73,7 @@ public class UserServiceTest {
 				.setUsername("user")
 				.setPassword(passwordEncoder.encode("user"));
 		when(userRepository.findByUsername("user")).thenReturn(user);
-		userService.deleteUser("user");
+		userAdminService.deleteUser("user");
 		verify(userRepository).findByUsername("user");
 		verify(userRepository).delete(user);
 	}
@@ -84,7 +85,7 @@ public class UserServiceTest {
 				.setUsername("user")
 				.setEnabled(false);
 		when(userRepository.findByUsername("user")).thenReturn(input);
-		UserEntity result = userService.enableOrDisableUser("user", true);
+		UserEntity result = userAdminService.enableOrDisableUser("user", true);
 		assertThat(result.getId()).isEqualTo(input.getId());
 		assertThat(result.isEnabled()).isTrue();
 		verify(userRepository).findByUsername("user");
@@ -98,7 +99,7 @@ public class UserServiceTest {
 				.setUsername("user")
 				.setExpiredAt(expiredAt);
 		when(userRepository.findByUsername("user")).thenReturn(input);
-		UserEntity result = userService.extendsUserExpiration("user", 60);
+		UserEntity result = userAdminService.extendsUserExpiration("user", 60);
 		assertThat(result.getId()).isEqualTo(input.getId());
 		assertThat(result.getExpiredAt()).isAfter(expiredAt);
 		assertThat((result.getExpiredAt().getTime() - expiredAt.getTime()) / 1000).isEqualTo(3600);
@@ -110,7 +111,7 @@ public class UserServiceTest {
 		Set<UserRoleEntity> dbResult =
 				new HashSet<>(Arrays.asList(new UserRoleEntity().setRole(new RoleEntity().setCode("role"))));
 		when(userRoleRepository.findByUserUsername("user")).thenReturn(dbResult);
-		Set<RoleEntity> result = userService.findRolesByUserUsername("user");
+		Set<RoleEntity> result = userAdminService.findRolesByUserUsername("user");
 		assertThat(result.size()).isEqualTo(1);
 		assertThat(result.iterator().next()).isEqualTo(dbResult.iterator().next().getRole());
 		verify(userRoleRepository).findByUserUsername("user");
@@ -126,22 +127,11 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testFindUsersByRoleCode() {
-		Set<UserRoleEntity> dbResult =
-				new HashSet<>(Arrays.asList(new UserRoleEntity().setUser(new UserEntity().setUsername("user"))));
-		when(userRoleRepository.findByRoleCode("role")).thenReturn(dbResult);
-		Set<UserEntity> result = userService.findUsersByRoleCode("role");
-		assertThat(result.size()).isEqualTo(1);
-		assertThat(result.iterator().next()).isEqualTo(dbResult.iterator().next().getUser());
-		verify(userRoleRepository).findByRoleCode("role");
-	}
-
-	@Test
 	public void testFindUsersByUsernameStartingWith() {
 		Page<UserEntity> dbResult = new PageImpl<>(Arrays.asList(new UserEntity().setUsername("user")));
 		when(userRepository.findByUsernameStartingWith(eq("user"), any()))
 				.thenReturn(dbResult);
-		Page<UserEntity> result = userService.findUsersByUsernameStartingWith("user", null);
+		Page<UserEntity> result = userAdminService.findUsersByUsernameStartingWith("user", null);
 		assertThat(result.getNumberOfElements()).isEqualTo(1);
 		assertThat(result).isEqualTo(dbResult);
 		verify(userRepository).findByUsernameStartingWith(eq("user"), any());
@@ -151,19 +141,19 @@ public class UserServiceTest {
 	public void testLockOrUnlockUser() {
 		UserEntity dbResult = new UserEntity().setAccountNonLocked(false);
 		when(userRepository.findByUsername("user")).thenReturn(dbResult);
-		UserEntity result = userService.lockOrUnlockUser("user", true);
+		UserEntity result = userAdminService.lockOrUnlockUser("user", true);
 		assertThat(result.isAccountNonLocked()).isEqualTo(true);
 		verify(userRepository).findByUsername("user");
 	}
 
 	@Test
 	public void testRemoveRoleFromUser() {
-		userService.removeRoleFromUser("", "");
+		userAdminService.removeRoleFromUser("", "");
 	}
 
 	@Test
 	public void testSaveUser() {
-		userService.saveUser(new UserEntity());
+		userAdminService.saveUser(new UserEntity());
 	}
 
 	@Test
@@ -172,7 +162,7 @@ public class UserServiceTest {
 				.setUsername("user")
 				.setEnabled(false);
 		when(userRepository.findByUsername("user")).thenReturn(input);
-		UserEntity updatedUser = userService.updateUser("user", new UserEntity().setUsername("updated"));
+		UserEntity updatedUser = userAdminService.updateUser("user", new UserEntity().setUsername("updated"));
 		assertThat(updatedUser.getUsername()).isEqualTo(input.getUsername());
 		verify(userRepository).findByUsername("user");
 	}
@@ -181,7 +171,7 @@ public class UserServiceTest {
 	public void testUpdateUserPassword() {
 		String rawPassword = "p@$$w0rd!";
 		when(userRepository.findByUsername("user")).thenReturn(new UserEntity());
-		UserEntity result = userService.updateUserPassword("user", rawPassword);
+		UserEntity result = userAdminService.updateUserPassword("user", rawPassword);
 		assertThat(passwordEncoder.matches(rawPassword, result.getPassword())).isTrue();
 		verify(userRepository).findByUsername("user");
 	}
