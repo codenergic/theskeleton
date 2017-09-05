@@ -35,10 +35,12 @@ public class UserRestData implements RestData {
 	private String email;
 	@JsonProperty
 	private String phoneNumber;
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private Set<String> authorities = new HashSet<>();
+	@JsonProperty(access = Access.READ_ONLY)
+	private boolean nonLocked = true;
 
 	private UserRestData() {
 	}
@@ -50,6 +52,7 @@ public class UserRestData implements RestData {
 		this.phoneNumber = builder.phoneNumber;
 		this.password = builder.password;
 		this.authorities = builder.authorities;
+		this.nonLocked = builder.nonLocked;
 	}
 
 	public String getId() {
@@ -76,14 +79,18 @@ public class UserRestData implements RestData {
 		return authorities;
 	}
 
+	public boolean isNonLocked() {
+		return nonLocked;
+	}
+
 	public UserEntity toEntity() {
-		UserEntity userEntity = new UserEntity();
-		userEntity.setId(id);
-		userEntity.setUsername(username);
-		userEntity.setEmail(email);
-		userEntity.setPhoneNumber(phoneNumber);
-		userEntity.setPassword(password);
-		return userEntity;
+		return new UserEntity()
+				.setId(id)
+				.setUsername(username)
+				.setEmail(email)
+				.setPhoneNumber(phoneNumber)
+				.setPassword(password)
+				.setAccountNonLocked(nonLocked);
 	}
 
 	/**
@@ -96,9 +103,16 @@ public class UserRestData implements RestData {
 	}
 
 	public static Builder builder(UserEntity user) {
-		return builder().withId(user.getId()).withUsername(user.getUsername()).withEmail(user.getEmail())
-				.withPhoneNumber(user.getPhoneNumber()).withAuthorities(
-						user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()));
+		return builder()
+				.withId(user.getId())
+				.withUsername(user.getUsername())
+				.withEmail(user.getEmail())
+				.withPhoneNumber(user.getPhoneNumber())
+				.withAuthorities(user.getAuthorities()
+						.stream()
+						.map(GrantedAuthority::getAuthority)
+						.collect(Collectors.toSet()))
+				.withNonLocked(user.isAccountNonLocked());
 	}
 
 	/**
@@ -111,6 +125,7 @@ public class UserRestData implements RestData {
 		private String phoneNumber;
 		private String password;
 		private Set<String> authorities;
+		private boolean nonLocked;
 
 		private Builder() {
 		}
@@ -142,6 +157,11 @@ public class UserRestData implements RestData {
 
 		public Builder withAuthorities(Set<String> authorities) {
 			this.authorities = authorities;
+			return this;
+		}
+
+		public Builder withNonLocked(boolean nonLocked) {
+			this.nonLocked = nonLocked;
 			return this;
 		}
 
