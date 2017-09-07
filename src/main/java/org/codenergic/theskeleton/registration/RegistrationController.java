@@ -15,23 +15,29 @@
  */
 package org.codenergic.theskeleton.registration;
 
-import javax.validation.Valid;
-
+import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.validation.Valid;
+
 @Controller
 @RequestMapping("/registration")
 public class RegistrationController {
 	private static final String REGISTRATION = "registration";
-	private UserService userService;
+	private static final String REGISTRATION_CONFIRMATION = "registration_confirmation";
 
-	public RegistrationController(UserService userService) {
+	private UserService userService;
+	private PasswordEncoder passwordEncoder;
+
+	public RegistrationController(UserService userService, PasswordEncoder passwordEncoder) {
 		this.userService = userService;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@GetMapping
@@ -44,7 +50,11 @@ public class RegistrationController {
 		if (bindingResult.hasErrors()) {
 			return registrationView(registrationForm);
 		}
-		// TODO: register user
-		return REGISTRATION;
+		UserEntity userEntity = new UserEntity();
+		userEntity.setUsername(registrationForm.getUsername());
+		userEntity.setEmail(registrationForm.getEmail());
+		userEntity.setPassword(passwordEncoder.encode(registrationForm.getPassword()));
+		userService.register(userEntity);
+		return REGISTRATION_CONFIRMATION;
 	}
 }

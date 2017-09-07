@@ -176,4 +176,13 @@ public class UserServiceTest {
 		verify(userRepository).findByUsername("user");
 	}
 
+	@Test
+	public void testRegisterUser() {
+		UserEntity user = new UserEntity()
+			.setUsername("user")
+			.setPassword(passwordEncoder.encode("user"))
+			.setEmail("user@system")
+			.setEnabled(false);
+		userService.register(user);
+	}
 }
