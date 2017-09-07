@@ -114,6 +114,16 @@ public class RoleServiceTest {
 	}
 
 	@Test
+	@SuppressWarnings("serial")
+	public void testDeleteRole() {
+		RoleEntity input = new RoleEntity() {{ setId("123"); }}.setCode("user");
+		when(roleRepository.findByCode("123")).thenReturn(input);
+		roleService.deleteRole("123");
+		verify(roleRepository).findByCode("123");
+		verify(roleRepository).delete(input);
+	}
+
+	@Test
 	public void testAddPrivilegeToRole() {
 		RoleEntity role = new RoleEntity()
 				.setId(UUID.randomUUID().toString())
