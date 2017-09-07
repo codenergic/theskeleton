@@ -34,38 +34,38 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 public class PrivilegeServiceTest {
-	private PrivilegeService PrivilegeService;
+	private PrivilegeService privilegeService;
 	@Mock
-	private PrivilegeRepository PrivilegeRepository;
+	private PrivilegeRepository privilegeRepository;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.PrivilegeService = new PrivilegeServiceImpl(PrivilegeRepository);
+		this.privilegeService = new PrivilegeServiceImpl(privilegeRepository);
 	}
 
 	@Test
 	public void testFindPrivilegeByName() {
 		PrivilegeEntity result = new PrivilegeEntity();
 		result.setName("user");
-		when(PrivilegeRepository.findByName(eq("user"))).thenReturn(result);
-		assertThat(PrivilegeService.findPrivilegeByName("user")).isEqualTo(result);
-		verify(PrivilegeRepository).findByName(eq("user"));
-		when(PrivilegeRepository.findByName(eq("admin"))).thenReturn(null);
-		assertThat(PrivilegeService.findPrivilegeByName("admin")).isNull();
-		verify(PrivilegeRepository).findByName(eq("admin"));
+		when(privilegeRepository.findByName(eq("user"))).thenReturn(result);
+		assertThat(privilegeService.findPrivilegeByName("user")).isEqualTo(result);
+		verify(privilegeRepository).findByName(eq("user"));
+		when(privilegeRepository.findByName(eq("admin"))).thenReturn(null);
+		assertThat(privilegeService.findPrivilegeByName("admin")).isNull();
+		verify(privilegeRepository).findByName(eq("admin"));
 	}
 
 	@Test
 	@SuppressWarnings("serial")
 	public void testFindPrivilegeById() {
 		PrivilegeEntity result = new PrivilegeEntity() {{ setId("123"); }}.setName("user_list_read");
-		when(PrivilegeRepository.findOne(eq("123"))).thenReturn(result);
-		assertThat(PrivilegeService.findPrivilegeById("123")).isEqualTo(result);
-		verify(PrivilegeRepository).findOne(eq("123"));
-		when(PrivilegeRepository.findOne(eq("124"))).thenReturn(null);
-		assertThat(PrivilegeService.findPrivilegeById("124")).isNull();
-		verify(PrivilegeRepository).findOne(eq("124"));
+		when(privilegeRepository.findOne(eq("123"))).thenReturn(result);
+		assertThat(privilegeService.findPrivilegeById("123")).isEqualTo(result);
+		verify(privilegeRepository).findOne(eq("123"));
+		when(privilegeRepository.findOne(eq("124"))).thenReturn(null);
+		assertThat(privilegeService.findPrivilegeById("124")).isNull();
+		verify(privilegeRepository).findOne(eq("124"));
 	}
 
 	@Test
@@ -73,8 +73,8 @@ public class PrivilegeServiceTest {
 	public void testFindPrivileges() {
 		PrivilegeEntity result = new PrivilegeEntity() {{ setId("123"); }}.setName("user_list_read");
 		Page<PrivilegeEntity> page = new PageImpl<>(Arrays.asList(result));
-		when(PrivilegeRepository.findAll(any(Pageable.class))).thenReturn(page);
-		assertThat(PrivilegeService.findPrivileges(new PageRequest(1, 10))).isEqualTo(page);
-		verify(PrivilegeRepository).findAll(any(Pageable.class));
+		when(privilegeRepository.findAll(any(Pageable.class))).thenReturn(page);
+		assertThat(privilegeService.findPrivileges(new PageRequest(1, 10))).isEqualTo(page);
+		verify(privilegeRepository).findAll(any(Pageable.class));
 	}
 }
