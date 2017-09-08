@@ -22,9 +22,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends AuditingEntityRepository<UserEntity> {
-	UserEntity findByUsername(String username);
+	boolean existsByEmail(String email);
+
+	boolean existsByUsername(String username);
 
 	UserEntity findByEmail(String email);
+
+	UserEntity findByUsername(String username);
 
 	Page<UserEntity> findByUsernameStartingWith(String username, Pageable pageable);
 }

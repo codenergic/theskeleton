@@ -110,16 +110,6 @@ public class UserServiceImpl implements UserService, UserAdminService {
 	}
 
 	@Override
-	@Transactional
-	public void register(UserEntity userEntity) {
-		userEntity.setId(null);
-		userEntity.setExpiredAt(null);
-		userEntity.setAccountNonLocked(true);
-		userEntity.setCredentialsNonExpired(true);
-		userRepository.save(userEntity);
-	}
-
-	@Override
 	public Page<UserEntity> findUsersByUsernameStartingWith(String username, Pageable pageable) {
 		return userRepository.findByUsernameStartingWith(username, pageable);
 	}

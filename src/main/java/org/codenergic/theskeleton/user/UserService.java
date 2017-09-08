@@ -35,6 +35,4 @@ public interface UserService extends UserDetailsService {
 
 	@PreAuthorize("hasAuthority('user_read')")
 	UserEntity findUserByUsername(@NotNull String username);
-
-	void register(UserEntity userEntity);
 }
