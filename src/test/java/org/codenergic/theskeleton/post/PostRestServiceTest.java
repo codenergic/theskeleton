@@ -15,7 +15,19 @@
  */
 package org.codenergic.theskeleton.post;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.contains;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +42,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import java.util.Arrays;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
@@ -58,17 +64,18 @@ public class PostRestServiceTest {
 		MockHttpServletResponse response = mockMvc.perform(request)
 			.andReturn()
 			.getResponse();
-		verify(postService).savePost(any());
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(
-				PostRestData.builder(PostServiceTest.DUMMY_POST).build())
+				PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST).build())
 			);
+		verify(postService).savePost(any());
 	}
 
 	@Test
 	public void testUpdatePost() throws Exception {
-		byte[] jsonInput = objectMapper.writeValueAsBytes(PostRestData.builder(PostServiceTest.DUMMY_POST).build());
+		byte[] jsonInput = objectMapper.writeValueAsBytes(
+				PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST).build());
 		when(postService.updatePost(eq("123"), any())).thenReturn(PostServiceTest.DUMMY_POST2);
 		MockHttpServletResponse response = mockMvc.perform(put("/api/post/123")
 			.contentType(MediaType.APPLICATION_JSON)
@@ -78,7 +85,8 @@ public class PostRestServiceTest {
 		verify(postService).updatePost(eq("123"), any());
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(PostRestData.builder(PostServiceTest.DUMMY_POST2).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(
+					PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST2).build()));
 	}
 
 	@Test
@@ -103,6 +111,6 @@ public class PostRestServiceTest {
 		verify(postService).findPostByTitleContaining(eq("disastah"), any());
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder(a).build())));
+			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
 	}
 }

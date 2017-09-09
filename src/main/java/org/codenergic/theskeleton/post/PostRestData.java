@@ -15,84 +15,53 @@
  */
 package org.codenergic.theskeleton.post;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.annotation.Nullable;
 
-public class PostRestData {
-	@JsonProperty
-	private String id;
-	@JsonProperty
-	private String title;
-	@JsonProperty
-	private String content;
+import org.codenergic.theskeleton.core.data.RestData;
 
-	public PostRestData() {}
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.google.auto.value.AutoValue;
 
-	private PostRestData(Builder builder) {
-		setId(builder.id);
-		setTitle(builder.title);
-		setContent(builder.content);
+@SuppressWarnings("serial")
+@AutoValue
+@JsonDeserialize(builder = AutoValue_PostRestData.Builder.class)
+abstract class PostRestData implements RestData {
+	@Nullable
+	abstract String getContent();
+
+	@Nullable
+	abstract String getId();
+
+	@Nullable
+	abstract String getTitle();
+
+	PostEntity toPostEntity() {
+		return new PostEntity()
+				.setContent(getContent())
+				.setId(getId())
+				.setTitle(getTitle());
 	}
 
-	public static Builder newBuilder() {
-		return new Builder();
-	}
-	public String getId() {
-		return id;
+	static Builder builder() {
+		return new AutoValue_PostRestData.Builder();
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getTitle() {
-		return title;
-	}
+	@AutoValue.Builder
+	@JsonPOJOBuilder(withPrefix = "")
+	interface Builder {
+		PostRestData build();
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void setContent(String content) {
-		this.content = content;
-	}
-	public PostEntity toEntity() {
-		PostEntity postEntity = new PostEntity();
-		postEntity.setId(id);
-		postEntity.setTitle(title);
-		postEntity.setContent(content);
-		return postEntity;
-	}
-
-	public static Builder builder(PostEntity post) {
-		return newBuilder().title(post.getTitle()).content(post.getContent()).id(post.getId());
-	}
-
-
-	public static final class Builder {
-		private String id;
-		private String title;
-		private String content;
-
-		public Builder id(String val) {
-			id = val;
-			return this;
+		default Builder fromPostEntity(PostEntity post) {
+			return id(post.getId())
+					.content(post.getContent())
+					.title(post.getTitle());
 		}
 
-		public Builder title(String val) {
-			title = val;
-			return this;
-		}
+		Builder content(String content);
 
-		public Builder content(String val) {
-			content = val;
-			return this;
-		}
+		Builder id(String id);
 
-		public PostRestData build() {
-			return new PostRestData(this);
-		}
+		Builder title(String title);
 	}
 }
