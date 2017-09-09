@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService, UserAdminService {
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String username) {
 		UserEntity user = findUserByUsername(username);
 		if (user == null)
 			user = findUserByEmail(username);

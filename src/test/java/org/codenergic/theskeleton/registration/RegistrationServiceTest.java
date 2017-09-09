@@ -1,12 +1,14 @@
 package org.codenergic.theskeleton.registration;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.codenergic.theskeleton.registration.impl.RegistrationServiceImpl;
+import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +56,9 @@ public class RegistrationServiceTest {
 		RegistrationForm registrationForm = new RegistrationForm();
 		registrationForm.setUsername("user");
 		registrationForm.setPassword("password");
+		registrationForm.setEmail("user@example.com");
 		registrationService.registerUser(registrationForm);
+		verify(userRepository).save(any(UserEntity.class));
 		verify(userRepository).existsByEmail(anyString());
 		verify(userRepository).existsByUsername(anyString());
 	}

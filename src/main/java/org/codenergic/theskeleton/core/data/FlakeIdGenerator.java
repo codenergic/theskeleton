@@ -28,7 +28,7 @@ public class FlakeIdGenerator implements IdentifierGenerator {
 	private IdGenerator flake = IdGenerators.newFlakeIdGenerator();
 
 	@Override
-	public Serializable generate(SessionImplementor session, Object object) throws HibernateException {
+	public Serializable generate(SessionImplementor session, Object object) {
 		try {
 			return flake.generateId(1_000).asString();
 		} catch (InterruptedException e) {

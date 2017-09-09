@@ -76,9 +76,6 @@ public class PostRestData {
 		private String title;
 		private String content;
 
-		public Builder() {
-		}
-
 		public Builder id(String val) {
 			id = val;
 			return this;

@@ -25,7 +25,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.ClientRegistrationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +40,7 @@ public class OAuth2ClientServiceImpl implements OAuth2ClientService {
 	}
 
 	@Override
-	public ClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
+	public ClientDetails loadClientByClientId(String clientId) {
 		return findClientById(clientId);
 	}
 
