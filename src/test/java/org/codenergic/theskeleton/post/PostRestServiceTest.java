@@ -58,8 +58,8 @@ public class PostRestServiceTest {
 	@Test
 	public void testSavePost() throws Exception {
 		when(postService.savePost(any())).thenReturn(PostServiceTest.DUMMY_POST);
-		MockHttpServletRequestBuilder request = post("/api/post")
-			.content("{\"title\": \"It's a disastah\"}")
+		MockHttpServletRequestBuilder request = post("/api/posts")
+			.content("{\"title\": \"It's a disastah\", \"content\": \"Seriously a disastah\"}")
 			.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 			.andReturn()
@@ -77,7 +77,7 @@ public class PostRestServiceTest {
 		byte[] jsonInput = objectMapper.writeValueAsBytes(
 				PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST).build());
 		when(postService.updatePost(eq("123"), any())).thenReturn(PostServiceTest.DUMMY_POST2);
-		MockHttpServletResponse response = mockMvc.perform(put("/api/post/123")
+		MockHttpServletResponse response = mockMvc.perform(put("/api/posts/123")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(jsonInput))
 			.andReturn()
@@ -91,7 +91,7 @@ public class PostRestServiceTest {
 
 	@Test
 	public void testDeletePost() throws Exception {
-		MockHttpServletRequestBuilder request = delete("/api/post/123")
+		MockHttpServletRequestBuilder request = delete("/api/posts/123")
 			.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 			.andReturn()
@@ -103,7 +103,7 @@ public class PostRestServiceTest {
 	public void testFindPostByTitleContaining() throws Exception {
 		final Page<PostEntity> post = new PageImpl<>(Arrays.asList(PostServiceTest.DUMMY_POST));
 		when(postService.findPostByTitleContaining(contains("disastah"), any())).thenReturn(post);
-		MockHttpServletRequestBuilder request = get("/api/post?title=disastah")
+		MockHttpServletRequestBuilder request = get("/api/posts?title=disastah")
 			.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 			.andReturn()

@@ -42,7 +42,7 @@ public class OAuth2ResourceServerConfig extends ResourceServerConfigurerAdapter 
 				.antMatchers("/api/**")
 				.and()
 			.authorizeRequests()
-				.anyRequest().authenticated()
+				.anyRequest().permitAll()
 				.and()
 			.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
