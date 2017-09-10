@@ -26,7 +26,6 @@ import com.google.auto.value.AutoValue;
 
 @SuppressWarnings("serial")
 @AutoValue
-@AutoValue.CopyAnnotations
 @JsonDeserialize(builder = AutoValue_PostRestData.Builder.class)
 abstract class PostRestData implements RestData {
 	@NotNull(groups = {New.class, Existing.class})
