@@ -15,11 +15,10 @@
  */
 package org.codenergic.theskeleton.post;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,18 +32,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/post")
 public class PostRestService {
-
 	@Autowired
 	private PostService postService;
 
 	@PostMapping
-	public PostRestData savePost(@RequestBody @Valid PostRestData postRestData) {
+	public PostRestData savePost(@RequestBody @Validated(PostRestData.New.class) PostRestData postRestData) {
 		PostEntity post = postService.savePost(postRestData.toPostEntity());
 		return PostRestData.builder().fromPostEntity(post).build();
 	}
 
 	@PutMapping("/{id}")
-	public PostRestData updatePost(@PathVariable("id") String id, @RequestBody @Valid final PostRestData postRestData) {
+	public PostRestData updatePost(@PathVariable("id") String id, @RequestBody @Validated(PostRestData.Existing.class) final PostRestData postRestData) {
 		PostEntity post = postService.updatePost(id, postRestData.toPostEntity());
 		return PostRestData.builder().fromPostEntity(post).build();
 	}

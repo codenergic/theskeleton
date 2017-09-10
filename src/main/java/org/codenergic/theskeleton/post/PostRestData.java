@@ -16,6 +16,7 @@
 package org.codenergic.theskeleton.post;
 
 import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.core.data.RestData;
 
@@ -25,14 +26,18 @@ import com.google.auto.value.AutoValue;
 
 @SuppressWarnings("serial")
 @AutoValue
+@AutoValue.CopyAnnotations
 @JsonDeserialize(builder = AutoValue_PostRestData.Builder.class)
 abstract class PostRestData implements RestData {
+	@NotNull(groups = {New.class, Existing.class})
 	@Nullable
 	abstract String getContent();
 
+	@NotNull(groups = {Existing.class})
 	@Nullable
 	abstract String getId();
 
+	@NotNull(groups = {New.class, Existing.class})
 	@Nullable
 	abstract String getTitle();
 
@@ -64,4 +69,8 @@ abstract class PostRestData implements RestData {
 
 		Builder title(String title);
 	}
+ 
+	public interface New {}
+
+	public interface Existing {}
 }
