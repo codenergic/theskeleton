@@ -15,158 +15,82 @@
  */
 package org.codenergic.theskeleton.user;
 
-import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import org.codenergic.theskeleton.core.data.RestData;
-import org.springframework.security.core.GrantedAuthority;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.google.auto.value.AutoValue;
 
 @SuppressWarnings("serial")
-public class UserRestData implements RestData {
-	@JsonProperty
-	private String id;
-	@JsonProperty
-	private String username;
-	@JsonProperty
-	private String email;
-	@JsonProperty
-	private String phoneNumber;
-	@JsonProperty(access = Access.WRITE_ONLY)
-	private String password;
-	@JsonProperty(access = Access.WRITE_ONLY)
-	private Set<String> authorities = new HashSet<>();
-	@JsonProperty(access = Access.READ_ONLY)
-	private boolean nonLocked = true;
+@AutoValue
+@JsonDeserialize(builder = AutoValue_UserRestData.Builder.class)
+abstract class UserRestData implements RestData {
+	@Nullable
+	abstract String getId();
 
-	private UserRestData() {
+	@Nullable
+	abstract String getUsername();
+
+	@Nullable
+	abstract String getEmail();
+
+	@Nullable
+	abstract String getPhoneNumber();
+
+	@Nullable
+	abstract String getPassword();
+
+	@Nullable
+	abstract Set<String> getAuthorities();
+
+	@Nullable
+	abstract Boolean getIsNonLocked();
+
+	static Builder builder() {
+		return new AutoValue_UserRestData.Builder();
 	}
 
-	private UserRestData(Builder builder) {
-		this.id = builder.id;
-		this.username = builder.username;
-		this.email = builder.email;
-		this.phoneNumber = builder.phoneNumber;
-		this.password = builder.password;
-		this.authorities = builder.authorities;
-		this.nonLocked = builder.nonLocked;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public Set<String> getAuthorities() {
-		return authorities;
-	}
-
-	public boolean isNonLocked() {
-		return nonLocked;
-	}
-
-	public UserEntity toEntity() {
+	UserEntity toUserEntity() {
 		return new UserEntity()
-				.setId(id)
-				.setUsername(username)
-				.setEmail(email)
-				.setPhoneNumber(phoneNumber)
-				.setPassword(password)
-				.setAccountNonLocked(nonLocked);
+			.setId(getId())
+			.setUsername(getUsername())
+			.setEmail(getEmail())
+			.setPhoneNumber(getPhoneNumber())
+			.setPassword(getPassword())
+			.setAccountNonLocked(Optional.ofNullable(getIsNonLocked()).orElse(false));
 	}
 
-	/**
-	 * Creates builder to build {@link UserRestData}.
-	 *
-	 * @return created builder
-	 */
-	public static Builder builder() {
-		return new Builder();
-	}
+	@AutoValue.Builder
+	@JsonPOJOBuilder(withPrefix = "")
+	interface Builder {
+		Builder id(String id);
 
-	public static Builder builder(UserEntity user) {
-		return builder()
-				.withId(user.getId())
-				.withUsername(user.getUsername())
-				.withEmail(user.getEmail())
-				.withPhoneNumber(user.getPhoneNumber())
-				.withAuthorities(user.getAuthorities()
-						.stream()
-						.map(GrantedAuthority::getAuthority)
-						.collect(Collectors.toSet()))
-				.withNonLocked(user.isAccountNonLocked());
-	}
+		Builder username(String username);
 
-	/**
-	 * Builder to build {@link UserRestData}.
-	 */
-	public static final class Builder {
-		private String id;
-		private String username;
-		private String email;
-		private String phoneNumber;
-		private String password;
-		private Set<String> authorities;
-		private boolean nonLocked;
+		Builder email(String email);
 
-		private Builder() {
-		}
+		Builder phoneNumber(String phoneNumber);
 
-		public Builder withId(String id) {
-			this.id = id;
-			return this;
-		}
+		Builder password(String password);
 
-		public Builder withUsername(String username) {
-			this.username = username;
-			return this;
-		}
+		Builder authorities(Set<String> authorities);
 
-		public Builder withEmail(String email) {
-			this.email = email;
-			return this;
-		}
+		Builder isNonLocked(Boolean nonLocked);
 
-		public Builder withPassword(String password) {
-			this.password = password;
-			return this;
-		}
+		UserRestData build();
 
-		public Builder withPhoneNumber(String phoneNumber) {
-			this.phoneNumber = phoneNumber;
-			return this;
-		}
-
-		public Builder withAuthorities(Set<String> authorities) {
-			this.authorities = authorities;
-			return this;
-		}
-
-		public Builder withNonLocked(boolean nonLocked) {
-			this.nonLocked = nonLocked;
-			return this;
-		}
-
-		public UserRestData build() {
-			return new UserRestData(this);
+		default Builder fromUserEntity(UserEntity user) {
+			return id(user.getId())
+				.username(user.getUsername())
+				.email(user.getEmail())
+				.phoneNumber(user.getPhoneNumber())
+				.password(user.getPassword())
+				.isNonLocked(user.isAccountNonLocked());
 		}
 	}
 }

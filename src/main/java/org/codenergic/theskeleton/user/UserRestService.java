@@ -101,12 +101,12 @@ public class UserRestService {
 
 	@PostMapping
 	public UserRestData saveUser(@RequestBody @Valid UserRestData userData) {
-		return convertEntityToRestData(userAdminService.saveUser(userData.toEntity()));
+		return convertEntityToRestData(userAdminService.saveUser(userData.toUserEntity()));
 	}
 
 	@PutMapping("/{username}")
 	public UserRestData updateUser(@PathVariable("username") String username, @RequestBody @Valid UserRestData userData) {
-		return convertEntityToRestData(userAdminService.updateUser(username, userData.toEntity()));
+		return convertEntityToRestData(userAdminService.updateUser(username, userData.toUserEntity()));
 	}
 
 	@PutMapping("/{username}/password")
@@ -115,6 +115,6 @@ public class UserRestService {
 	}
 
 	private UserRestData convertEntityToRestData(UserEntity user) {
-		return user == null ? null : UserRestData.builder(user).build();
+		return UserRestData.builder().fromUserEntity(user).build();
 	}
 }
