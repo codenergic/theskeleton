@@ -20,6 +20,7 @@ import java.util.concurrent.Executor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
@@ -30,7 +31,14 @@ public class AsyncConfig {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setMaxPoolSize(10);
 		executor.setThreadNamePrefix("AsyncService-");
-		executor.initialize();
 		return executor;
+	}
+
+	@Bean
+	public ScheduledExecutorFactoryBean executorService() {
+		ScheduledExecutorFactoryBean bean = new ScheduledExecutorFactoryBean();
+		bean.setPoolSize(10);
+		bean.setThreadNamePrefix("ScheduledExecutorService-");
+		return bean;
 	}
 }

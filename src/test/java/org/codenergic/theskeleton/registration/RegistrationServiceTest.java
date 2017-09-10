@@ -1,8 +1,8 @@
 package org.codenergic.theskeleton.registration;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,7 +33,11 @@ public class RegistrationServiceTest {
 	public void testRegisterUserEmailDoesntExists() {
 		when(userRepository.existsByEmail(anyString())).thenReturn(false);
 		when(userRepository.existsByUsername(anyString())).thenReturn(true);
-		assertThatThrownBy(() -> registrationService.registerUser(new RegistrationForm()))
+		RegistrationForm registrationForm = new RegistrationForm();
+		registrationForm.setUsername("user");
+		registrationForm.setPassword("password");
+		registrationForm.setEmail("user@example.com");
+		assertThatThrownBy(() -> registrationService.registerUser(registrationForm))
 				.isInstanceOf(RegistrationException.class);
 		verify(userRepository).existsByEmail(anyString());
 		verify(userRepository).existsByUsername(anyString());
@@ -43,7 +47,11 @@ public class RegistrationServiceTest {
 	public void testRegisterUserUsernameDoesntExists() {
 		when(userRepository.existsByEmail(anyString())).thenReturn(true);
 		when(userRepository.existsByUsername(anyString())).thenReturn(false);
-		assertThatThrownBy(() -> registrationService.registerUser(new RegistrationForm()))
+		RegistrationForm registrationForm = new RegistrationForm();
+		registrationForm.setUsername("user");
+		registrationForm.setPassword("password");
+		registrationForm.setEmail("user@example.com");
+		assertThatThrownBy(() -> registrationService.registerUser(registrationForm))
 				.isInstanceOf(RegistrationException.class);
 		verify(userRepository).existsByEmail(anyString());
 		verify(userRepository, times(0)).existsByUsername(anyString());

@@ -1,8 +1,8 @@
 package org.codenergic.theskeleton.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -49,7 +49,7 @@ public class UserRestServiceTest {
 	private UserService userService;
 
 	@Test
-	public void testSerializeDeserializeUserUser() throws IOException {
+	public void testSerializeDeserializeUser() throws IOException {
 		UserRestData user = UserRestData.builder()
 				.id("123")
 				.username("user")

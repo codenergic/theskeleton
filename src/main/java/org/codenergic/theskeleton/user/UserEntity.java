@@ -68,6 +68,8 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 	private Set<UserRoleEntity> roles = new HashSet<>();
 	@Transient
 	private Set<RolePrivilegeEntity> authorities = new HashSet<>();
+	@Column(name = "picture_url")
+	private String pictureUrl;
 
 	@Override
 	public UserEntity setId(String id) {
@@ -174,6 +176,15 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 
 	public UserEntity setRoles(Set<UserRoleEntity> roles) {
 		this.roles = roles;
+		return this;
+	}
+
+	public String getPictureUrl() {
+		return pictureUrl;
+	}
+
+	public UserEntity setPictureUrl(String pictureUrl) {
+		this.pictureUrl = pictureUrl;
 		return this;
 	}
 }

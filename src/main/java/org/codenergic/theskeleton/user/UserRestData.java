@@ -89,7 +89,6 @@ abstract class UserRestData implements RestData {
 				.username(user.getUsername())
 				.email(user.getEmail())
 				.phoneNumber(user.getPhoneNumber())
-				.password(user.getPassword())
 				.isNonLocked(user.isAccountNonLocked());
 		}
 	}

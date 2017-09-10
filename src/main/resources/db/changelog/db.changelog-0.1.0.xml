@@ -35,6 +35,7 @@
 			<column name="username" type="varchar(255)">
 				<constraints nullable="false" unique="true" />
 			</column>
+			<column name="picture_url" type="varchar(500)" />
 		</createTable>
 		<sql>
 		insert into ts_user 
