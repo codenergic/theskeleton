@@ -18,10 +18,9 @@ management:
       mode: full
 s3:
   client:
-    endpoint: http://localhost:8081
-  server:
-    port: 8081
-    storageLocation: ${HOME}/.theskeleton-s3
+    endpoint: http://localhost:8082
+    access-key: supersecret
+    secret-key: supersecret123
 security:
   oauth2:
     resource:

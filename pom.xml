@@ -136,7 +136,7 @@
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
 
-		<!-- S3 Client -->
+		<!-- S3 -->
 		<dependency>
 			<groupId>io.minio</groupId>
 			<artifactId>minio</artifactId>
@@ -219,33 +219,6 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<profiles>
-		<profile>
-			<id>dev-build</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<dependencies>
-				<dependency>
-					<groupId>io.findify</groupId>
-					<artifactId>s3mock_2.12</artifactId>
-					<version>${s3mock.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-		<profile>
-			<id>prod-build</id>
-			<dependencies>
-				<dependency>
-					<groupId>io.findify</groupId>
-					<artifactId>s3mock_2.12</artifactId>
-					<version>${s3mock.version}</version>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
-		</profile>
-	</profiles>
 
 	<build>
 		<plugins>

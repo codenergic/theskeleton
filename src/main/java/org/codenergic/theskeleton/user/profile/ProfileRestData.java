@@ -1,13 +1,12 @@
 package org.codenergic.theskeleton.user.profile;
 
-import javax.annotation.Nullable;
-
-import org.codenergic.theskeleton.core.data.RestData;
-import org.codenergic.theskeleton.user.UserEntity;
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.auto.value.AutoValue;
+import org.codenergic.theskeleton.core.data.RestData;
+import org.codenergic.theskeleton.user.UserEntity;
+
+import javax.annotation.Nullable;
 
 @SuppressWarnings("serial")
 @AutoValue
@@ -24,6 +23,9 @@ abstract class ProfileRestData implements RestData {
 
 	@Nullable
 	abstract String getPassword();
+
+	@Nullable
+	abstract String getPictureUrl();
 
 	static Builder builder() {
 		return new AutoValue_ProfileRestData.Builder();
@@ -48,12 +50,15 @@ abstract class ProfileRestData implements RestData {
 
 		Builder password(String password);
 
+		Builder pictureUrl(String url);
+
 		ProfileRestData build();
 
 		default Builder fromUserEntity(UserEntity user) {
 			return username(user.getUsername())
 				.email(user.getEmail())
-				.phoneNumber(user.getPhoneNumber());
+				.phoneNumber(user.getPhoneNumber())
+				.pictureUrl(user.getPictureUrl());
 		}
 	}
 }
