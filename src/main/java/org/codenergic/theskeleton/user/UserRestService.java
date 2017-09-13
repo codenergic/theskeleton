@@ -68,7 +68,7 @@ public class UserRestService {
 	@GetMapping("/{username}/roles")
 	public Set<RoleRestData> findRolesByUserUsername(@PathVariable("username") String username) {
 		return userAdminService.findRolesByUserUsername(username).stream()
-				.map(r -> RoleRestData.builder(r).build())
+				.map(r -> RoleRestData.builder().fromRoleEntity(r).build())
 				.collect(Collectors.toSet());
 	}
 

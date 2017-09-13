@@ -22,8 +22,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import org.codenergic.theskeleton.privilege.PrivilegeEntity;
+import org.codenergic.theskeleton.privilege.PrivilegeRestData;
+import org.codenergic.theskeleton.privilege.PrivilegeRestService;
+import org.codenergic.theskeleton.privilege.PrivilegeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +55,18 @@ public class PrivilegeRestServiceTest {
 	private PrivilegeService privilegeService;
 
 	@Test
+	public void testSerializeDeserializePrivilege() throws IOException {
+		PrivilegeRestData privilege = PrivilegeRestData.builder()
+				.id("123")
+				.name("12345")
+				.description("Description 12345")
+				.build();
+		String json = objectMapper.writeValueAsString(privilege);
+		PrivilegeRestData privilege2 = objectMapper.readValue(json, PrivilegeRestData.class);
+		assertThat(privilege).isEqualTo(privilege2);
+	}
+
+	@Test
 	public void testFindPrivilegeByName() throws Exception {
 		PrivilegeEntity dbResult = new PrivilegeEntity()
 				.setId("123")
@@ -62,7 +79,7 @@ public class PrivilegeRestServiceTest {
 		verify(privilegeService).findPrivilegeByIdOrName("123");
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(PrivilegeRestData.builder(dbResult).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(PrivilegeRestData.builder().fromPrivilegeEntity(dbResult).build()));
 	}
 
 	@Test
@@ -83,7 +100,8 @@ public class PrivilegeRestServiceTest {
 				.setName("12345")
 				.setDescription("Description 12345");
 		Page<PrivilegeEntity> pageResponseBody = new PageImpl<>(Arrays.asList(dbResult));
-		Page<PrivilegeRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(PrivilegeRestData.builder(dbResult).build()));
+		Page<PrivilegeRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(PrivilegeRestData.builder()
+				.fromPrivilegeEntity(dbResult).build()));
 		when(privilegeService.findPrivileges(anyString(), any())).thenReturn(pageResponseBody);
 		MockHttpServletResponse response = mockMvc.perform(get("/api/privileges"))
 				.andReturn()

@@ -15,97 +15,51 @@
  */
 package org.codenergic.theskeleton.role;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.core.data.RestData;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.google.auto.value.AutoValue;
 
 @SuppressWarnings("serial")
-public class RoleRestData implements RestData {
-	@JsonProperty
-	private String id;
-	@JsonProperty
+@AutoValue
+@JsonDeserialize(builder = AutoValue_RoleRestData.Builder.class)
+public abstract class RoleRestData implements RestData {
+	@Nullable
+	abstract String getId();
 	@NotNull
-	private String code;
-	@JsonProperty
-	private String description;
+	@Nullable
+	abstract String getCode();
+	@Nullable
+	abstract String getDescription();
 
-	private RoleRestData() {
-		this.code = "";
-	}
-
-	private RoleRestData(Builder builder) {
-		this.id = builder.id;
-		this.code = builder.code;
-		this.description = builder.description;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * Creates builder to build {@link RoleRestData}.
-	 *
-	 * @return created builder
-	 */
 	public static Builder builder() {
-		return new Builder();
+		return new AutoValue_RoleRestData.Builder();
 	}
 
-	public static Builder builder(RoleEntity role) {
-		return new Builder()
-				.withId(role.getId())
-				.withCode(role.getCode())
-				.withDescription(role.getDescription());
+	RoleEntity toRoleEntity() {
+		return new RoleEntity()
+			.setId(getId())
+			.setCode(getCode())
+			.setDescription(getDescription());
 	}
 
-	public RoleEntity toEntity() {
-		RoleEntity roleEntity = new RoleEntity();
-		roleEntity.setId(id);
-		roleEntity.setCode(code);
-		roleEntity.setDescription(description);
-		return roleEntity;
-	}
+	@AutoValue.Builder
+	@JsonPOJOBuilder(withPrefix = "")
+	public interface Builder {
+		Builder id(String id);
+		Builder code(String code);
+		Builder description(String description);
 
-	/**
-	 * Builder to build {@link RoleRestData}.
-	 */
-	public static final class Builder {
-		private String id;
-		private String code;
-		private String description;
+		RoleRestData build();
 
-		private Builder() {
-		}
-
-		public Builder withId(String id) {
-			this.id = id;
-			return this;
-		}
-
-		public Builder withCode(String code) {
-			this.code = code;
-			return this;
-		}
-
-		public Builder withDescription(String description) {
-			this.description = description;
-			return this;
-		}
-
-		public RoleRestData build() {
-			return new RoleRestData(this);
+		default Builder fromRoleEntity(RoleEntity role) {
+			return id(role.getId())
+				.code(role.getCode())
+				.description(role.getDescription());
 		}
 	}
-
 }

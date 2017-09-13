@@ -49,25 +49,25 @@ public class RoleRestService {
 	@GetMapping("/{idOrCode}")
 	public RoleRestData findRoleByIdOrCode(@PathVariable("idOrCode") final String idOrCode) {
 		RoleEntity role = roleService.findRoleByIdOrCode(idOrCode);
-		return role == null ? null : RoleRestData.builder(role).build();
+		return role == null ? null : RoleRestData.builder().fromRoleEntity(role).build();
 	}
 
 	@GetMapping
 	public Page<RoleRestData> findRoles(@RequestParam(name = "q", defaultValue = "") final String keywords,
 			final Pageable pageable) {
 		return roleService.findRoles(keywords, pageable)
-				.map(s -> RoleRestData.builder(s).build());
+				.map(s -> RoleRestData.builder().fromRoleEntity(s).build());
 	}
 
 	@PostMapping
 	public RoleRestData saveRole(@RequestBody @Valid final RoleRestData role) {
-		return RoleRestData.builder(roleService.saveRole(role.toEntity()))
+		return RoleRestData.builder().fromRoleEntity(roleService.saveRole(role.toRoleEntity()))
 				.build();
 	}
 
 	@PutMapping("/{code}")
 	public RoleRestData updateRole(@PathVariable("code") String code, @RequestBody @Valid final RoleRestData role) {
-		return RoleRestData.builder(roleService.updateRole(code, role.toEntity()))
+		return RoleRestData.builder().fromRoleEntity(roleService.updateRole(code, role.toRoleEntity()))
 				.build();
 	}
 
@@ -79,7 +79,7 @@ public class RoleRestService {
 	@GetMapping("/{code}/privileges")
 	public Set<PrivilegeRestData> findRolesByUserUsername(@PathVariable("code") String code) {
 		return roleService.findPrivilegesByRoleCode(code).stream()
-				.map(r -> PrivilegeRestData.builder(r).build())
+				.map(r -> PrivilegeRestData.builder().fromPrivilegeEntity(r).build())
 				.collect(Collectors.toSet());
 	}
 
@@ -89,6 +89,6 @@ public class RoleRestService {
 	}
 
 	private RoleRestData convertEntityToRestData(RoleEntity role) {
-		return role == null ? null : RoleRestData.builder(role).build();
+		return role == null ? null : RoleRestData.builder().fromRoleEntity(role).build();
 	}
 }

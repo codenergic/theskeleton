@@ -129,7 +129,7 @@ public class UserRestServiceTest {
 				.setCode("role123");
 		final Set<RoleEntity> roles = new HashSet<>(Arrays.asList(role));
 		final Set<RoleRestData> expected = roles.stream()
-				.map(r -> RoleRestData.builder(r).build())
+				.map(r -> RoleRestData.builder().fromRoleEntity(r).build())
 				.collect(Collectors.toSet());
 		when(userAdminService.findRolesByUserUsername("user123")).thenReturn(roles);
 		MockHttpServletRequestBuilder request = get("/api/users/user123/roles")

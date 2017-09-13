@@ -23,6 +23,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
+import org.codenergic.theskeleton.privilege.PrivilegeEntity;
+import org.codenergic.theskeleton.privilege.PrivilegeRepository;
+import org.codenergic.theskeleton.privilege.PrivilegeService;
 import org.codenergic.theskeleton.privilege.impl.PrivilegeServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
