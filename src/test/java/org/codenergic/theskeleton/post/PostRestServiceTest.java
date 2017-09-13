@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -54,6 +55,18 @@ public class PostRestServiceTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private PostService postService;
+
+	@Test
+	public void testSerializeDeserializePost() throws IOException {
+		PostRestData post = PostRestData.builder()
+				.id("123")
+				.title("It's a disastah")
+				.content("Seriously a disastah")
+				.build();
+		String json = objectMapper.writeValueAsString(post);
+		PostRestData post2 = objectMapper.readValue(json, PostRestData.class);
+		assertThat(post).isEqualTo(post2);
+	}
 
 	@Test
 	public void testSavePost() throws Exception {

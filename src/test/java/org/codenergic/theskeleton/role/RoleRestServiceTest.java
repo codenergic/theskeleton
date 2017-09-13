@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -61,6 +62,18 @@ public class RoleRestServiceTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private RoleService roleService;
+
+	@Test
+	public void testSerializeDeserializeRole() throws IOException {
+		RoleRestData role = RoleRestData.builder()
+				.id("123")
+				.code("12345")
+				.description("Description 12345")
+				.build();
+		String json = objectMapper.writeValueAsString(role);
+		RoleRestData role2 = objectMapper.readValue(json, RoleRestData.class);
+		assertThat(role).isEqualTo(role2);
+	}
 
 	@Test
 	public void testFindRoleByCode() throws Exception {
