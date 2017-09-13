@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.privilege.role;
+package org.codenergic.theskeleton.role;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +35,10 @@ import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.privilege.PrivilegeEntity;
 import org.codenergic.theskeleton.privilege.PrivilegeRestData;
+import org.codenergic.theskeleton.role.RoleEntity;
+import org.codenergic.theskeleton.role.RoleRestData;
+import org.codenergic.theskeleton.role.RoleRestService;
+import org.codenergic.theskeleton.role.RoleService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

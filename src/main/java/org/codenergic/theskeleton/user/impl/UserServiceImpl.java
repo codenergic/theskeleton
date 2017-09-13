@@ -24,10 +24,10 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.codenergic.theskeleton.privilege.role.RoleEntity;
-import org.codenergic.theskeleton.privilege.role.RolePrivilegeEntity;
-import org.codenergic.theskeleton.privilege.role.RolePrivilegeRepository;
-import org.codenergic.theskeleton.privilege.role.RoleRepository;
+import org.codenergic.theskeleton.role.RoleEntity;
+import org.codenergic.theskeleton.role.RolePrivilegeEntity;
+import org.codenergic.theskeleton.role.RolePrivilegeRepository;
+import org.codenergic.theskeleton.role.RoleRepository;
 import org.codenergic.theskeleton.user.UserAdminService;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;

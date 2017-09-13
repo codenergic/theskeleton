@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.privilege.role;
+package org.codenergic.theskeleton.role;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,7 +29,12 @@ import java.util.UUID;
 
 import org.codenergic.theskeleton.privilege.PrivilegeEntity;
 import org.codenergic.theskeleton.privilege.PrivilegeRepository;
-import org.codenergic.theskeleton.privilege.role.impl.RoleServiceImpl;
+import org.codenergic.theskeleton.role.RoleEntity;
+import org.codenergic.theskeleton.role.RolePrivilegeEntity;
+import org.codenergic.theskeleton.role.RolePrivilegeRepository;
+import org.codenergic.theskeleton.role.RoleRepository;
+import org.codenergic.theskeleton.role.RoleService;
+import org.codenergic.theskeleton.role.impl.RoleServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

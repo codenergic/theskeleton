@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.codenergic.theskeleton.privilege.role.RoleRestData;
+import org.codenergic.theskeleton.role.RoleRestData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;

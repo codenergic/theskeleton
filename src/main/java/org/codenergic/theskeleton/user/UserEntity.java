@@ -33,7 +33,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
-import org.codenergic.theskeleton.privilege.role.RolePrivilegeEntity;
+import org.codenergic.theskeleton.role.RolePrivilegeEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity

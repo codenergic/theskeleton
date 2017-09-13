@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.privilege.role;
+package org.codenergic.theskeleton.role;
+
+import java.util.Set;
 
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RoleRepository extends AuditingEntityRepository<RoleEntity> {
-	RoleEntity findByCode(String code);
+public interface RolePrivilegeRepository extends AuditingEntityRepository<RolePrivilegeEntity> {
+	Set<RolePrivilegeEntity> findByRoleCode(String code);
 
-	@Query("FROM RoleEntity r WHERE r.code LIKE ?1% OR r.description LIKE ?1%")
-	Page<RoleEntity> findByCodeOrDescriptionStartsWith(String keyword, Pageable pageable);
+	RolePrivilegeEntity findByRoleCodeAndPrivilegeName(String code, String privilegeName);
+
+	Set<RolePrivilegeEntity> findByPrivilegeName(String name);
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.privilege.role.impl;
+package org.codenergic.theskeleton.role.impl;
 
 import java.util.Objects;
 import java.util.Set;
@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.privilege.PrivilegeEntity;
 import org.codenergic.theskeleton.privilege.PrivilegeRepository;
-import org.codenergic.theskeleton.privilege.role.RoleEntity;
-import org.codenergic.theskeleton.privilege.role.RolePrivilegeEntity;
-import org.codenergic.theskeleton.privilege.role.RolePrivilegeRepository;
-import org.codenergic.theskeleton.privilege.role.RoleRepository;
-import org.codenergic.theskeleton.privilege.role.RoleService;
+import org.codenergic.theskeleton.role.RoleEntity;
+import org.codenergic.theskeleton.role.RolePrivilegeEntity;
+import org.codenergic.theskeleton.role.RolePrivilegeRepository;
+import org.codenergic.theskeleton.role.RoleRepository;
+import org.codenergic.theskeleton.role.RoleService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

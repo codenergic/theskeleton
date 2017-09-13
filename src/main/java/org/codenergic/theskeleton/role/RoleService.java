@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.privilege.role;
+package org.codenergic.theskeleton.role;
 
 import java.util.Set;
 
@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.privilege.PrivilegeEntity;
 import org.codenergic.theskeleton.privilege.PrivilegeRepository;
-import org.codenergic.theskeleton.privilege.role.impl.RoleServiceImpl;
+import org.codenergic.theskeleton.role.impl.RoleServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;

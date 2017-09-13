@@ -25,7 +25,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
-import org.codenergic.theskeleton.privilege.role.RoleEntity;
+import org.codenergic.theskeleton.role.RoleEntity;
 
 @SuppressWarnings("serial")
 @Entity
