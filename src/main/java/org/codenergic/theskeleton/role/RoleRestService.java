@@ -19,12 +19,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
-
 import org.codenergic.theskeleton.privilege.PrivilegeRestData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,13 +59,13 @@ public class RoleRestService {
 	}
 
 	@PostMapping
-	public RoleRestData saveRole(@RequestBody @Valid final RoleRestData role) {
+	public RoleRestData saveRole(@RequestBody @Validated(RoleRestData.New.class) final RoleRestData role) {
 		return RoleRestData.builder().fromRoleEntity(roleService.saveRole(role.toRoleEntity()))
 				.build();
 	}
 
 	@PutMapping("/{code}")
-	public RoleRestData updateRole(@PathVariable("code") String code, @RequestBody @Valid final RoleRestData role) {
+	public RoleRestData updateRole(@PathVariable("code") String code, @RequestBody @Validated(RoleRestData.Existing.class) final RoleRestData role) {
 		return RoleRestData.builder().fromRoleEntity(roleService.updateRole(code, role.toRoleEntity()))
 				.build();
 	}
