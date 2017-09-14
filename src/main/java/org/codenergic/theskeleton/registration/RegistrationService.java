@@ -8,4 +8,8 @@ public interface RegistrationService {
 	boolean isUsernameExists(String username);
 
 	UserEntity registerUser(RegistrationForm form);
+
+	RegistrationEntity sendConfirmationNotification(UserEntity user);
+
+	boolean activateUser(String activationToken);
 }

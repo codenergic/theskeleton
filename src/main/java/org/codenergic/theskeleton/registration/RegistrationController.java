@@ -15,19 +15,24 @@
  */
 package org.codenergic.theskeleton.registration;
 
-import javax.validation.Valid;
-
+import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/registration")
 public class RegistrationController {
 	private static final String REGISTRATION = "registration";
 	private static final String REGISTRATION_CONFIRMATION = "registration_confirmation";
+	private static final String REGISTRATION_ACTIVATION = "registration_activation";
+
 
 	private RegistrationService registrationService;
 
@@ -42,10 +47,21 @@ public class RegistrationController {
 
 	@PostMapping
 	public String register(@Valid RegistrationForm registrationForm, BindingResult bindingResult) {
-		if (bindingResult.hasErrors()) {
+		if (bindingResult.hasErrors())
 			return registrationView(registrationForm);
-		}
-		registrationService.registerUser(registrationForm);
+		UserEntity user = registrationService.registerUser(registrationForm);
+		if (user != null && user.getId() != null)
+			registrationService.sendConfirmationNotification(user);
 		return REGISTRATION_CONFIRMATION;
+	}
+
+	@GetMapping(path = "/activate")
+	public String activateUser(Model model, @RequestParam(name = "at") String activationToken) {
+		try {
+			registrationService.activateUser(activationToken);
+		} catch (RegistrationException e) {
+			model.addAttribute("message", e.getMessage());
+		}
+		return REGISTRATION_ACTIVATION;
 	}
 }

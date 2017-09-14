@@ -38,8 +38,8 @@
 			<column name="picture_url" type="varchar(500)" />
 		</createTable>
 		<sql>
-		insert into ts_user 
-			(id, username, password, email, phone_number, account_non_locked, 
+		insert into ts_user
+			(id, username, password, email, phone_number, account_non_locked,
 			 credentials_non_expired, enabled, expired_at, status, created_date, last_modified_date)
 		values
 			('0000015bb4a150750007bf0700000002', 'system', 'unhackable', 'system@server', null, true, true, true, null, 1, ${now}, ${now}),
@@ -209,14 +209,14 @@
 			<column name="secret_required" type="boolean" />
 		</createTable>
 		<sql>
-		insert into ts_oauth2_client 
+		insert into ts_oauth2_client
 			(id, authorized_grant_types, auto_approve, client_secret, description, name,
 			registered_redirect_uris, scopes, scoped, secret_required, status, created_date,
 			last_modified_date)
 		values
 			('0000015bb4a150850007bf0700000000', 'password,authorization_code,implicit,refresh_token', false,
 			'$2a$06$F0YQTRPvG8M9SPzIgk49GOgwOH7jcHaT2elonRrs9mSCftNtEgMmi', 'Default client', 'default',
-			'http://localhost:9000/,http://localhost:9000/oauth,https://theskeleton.codenergic.org,https://theskeleton.codenergic.org/oauth', 
+			'http://localhost:9000/,http://localhost:9000/oauth,https://theskeleton.codenergic.org,https://theskeleton.codenergic.org/oauth',
 			'read,write', true, true, 1, ${now}, ${now});
 		</sql>
 		<createTable tableName="ts_user_oauth2_client_approval">
@@ -266,6 +266,22 @@
 			<column name="last_modified_date" type="datetime" />
 			<column name="content" type="clob" />
 			<column name="title" type="varchar(200)" />
+		</createTable>
+	</changeSet>
+	<changeSet id="0004" author="diaxz">
+		<createTable tableName="ts_registration">
+			<column name="id" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="status" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="user_id" type="varchar(255)">
+				<constraints nullable="false" foreignKeyName="fk_registration_user_id"
+							 references="ts_user(id)" />
+			</column>
+			<column name="token" type="varchar(255)" />
+			<column name="expiry_date" type="datetime" />
 		</createTable>
 	</changeSet>
 </databaseChangeLog>
