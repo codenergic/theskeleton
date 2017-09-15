@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,14 +22,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 	private RegistrationRepository registrationRepository;
 	private PasswordEncoder passwordEncoder;
 	private EmailService emailService;
-	private HttpServletRequest httpServletRequest;
 	public RegistrationServiceImpl(UserRepository userRepository, RegistrationRepository registrationRepository,
-								   PasswordEncoder passwordEncoder, EmailService emailService, HttpServletRequest httpServletRequest) {
+								   PasswordEncoder passwordEncoder, EmailService emailService) {
 		this.userRepository = userRepository;
 		this.registrationRepository = registrationRepository;
 		this.passwordEncoder = passwordEncoder;
 		this.emailService = emailService;
-		this.httpServletRequest = httpServletRequest;
 	}
 
 	@Override
@@ -60,14 +57,13 @@ public class RegistrationServiceImpl implements RegistrationService {
 
 	@Override
 	@Transactional
-	public RegistrationEntity sendConfirmationNotification(UserEntity user) {
+	public RegistrationEntity sendConfirmationNotification(UserEntity user, String host) {
 		String token = RandomStringUtils.randomAlphabetic(24);
 		RegistrationEntity registration = new RegistrationEntity()
 			.setToken(token)
 			.setUser(user)
 			.setExpiryDate(DateTime.now().plusDays(15).toDate());
 		Map<String, Object> params = new HashMap<>();
-		String host = httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort();
 		params.put("activationUrl", "http://" + host + "/registration/activate?at=" + token);
 		String subject = "Registration Confirmation";
 		String template = "email/registration.html";

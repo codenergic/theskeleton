@@ -9,7 +9,7 @@ public interface RegistrationService {
 
 	UserEntity registerUser(RegistrationForm form);
 
-	RegistrationEntity sendConfirmationNotification(UserEntity user);
+	RegistrationEntity sendConfirmationNotification(UserEntity user, String host);
 
 	boolean activateUser(String activationToken);
 }

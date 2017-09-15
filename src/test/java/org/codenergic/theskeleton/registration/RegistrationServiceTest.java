@@ -48,8 +48,6 @@ public class RegistrationServiceTest {
 	private UserRepository userRepository;
 	@Mock
 	private RegistrationRepository registrationRepository;
-	@Mock
-	private  HttpServletRequest httpServletRequest;
 	@Autowired
 	private EmailService emailService;
 	private PasswordEncoder passwordEncoder = NoOpPasswordEncoder.getInstance();
@@ -59,7 +57,7 @@ public class RegistrationServiceTest {
 	public void init() {
 		MockitoAnnotations.initMocks(this);
 		registrationService = new RegistrationServiceImpl(userRepository, registrationRepository, passwordEncoder,
-			emailService, httpServletRequest);
+			emailService);
 		greenMail = new GreenMail(ServerSetupTest.SMTP);
 		greenMail.start();
 	}
@@ -118,12 +116,12 @@ public class RegistrationServiceTest {
 			.setUsername("user")
 			.setPassword(passwordEncoder.encode("user"))
 			.setEmail("user@codenergic.org");
-		registrationService.sendConfirmationNotification(user);
+		registrationService.sendConfirmationNotification(user,"localhost");
 		assertThat(greenMail.waitForIncomingEmail(1000, 1)).isTrue();
 		MimeMessage message = greenMail.getReceivedMessages()[0];
 		assertThat(GreenMailUtil.getBody(message)).contains("activate?at=");
 		user.setEmail("@codenergic.org");
-		assertThatThrownBy(() -> registrationService.sendConfirmationNotification(user))
+		assertThatThrownBy(() -> registrationService.sendConfirmationNotification(user, "localhost"))
 			.isInstanceOf(RegistrationException.class);
 	}
 
