@@ -235,7 +235,7 @@ public class UserRestServiceTest {
 				.setId("user123");
 		when(userAdminService.saveUser(any())).thenReturn(user);
 		MockHttpServletRequestBuilder request = post("/api/users")
-				.content("{\"username\": \"user123\"}")
+				.content("{\"username\": \"user123\", \"email\": \"user@server\"}")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()
@@ -252,7 +252,7 @@ public class UserRestServiceTest {
 				.setId("user123");
 		when(userAdminService.updateUser(eq("user123"), any())).thenReturn(user);
 		MockHttpServletRequestBuilder request = put("/api/users/user123")
-				.content("{\"username\": \"user123\"}")
+				.content("{\"username\": \"user123\", \"email\": \"user@server\"}")
 				.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 				.andReturn()

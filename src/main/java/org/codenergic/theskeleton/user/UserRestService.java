@@ -19,11 +19,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
-
 import org.codenergic.theskeleton.role.RoleRestData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -100,12 +99,12 @@ public class UserRestService {
 	}
 
 	@PostMapping
-	public UserRestData saveUser(@RequestBody @Valid UserRestData userData) {
+	public UserRestData saveUser(@RequestBody @Validated(UserRestData.New.class) UserRestData userData) {
 		return convertEntityToRestData(userAdminService.saveUser(userData.toUserEntity()));
 	}
 
 	@PutMapping("/{username}")
-	public UserRestData updateUser(@PathVariable("username") String username, @RequestBody @Valid UserRestData userData) {
+	public UserRestData updateUser(@PathVariable("username") String username, @RequestBody @Validated(UserRestData.Existing.class) UserRestData userData) {
 		return convertEntityToRestData(userAdminService.updateUser(username, userData.toUserEntity()));
 	}
 

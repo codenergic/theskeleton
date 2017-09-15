@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.codenergic.theskeleton.core.data.RestData;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -33,9 +34,11 @@ abstract class UserRestData implements RestData {
 	@Nullable
 	abstract String getId();
 
+	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	abstract String getUsername();
 
+	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	abstract String getEmail();
 
@@ -92,4 +95,8 @@ abstract class UserRestData implements RestData {
 				.isNonLocked(user.isAccountNonLocked());
 		}
 	}
+	
+	public interface New {}
+
+	public interface Existing {}
 }

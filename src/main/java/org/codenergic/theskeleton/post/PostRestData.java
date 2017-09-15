@@ -16,9 +16,9 @@
 package org.codenergic.theskeleton.post;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.core.data.RestData;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -28,47 +28,44 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 @JsonDeserialize(builder = AutoValue_PostRestData.Builder.class)
 abstract class PostRestData implements RestData {
-	@NotNull(groups = {New.class, Existing.class})
+	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	abstract String getContent();
 
-	@NotNull(groups = {Existing.class})
 	@Nullable
 	abstract String getId();
 
-	@NotNull(groups = {New.class, Existing.class})
+	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	abstract String getTitle();
-
-	PostEntity toPostEntity() {
-		return new PostEntity()
-				.setContent(getContent())
-				.setId(getId())
-				.setTitle(getTitle());
-	}
 
 	static Builder builder() {
 		return new AutoValue_PostRestData.Builder();
 	}
 
+	PostEntity toPostEntity() {
+		return new PostEntity()
+			.setContent(getContent())
+			.setId(getId())
+			.setTitle(getTitle());
+	}
+
 	@AutoValue.Builder
 	@JsonPOJOBuilder(withPrefix = "")
 	interface Builder {
+		Builder content(String content);
+		Builder id(String id);
+		Builder title(String title);
+
 		PostRestData build();
 
 		default Builder fromPostEntity(PostEntity post) {
 			return id(post.getId())
-					.content(post.getContent())
-					.title(post.getTitle());
+				.content(post.getContent())
+				.title(post.getTitle());
 		}
-
-		Builder content(String content);
-
-		Builder id(String id);
-
-		Builder title(String title);
 	}
- 
+	
 	public interface New {}
 
 	public interface Existing {}

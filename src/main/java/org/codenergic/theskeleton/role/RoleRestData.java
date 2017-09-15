@@ -16,9 +16,9 @@
 package org.codenergic.theskeleton.role;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.core.data.RestData;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -30,9 +30,11 @@ import com.google.auto.value.AutoValue;
 public abstract class RoleRestData implements RestData {
 	@Nullable
 	abstract String getId();
-	@NotNull
+
+	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	abstract String getCode();
+
 	@Nullable
 	abstract String getDescription();
 
@@ -62,4 +64,8 @@ public abstract class RoleRestData implements RestData {
 				.description(role.getDescription());
 		}
 	}
+	
+	public interface New {}
+
+	public interface Existing {}
 }
