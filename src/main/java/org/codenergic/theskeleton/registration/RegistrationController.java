@@ -51,10 +51,15 @@ public class RegistrationController {
 						   BindingResult bindingResult) {
 		if (bindingResult.hasErrors())
 			return registrationView(registrationForm);
-		UserEntity user = registrationService.registerUser(registrationForm);
-		if (user != null && user.getId() != null){
-			String host = httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort();
-			registrationService.sendConfirmationNotification(user, host);
+		try {
+			UserEntity user = registrationService.registerUser(registrationForm);
+			if (user != null && user.getId() != null){
+				String host = httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort();
+				registrationService.sendConfirmationNotification(user, host);
+			}
+		} catch (RegistrationException e){
+			bindingResult.rejectValue("username","error.registrationForm", e.getMessage());
+			return registrationView(registrationForm);
 		}
 		return REGISTRATION_CONFIRMATION;
 	}
