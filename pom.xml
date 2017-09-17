@@ -333,7 +333,7 @@
 		<repository>
 			<id>bintray-codenergic-theskeleton</id>
 			<name>codenergic-theskeleton</name>
-			<url>https://api.bintray.com/maven/codenergic/theskeleton/theskeleton/;publish=1</url>
+			<url>https://api.bintray.com/maven/codenergic/theskeleton/theskeleton-server/;publish=1</url>
 		</repository>
 	</distributionManagement>
 </project>
