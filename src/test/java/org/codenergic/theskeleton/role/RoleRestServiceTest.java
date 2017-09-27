@@ -22,10 +22,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -36,6 +39,8 @@ import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.privilege.PrivilegeEntity;
 import org.codenergic.theskeleton.privilege.PrivilegeRestData;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +51,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -62,6 +70,17 @@ public class RoleRestServiceTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private RoleService roleService;
+	@Rule
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
+	@Autowired
+	private WebApplicationContext context;
+
+	@Before
+	public void setUp() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+			.apply(documentationConfiguration(this.restDocumentation)) 
+			.build();
+	}
 
 	@Test
 	public void testSerializeDeserializeRole() throws IOException {
@@ -82,11 +101,14 @@ public class RoleRestServiceTest {
 				.setCode("12345")
 				.setDescription("Description 12345");
 		when(roleService.findRoleByIdOrCode("123")).thenReturn(dbResult);
-		MockHttpServletResponse response = mockMvc.perform(get("/api/roles/123"))
+		ResultActions resultActions = mockMvc.perform(get("/api/roles/123")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("role-read"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
 		verify(roleService).findRoleByIdOrCode("123");
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(dbResult).build()));
 	}
@@ -112,11 +134,14 @@ public class RoleRestServiceTest {
 		Page<RoleRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(RoleRestData.builder()
 				.fromRoleEntity(dbResult).build()));
 		when(roleService.findRoles(anyString(), any())).thenReturn(pageResponseBody);
-		MockHttpServletResponse response = mockMvc.perform(get("/api/roles"))
+		ResultActions resultActions = mockMvc.perform(get("/api/roles")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("role-read-all"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
 		verify(roleService).findRoles(anyString(), any());
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expectedResponseBody));
 	}
 
@@ -132,13 +157,15 @@ public class RoleRestServiceTest {
 				.setDescription("Description 12345");
 		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(input).build());
 		when(roleService.saveRole(any())).thenReturn(dbResult);
-		MockHttpServletResponse response = mockMvc.perform(post("/api/roles")
+		ResultActions resultActions = mockMvc.perform(post("/api/roles")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(jsonInput))
+				.andExpect(status().isOk())
+				.andDo(document("role-create"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
 		verify(roleService).saveRole(any());
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(dbResult).build()));
 	}
@@ -155,13 +182,15 @@ public class RoleRestServiceTest {
 				.setDescription("Description 12345");
 		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(input).build());
 		when(roleService.updateRole(eq("123"), any())).thenReturn(dbResult);
-		MockHttpServletResponse response = mockMvc.perform(put("/api/roles/123")
+		ResultActions resultActions = mockMvc.perform(put("/api/roles/123")
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(jsonInput))
+				.andExpect(status().isOk())
+				.andDo(document("role-update"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
 		verify(roleService).updateRole(eq("123"), any());
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(dbResult).build()));
 	}
@@ -174,28 +203,27 @@ public class RoleRestServiceTest {
 				.setDescription("Description 12345");
 		when(roleService.findRoleByIdOrCode(input.getId())).thenReturn(input);
 		doNothing().when(roleService).deleteRole(input.getId());
-		MockHttpServletRequestBuilder request = delete("/api/roles/{id}", input.getId())
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
-				.andReturn()
-				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
+		mockMvc.perform(delete("/api/roles/{id}", input.getId())
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("role-delete"));
 	}
 	
 	@Test
-	public void testAddRoleToUser() throws Exception {
+	public void testAddPrivilegeToRole() throws Exception {
 		final RoleEntity role = new RoleEntity()
 				.setId("role123")
 				.setCode("role123");
 		when(roleService.addPrivilegeToRole("role123", "privilege123")).thenReturn(role);
-		MockHttpServletRequestBuilder request = put("/api/roles/role123/privileges")
-				.content("{\"privilege\": \"privilege123\"}")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(put("/api/roles/role123/privileges")
+					.content("{\"privilege\": \"privilege123\"}")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("role-privilege-create"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
 		verify(roleService).addPrivilegeToRole("role123", "privilege123");
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(role).build()));
 	}
@@ -210,30 +238,32 @@ public class RoleRestServiceTest {
 				.map(p -> PrivilegeRestData.builder().fromPrivilegeEntity(p).build())
 				.collect(Collectors.toSet());
 		when(roleService.findPrivilegesByRoleCode("role123")).thenReturn(privileges);
-		MockHttpServletRequestBuilder request = get("/api/roles/role123/privileges")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(get("/api/roles/role123/privileges")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("role-privilege-read"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
 		verify(roleService).findPrivilegesByRoleCode("role123");
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expected));
 	}
 
 	@Test
-	public void testRemoveRoleFromUser() throws Exception {
+	public void testRemovePrivilegeFromRole() throws Exception {
 		final RoleEntity role = new RoleEntity()
 				.setId("role123")
 				.setCode("role123");
 		when(roleService.removePrivilegeFromRole("role123", "privilege123")).thenReturn(role);
-		MockHttpServletRequestBuilder request = delete("/api/roles/role123/privileges")
-				.content("{\"privilege\": \"privilege123\"}")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(delete("/api/roles/role123/privileges")
+					.content("{\"privilege\": \"privilege123\"}")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("role-privilege-delete"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
 		verify(roleService).removePrivilegeFromRole("role123", "privilege123");
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(role).build()));
 	}

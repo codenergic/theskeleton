@@ -1,0 +1,15 @@
+=== 1.1 Read
+
+.request
+include::{snippets}/privilege-read/http-request.adoc[]
+
+.response
+include::{snippets}/privilege-read/http-response.adoc[]
+
+=== 1.2 Read All
+
+.request
+include::{snippets}/privilege-read-all/http-request.adoc[]
+
+.response
+include::{snippets}/privilege-read-all/http-response.adoc[]

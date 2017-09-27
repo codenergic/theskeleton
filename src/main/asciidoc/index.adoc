@@ -1,0 +1,11 @@
+= TheSkeleton REST Docs
+
+Service running at https://theskeleton.codenergic.org/:
+
+:toc: left
+
+== 1. Privilege
+include::privilege.adoc[]
+
+== 2. Role
+include::role.adoc[]

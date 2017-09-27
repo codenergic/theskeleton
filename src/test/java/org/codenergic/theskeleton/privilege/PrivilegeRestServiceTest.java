@@ -20,15 +20,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.codenergic.theskeleton.privilege.PrivilegeEntity;
-import org.codenergic.theskeleton.privilege.PrivilegeRestData;
-import org.codenergic.theskeleton.privilege.PrivilegeRestService;
-import org.codenergic.theskeleton.privilege.PrivilegeService;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,6 +59,17 @@ public class PrivilegeRestServiceTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private PrivilegeService privilegeService;
+	@Rule
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
+	@Autowired
+	private WebApplicationContext context;
+
+	@Before
+	public void setUp() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+			.apply(documentationConfiguration(this.restDocumentation)) 
+			.build();
+	}
 
 	@Test
 	public void testSerializeDeserializePrivilege() throws IOException {
@@ -73,11 +90,13 @@ public class PrivilegeRestServiceTest {
 				.setName("12345")
 				.setDescription("Description 12345");
 		when(privilegeService.findPrivilegeByIdOrName("123")).thenReturn(dbResult);
-		MockHttpServletResponse response = mockMvc.perform(get("/api/privileges/123"))
+		ResultActions resultActions = mockMvc.perform(get("/api/privileges/123").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("privilege-read"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
 		verify(privilegeService).findPrivilegeByIdOrName("123");
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(PrivilegeRestData.builder().fromPrivilegeEntity(dbResult).build()));
 	}
@@ -103,11 +122,13 @@ public class PrivilegeRestServiceTest {
 		Page<PrivilegeRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(PrivilegeRestData.builder()
 				.fromPrivilegeEntity(dbResult).build()));
 		when(privilegeService.findPrivileges(anyString(), any())).thenReturn(pageResponseBody);
-		MockHttpServletResponse response = mockMvc.perform(get("/api/privileges"))
+		ResultActions resultActions = mockMvc.perform(get("/api/privileges").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("privilege-read-all"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
 		verify(privilegeService).findPrivileges(anyString(), any());
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expectedResponseBody));
 	}
 }
