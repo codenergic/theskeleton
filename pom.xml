@@ -361,7 +361,7 @@
 						</goals>
 						<configuration> 
 							<outputDirectory>
-								${project.build.outputDirectory}/static/docs
+								${project.build.outputDirectory}/static/api-docs
 							</outputDirectory>
 							<resources>
 								<resource>

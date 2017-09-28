@@ -1,4 +1,4 @@
-=== 2.1 Read
+=== Read
 
 .request
 include::{snippets}/role-read/http-request.adoc[]
@@ -6,7 +6,7 @@ include::{snippets}/role-read/http-request.adoc[]
 .response
 include::{snippets}/role-read/http-response.adoc[]
 
-=== 2.2 Read All
+=== Read All
 
 .request
 include::{snippets}/role-read-all/http-request.adoc[]
@@ -14,7 +14,7 @@ include::{snippets}/role-read-all/http-request.adoc[]
 .response
 include::{snippets}/role-read-all/http-response.adoc[]
 
-=== 2.3 Create
+=== Create
 
 .request
 include::{snippets}/role-create/http-request.adoc[]
@@ -22,7 +22,7 @@ include::{snippets}/role-create/http-request.adoc[]
 .response
 include::{snippets}/role-create/http-response.adoc[]
 
-=== 2.4 Update
+=== Update
 
 .request
 include::{snippets}/role-update/http-request.adoc[]
@@ -30,7 +30,7 @@ include::{snippets}/role-update/http-request.adoc[]
 .response
 include::{snippets}/role-update/http-response.adoc[]
 
-=== 2.5 Delete
+=== Delete
 
 .request
 include::{snippets}/role-delete/http-request.adoc[]
@@ -38,7 +38,7 @@ include::{snippets}/role-delete/http-request.adoc[]
 .response
 include::{snippets}/role-delete/http-response.adoc[]
 
-=== 2.6 Get Privilege
+=== Get Privilege
 
 .request
 include::{snippets}/role-privilege-read/http-request.adoc[]
@@ -46,7 +46,7 @@ include::{snippets}/role-privilege-read/http-request.adoc[]
 .response
 include::{snippets}/role-privilege-read/http-response.adoc[]
 
-=== 2.7 Add Privilege
+=== Add Privilege
 
 .request
 include::{snippets}/role-privilege-create/http-request.adoc[]
@@ -54,7 +54,7 @@ include::{snippets}/role-privilege-create/http-request.adoc[]
 .response
 include::{snippets}/role-privilege-create/http-response.adoc[]
 
-=== 2.8 Remove Privilege
+=== Remove Privilege
 
 .request
 include::{snippets}/role-privilege-delete/http-request.adoc[]

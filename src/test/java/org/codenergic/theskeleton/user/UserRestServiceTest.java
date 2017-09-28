@@ -5,10 +5,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RoleRestData;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +34,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,6 +55,17 @@ public class UserRestServiceTest {
 	private UserAdminService userAdminService;
 	@MockBean
 	private UserService userService;
+	@Rule
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
+	@Autowired
+	private WebApplicationContext context;
+
+	@Before
+	public void setUp() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+			.apply(documentationConfiguration(this.restDocumentation)) 
+			.build();
+	}
 
 	@Test
 	public void testSerializeDeserializeUser() throws IOException {
@@ -66,13 +85,14 @@ public class UserRestServiceTest {
 				.setUsername("user123")
 				.setPassword("123456");
 		when(userAdminService.addRoleToUser("user123", "role123")).thenReturn(user);
-		MockHttpServletRequestBuilder request = put("/api/users/user123/roles")
-				.content("{\"role\": \"role123\"}")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(put("/api/users/user123/roles")
+					.content("{\"role\": \"role123\"}")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-role-create"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
 		verify(userAdminService).addRoleToUser("user123", "role123");
@@ -80,12 +100,10 @@ public class UserRestServiceTest {
 
 	@Test
 	public void testDeleteUser() throws Exception {
-		MockHttpServletRequestBuilder request = delete("/api/users/user123")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
-				.andReturn()
-				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
+		mockMvc.perform(delete("/api/users/user123")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-delete"));
 	}
 
 	@Test
@@ -93,13 +111,14 @@ public class UserRestServiceTest {
 		final UserEntity user = new UserEntity()
 				.setEnabled(true);
 		when(userAdminService.enableOrDisableUser("user123", true)).thenReturn(user);
-		MockHttpServletRequestBuilder request = put("/api/users/user123/enable")
-				.content("{\"enabled\": true}")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(put("/api/users/user123/enable")
+					.content("{\"enabled\": true}")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-enable"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
 		verify(userAdminService).enableOrDisableUser("user123", true);
@@ -110,13 +129,14 @@ public class UserRestServiceTest {
 		final UserEntity user = new UserEntity()
 				.setExpiredAt(new Date());
 		when(userAdminService.extendsUserExpiration("user123", 60)).thenReturn(user);
-		MockHttpServletRequestBuilder request = put("/api/users/user123/exp")
-				.content("{\"amount\": 60}")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(put("/api/users/user123/exp")
+					.content("{\"amount\": 60}")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-extend-exp"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
 		verify(userAdminService).extendsUserExpiration("user123", 60);
@@ -132,12 +152,13 @@ public class UserRestServiceTest {
 				.map(r -> RoleRestData.builder().fromRoleEntity(r).build())
 				.collect(Collectors.toSet());
 		when(userAdminService.findRolesByUserUsername("user123")).thenReturn(roles);
-		MockHttpServletRequestBuilder request = get("/api/users/user123/roles")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(get("/api/users/user123/roles")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-role-read"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expected));
 		verify(userAdminService).findRolesByUserUsername("user123");
 	}
@@ -148,12 +169,13 @@ public class UserRestServiceTest {
 				.setId("user123")
 				.setEmail("user@server");
 		when(userService.findUserByEmail("user@server")).thenReturn(user);
-		MockHttpServletRequestBuilder request = get("/api/users/user@server?email=true")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(get("/api/users/user@server?email=true")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-read-email"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
 		verify(userService).findUserByEmail("user@server");
@@ -165,12 +187,13 @@ public class UserRestServiceTest {
 				.setId("user123")
 				.setEmail("user@server");
 		when(userService.findUserByUsername("user123")).thenReturn(user);
-		MockHttpServletRequestBuilder request = get("/api/users/user123")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(get("/api/users/user123")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-read"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
 		verify(userService).findUserByUsername("user123");
@@ -183,12 +206,13 @@ public class UserRestServiceTest {
 				.setEmail("user@server");
 		final Page<UserEntity> users = new PageImpl<>(Arrays.asList(user));
 		when(userAdminService.findUsersByUsernameStartingWith(eq("user123"), any())).thenReturn(users);
-		MockHttpServletRequestBuilder request = get("/api/users?username=user123")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(get("/api/users?username=user123")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-read-username-startingwith"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(
 					users.map(u -> UserRestData.builder().fromUserEntity(u).build())));
@@ -200,13 +224,14 @@ public class UserRestServiceTest {
 		final UserEntity user = new UserEntity()
 				.setAccountNonLocked(true);
 		when(userAdminService.lockOrUnlockUser("user123", true)).thenReturn(user);
-		MockHttpServletRequestBuilder request = put("/api/users/user123/lock")
-				.content("{\"enabled\": true}")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(put("/api/users/user123/lock")
+					.content("{\"enabled\": true}")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-lock"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
 		verify(userAdminService).lockOrUnlockUser("user123", true);
@@ -217,13 +242,14 @@ public class UserRestServiceTest {
 		final UserEntity user = new UserEntity()
 				.setId("user123");
 		when(userAdminService.removeRoleFromUser("user123", "role123")).thenReturn(user);
-		MockHttpServletRequestBuilder request = delete("/api/users/user123/roles")
-				.content("{\"role\": \"role123\"}")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(delete("/api/users/user123/roles")
+					.content("{\"role\": \"role123\"}")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-role-delete"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
 		verify(userAdminService).removeRoleFromUser("user123", "role123");
@@ -234,13 +260,14 @@ public class UserRestServiceTest {
 		final UserEntity user = new UserEntity()
 				.setId("user123");
 		when(userAdminService.saveUser(any())).thenReturn(user);
-		MockHttpServletRequestBuilder request = post("/api/users")
-				.content("{\"username\": \"user123\", \"email\": \"user@server\"}")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(post("/api/users")
+					.content("{\"username\": \"user123\", \"email\": \"user@server\"}")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-create"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
 		verify(userAdminService).saveUser(any());
@@ -251,13 +278,14 @@ public class UserRestServiceTest {
 		final UserEntity user = new UserEntity()
 				.setId("user123");
 		when(userAdminService.updateUser(eq("user123"), any())).thenReturn(user);
-		MockHttpServletRequestBuilder request = put("/api/users/user123")
-				.content("{\"username\": \"user123\", \"email\": \"user@server\"}")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(put("/api/users/user123")
+					.content("{\"username\": \"user123\", \"email\": \"user@server\"}")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-update"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
 		verify(userAdminService).updateUser(eq("user123"), any());
@@ -268,13 +296,14 @@ public class UserRestServiceTest {
 		final UserEntity user = new UserEntity()
 				.setId("user123");
 		when(userAdminService.updateUserPassword(eq("user123"), any())).thenReturn(user);
-		MockHttpServletRequestBuilder request = put("/api/users/user123/password")
-				.content("{\"username\": \"user123\"}")
-				.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
+		ResultActions resultActions = mockMvc.perform(put("/api/users/user123/password")
+					.content("{\"username\": \"user123\"}")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("user-update-password"));
+		MockHttpServletResponse response = resultActions
 				.andReturn()
 				.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
 		verify(userAdminService).updateUserPassword(eq("user123"), any());

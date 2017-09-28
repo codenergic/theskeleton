@@ -1,0 +1,31 @@
+=== Read All
+
+.request
+include::{snippets}/post-read-all/http-request.adoc[]
+
+.response
+include::{snippets}/post-read-all/http-response.adoc[]
+
+=== Create
+
+.request
+include::{snippets}/post-create/http-request.adoc[]
+
+.response
+include::{snippets}/post-create/http-response.adoc[]
+
+=== Update
+
+.request
+include::{snippets}/post-update/http-request.adoc[]
+
+.response
+include::{snippets}/post-update/http-response.adoc[]
+
+=== Delete
+
+.request
+include::{snippets}/post-delete/http-request.adoc[]
+
+.response
+include::{snippets}/post-delete/http-response.adoc[]

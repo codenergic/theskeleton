@@ -1,0 +1,103 @@
+=== Read
+
+.request
+include::{snippets}/user-read/http-request.adoc[]
+
+.response
+include::{snippets}/user-read/http-response.adoc[]
+
+=== Read by Email
+
+.request
+include::{snippets}/user-read-email/http-request.adoc[]
+
+.response
+include::{snippets}/user-read-email/http-response.adoc[]
+
+=== Read by Username Starting With
+
+.request
+include::{snippets}/user-read-username-startingwith/http-request.adoc[]
+
+.response
+include::{snippets}/user-read-username-startingwith/http-response.adoc[]
+
+=== Create
+
+.request
+include::{snippets}/user-create/http-request.adoc[]
+
+.response
+include::{snippets}/user-create/http-response.adoc[]
+
+=== Update
+
+.request
+include::{snippets}/user-update/http-request.adoc[]
+
+.response
+include::{snippets}/user-update/http-response.adoc[]
+
+=== Update Password
+
+.request
+include::{snippets}/user-update-password/http-request.adoc[]
+
+.response
+include::{snippets}/user-update-password/http-response.adoc[]
+
+=== Delete
+
+.request
+include::{snippets}/user-delete/http-request.adoc[]
+
+.response
+include::{snippets}/user-delete/http-response.adoc[]
+
+=== Enable or Disable
+
+.request
+include::{snippets}/user-enable/http-request.adoc[]
+
+.response
+include::{snippets}/user-enable/http-response.adoc[]
+
+=== Extends User Expireation
+
+.request
+include::{snippets}/user-extend-exp/http-request.adoc[]
+
+.response
+include::{snippets}/user-extend-exp/http-response.adoc[]
+
+=== Lock or Unlock
+
+.request
+include::{snippets}/user-lock/http-request.adoc[]
+
+.response
+include::{snippets}/user-lock/http-response.adoc[]
+
+=== Get Role
+
+.request
+include::{snippets}/user-role-read/http-request.adoc[]
+
+.response
+include::{snippets}/user-role-read/http-response.adoc[]
+
+=== Add Role
+
+.request
+include::{snippets}/user-role-create/http-request.adoc[]
+
+.response
+include::{snippets}/user-role-create/http-response.adoc[]
+
+=== Remove Role
+
+.request
+include::{snippets}/user-role-delete/http-request.adoc[]
+
+.response
+include::{snippets}/user-role-delete/http-response.adoc[]

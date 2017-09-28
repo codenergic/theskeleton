@@ -21,14 +21,19 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +44,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.restdocs.JUnitRestDocumentation;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -55,6 +63,17 @@ public class PostRestServiceTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private PostService postService;
+	@Rule
+	public JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
+	@Autowired
+	private WebApplicationContext context;
+
+	@Before
+	public void setUp() {
+		mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+				.apply(documentationConfiguration(this.restDocumentation)) 
+				.build();
+	}
 
 	@Test
 	public void testSerializeDeserializePost() throws IOException {
@@ -71,16 +90,17 @@ public class PostRestServiceTest {
 	@Test
 	public void testSavePost() throws Exception {
 		when(postService.savePost(any())).thenReturn(PostServiceTest.DUMMY_POST);
-		MockHttpServletRequestBuilder request = post("/api/posts")
-			.content("{\"title\": \"It's a disastah\", \"content\": \"Seriously a disastah\"}")
-			.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
-			.andReturn()
-			.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
+		ResultActions resultActions = mockMvc.perform(post("/api/posts")
+					.content("{\"title\": \"It's a disastah\", \"content\": \"Seriously a disastah\"}")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("post-create"));
+		MockHttpServletResponse response = resultActions
+				.andReturn()
+				.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(
-				PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST).build())
+				.isEqualTo(objectMapper.writeValueAsBytes(
+					PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST).build())
 			);
 		verify(postService).savePost(any());
 	}
@@ -90,39 +110,40 @@ public class PostRestServiceTest {
 		byte[] jsonInput = objectMapper.writeValueAsBytes(
 				PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST).build());
 		when(postService.updatePost(eq("123"), any())).thenReturn(PostServiceTest.DUMMY_POST2);
-		MockHttpServletResponse response = mockMvc.perform(put("/api/posts/123")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(jsonInput))
-			.andReturn()
-			.getResponse();
+		ResultActions resultActions = mockMvc.perform(put("/api/posts/123")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(jsonInput))
+				.andExpect(status().isOk())
+				.andDo(document("post-update"));
+		MockHttpServletResponse response = resultActions
+				.andReturn()
+				.getResponse();
 		verify(postService).updatePost(eq("123"), any());
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(
+				.isEqualTo(objectMapper.writeValueAsBytes(
 					PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST2).build()));
 	}
 
 	@Test
 	public void testDeletePost() throws Exception {
-		MockHttpServletRequestBuilder request = delete("/api/posts/123")
-			.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
-			.andReturn()
-			.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
+		mockMvc.perform(delete("/api/posts/123")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("post-delete"));
 	}
 
 	@Test
 	public void testFindPostByTitleContaining() throws Exception {
 		final Page<PostEntity> post = new PageImpl<>(Arrays.asList(PostServiceTest.DUMMY_POST));
 		when(postService.findPostByTitleContaining(contains("disastah"), any())).thenReturn(post);
-		MockHttpServletRequestBuilder request = get("/api/posts?title=disastah")
-			.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
-			.andReturn()
-			.getResponse();
+		ResultActions resultActions = mockMvc.perform(get("/api/posts?title=disastah")
+					.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andDo(document("post-read-all"));
+		MockHttpServletResponse response = resultActions
+				.andReturn()
+				.getResponse();
 		verify(postService).findPostByTitleContaining(eq("disastah"), any());
-		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
 	}

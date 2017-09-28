@@ -4,8 +4,16 @@ Service running at https://theskeleton.codenergic.org/:
 
 :toc: left
 
-== 1. Privilege
+:numbered:
+
+== Privilege
 include::privilege.adoc[]
 
-== 2. Role
+== Role
 include::role.adoc[]
+
+== User
+include::user.adoc[]
+
+== Post
+include::post.adoc[]
