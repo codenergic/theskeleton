@@ -37,7 +37,7 @@
 		<s3mock.version>0.2.3</s3mock.version>
 		<spring-boot.version>1.5.6.RELEASE</spring-boot.version>
 		<spring-boot-email.version>0.6.3</spring-boot-email.version>
-		<spring-resdocs.version>1.2.1.RELEASE</spring-resdocs.version>
+		<spring-restdocs.version>1.2.2.RELEASE</spring-restdocs.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
@@ -107,13 +107,13 @@
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
 			<artifactId>spring-restdocs-core</artifactId>
-			<version>${spring-resdocs.version}</version>
+			<version>${spring-restdocs.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.restdocs</groupId>
 			<artifactId>spring-restdocs-mockmvc</artifactId>
-			<version>${spring-resdocs.version}</version>
+			<version>${spring-restdocs.version}</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -308,14 +308,14 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin> 
+			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
 				<version>1.5.3</version>
 				<executions>
 					<execution>
 						<id>generate-docs</id>
-						<phase>prepare-package</phase> 
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>process-asciidoc</goal>
 						</goals>
@@ -329,10 +329,10 @@
 					</execution>
 				</executions>
 				<dependencies>
-					<dependency> 
+					<dependency>
 						<groupId>org.springframework.restdocs</groupId>
 						<artifactId>spring-restdocs-asciidoctor</artifactId>
-						<version>${spring-resdocs.version}</version>
+						<version>${spring-restdocs.version}</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -353,7 +353,7 @@
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
-						<configuration> 
+						<configuration>
 							<outputDirectory>
 								${project.build.outputDirectory}/static/api-docs
 							</outputDirectory>
