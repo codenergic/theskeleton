@@ -1,18 +1,16 @@
 package org.codenergic.theskeleton.user.profile;
 
-import java.io.InputStream;
-import java.util.Map;
+import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalRestData;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
-import org.codenergic.theskeleton.user.UserEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -25,6 +23,21 @@ public class ProfileRestService {
 
 	private ProfileRestData convertToRestData(UserEntity user) {
 		return ProfileRestData.builder().fromUserEntity(user).build();
+	}
+
+	@GetMapping("/connected-apps")
+	public List<UserOAuth2ClientApprovalRestData> findProfileConnectedApps(Authentication authentication) {
+		return profileService.findOAuth2ClientApprovalByUsername(authentication.getName())
+			.stream()
+			.collect(Collectors.groupingBy(e -> e.getClient().getId()))
+			.values().stream()
+			.map(clients -> {
+				UserOAuth2ClientApprovalRestData.Builder builder = UserOAuth2ClientApprovalRestData.builder()
+					.fromUserOAuth2ClientApprovalEntity(clients.get(0));
+				clients.forEach(c -> builder.addScopeAndStatus(c.getScope(), c.getApprovalStatus()));
+				return builder.build();
+			})
+			.collect(Collectors.toList());
 	}
 
 	@GetMapping

@@ -15,48 +15,46 @@
  */
 package org.codenergic.theskeleton.user;
 
-import java.util.Optional;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
-import org.codenergic.theskeleton.core.data.RestData;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.auto.value.AutoValue;
+import org.codenergic.theskeleton.core.data.RestData;
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
+import java.util.Set;
 
 @SuppressWarnings("serial")
 @AutoValue
 @JsonDeserialize(builder = AutoValue_UserRestData.Builder.class)
 abstract class UserRestData implements RestData {
-	@Nullable
-	abstract String getId();
+	static Builder builder() {
+		return new AutoValue_UserRestData.Builder();
+	}
 
-	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
-	abstract String getUsername();
+	abstract Set<String> getAuthorities();
 
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	abstract String getEmail();
 
 	@Nullable
-	abstract String getPhoneNumber();
+	abstract String getId();
+
+	@Nullable
+	abstract Boolean getIsNonLocked();
 
 	@Nullable
 	abstract String getPassword();
 
 	@Nullable
-	abstract Set<String> getAuthorities();
+	abstract String getPhoneNumber();
 
+	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
-	abstract Boolean getIsNonLocked();
-
-	static Builder builder() {
-		return new AutoValue_UserRestData.Builder();
-	}
+	abstract String getUsername();
 
 	UserEntity toUserEntity() {
 		return new UserEntity()
@@ -71,21 +69,11 @@ abstract class UserRestData implements RestData {
 	@AutoValue.Builder
 	@JsonPOJOBuilder(withPrefix = "")
 	interface Builder {
-		Builder id(String id);
-
-		Builder username(String username);
-
-		Builder email(String email);
-
-		Builder phoneNumber(String phoneNumber);
-
-		Builder password(String password);
-
 		Builder authorities(Set<String> authorities);
 
-		Builder isNonLocked(Boolean nonLocked);
-
 		UserRestData build();
+
+		Builder email(String email);
 
 		default Builder fromUserEntity(UserEntity user) {
 			return id(user.getId())
@@ -94,9 +82,19 @@ abstract class UserRestData implements RestData {
 				.phoneNumber(user.getPhoneNumber())
 				.isNonLocked(user.isAccountNonLocked());
 		}
-	}
-	
-	public interface New {}
 
-	public interface Existing {}
+		Builder id(String id);
+
+		Builder isNonLocked(Boolean nonLocked);
+
+		Builder password(String password);
+
+		Builder phoneNumber(String phoneNumber);
+
+		Builder username(String username);
+	}
+
+	interface New {}
+
+	interface Existing {}
 }

@@ -1,11 +1,16 @@
 package org.codenergic.theskeleton.user.profile;
 
-import java.io.InputStream;
-
 import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import java.io.InputStream;
+import java.util.List;
+
 public interface ProfileService {
+	@PreAuthorize("#username == principal.username")
+	List<UserOAuth2ClientApprovalEntity> findOAuth2ClientApprovalByUsername(String username);
+
 	@PreAuthorize("#username == principal.username")
 	UserEntity findProfileByUsername(String username);
 

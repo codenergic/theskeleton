@@ -15,11 +15,13 @@
  */
 package org.codenergic.theskeleton.user;
 
-import java.util.List;
-
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 
+import java.util.List;
+
 public interface UserOAuth2ClientApprovalRepository extends AuditingEntityRepository<UserOAuth2ClientApprovalEntity> {
+	List<UserOAuth2ClientApprovalEntity> findByUserUsername(String username);
+
 	List<UserOAuth2ClientApprovalEntity> findByUserUsernameAndClientId(String userId, String clientId);
 
 	UserOAuth2ClientApprovalEntity findByUserUsernameAndClientIdAndScope(String userId, String clientId, String scope);
