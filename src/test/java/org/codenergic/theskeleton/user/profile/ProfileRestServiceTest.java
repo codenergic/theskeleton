@@ -32,9 +32,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
@@ -52,15 +54,41 @@ public class ProfileRestServiceTest {
 	private ProfileService profileService;
 
 	@Test
-	public void testSerializeDeserializeUser() throws IOException {
-		ProfileRestData user = ProfileRestData.builder()
-			.username("user")
-			.password("123123123")
-			.phoneNumber("1231123123123")
-			.build();
-		String json = objectMapper.writeValueAsString(user);
-		ProfileRestData user2 = objectMapper.readValue(json, ProfileRestData.class);
-		assertThat(user).isEqualTo(user2);
+	@WithMockUser("user123")
+	public void testFindProfileConnectedApps() throws Exception {
+		final UserEntity user = new UserEntity().setUsername("user123");
+		final OAuth2ClientEntity client = new OAuth2ClientEntity().setId("client123").setName("client123");
+		final UserOAuth2ClientApprovalEntity approval1 = new UserOAuth2ClientApprovalEntity()
+			.setUser(user)
+			.setClient(client)
+			.setScope("scope1")
+			.setApprovalStatus(Approval.ApprovalStatus.APPROVED);
+		final UserOAuth2ClientApprovalEntity approval2 = new UserOAuth2ClientApprovalEntity()
+			.setUser(user)
+			.setClient(client)
+			.setScope("scope2")
+			.setApprovalStatus(Approval.ApprovalStatus.DENIED);
+		when(profileService.findOAuth2ClientApprovalByUsername("user123")).thenReturn(Arrays.asList(approval1, approval2));
+		MockHttpServletRequestBuilder request = get("/api/profile/connected-apps")
+			.contentType(MediaType.APPLICATION_JSON);
+		MockHttpServletResponse response = mockMvc.perform(request)
+			.andDo(document("user-profile-connected-apps-view"))
+			.andReturn()
+			.getResponse();
+		assertThat(response.getStatus()).isEqualTo(200);
+		CollectionType collectionType = objectMapper.getTypeFactory().constructCollectionType(List.class, UserOAuth2ClientApprovalRestData.class);
+		List<UserOAuth2ClientApprovalRestData> returnedData = objectMapper
+			.readValue(response.getContentAsByteArray(), collectionType);
+		assertThat(returnedData).hasSize(1);
+		UserOAuth2ClientApprovalRestData restData = returnedData.get(0);
+		assertThat(restData.getClientId()).isEqualTo(client.getId());
+		assertThat(restData.getClientName()).isEqualTo(client.getName());
+		assertThat(restData.getUsername()).isEqualTo(user.getUsername());
+		ImmutableMap<String, Approval.ApprovalStatus> scopeAndStatus = restData.getScopeAndStatus();
+		assertThat(scopeAndStatus).hasSize(2);
+		assertThat(scopeAndStatus).containsEntry(approval1.getScope(), approval1.getApprovalStatus());
+		assertThat(scopeAndStatus).containsEntry(approval2.getScope(), approval2.getApprovalStatus());
+		verify(profileService).findOAuth2ClientApprovalByUsername("user123");
 	}
 
 	@Test
@@ -80,6 +108,33 @@ public class ProfileRestServiceTest {
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder().fromUserEntity(user).build()));
 		verify(profileService).findProfileByUsername("user123");
+	}
+
+	@Test
+	@WithMockUser("user123")
+	public void testRemoveProfileConnectedApps() throws Exception {
+		doAnswer(invocation -> null)
+			.when(profileService)
+			.removeOAuth2ClientApprovalByUsername("user123", "123");
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/profile/connected-apps/123"))
+			.andDo(document("user-profile-connected-apps-remove"))
+			.andReturn()
+			.getResponse();
+		assertThat(response.getStatus()).isEqualTo(200);
+		assertThat(response.getContentAsByteArray()).hasSize(0);
+		verify(profileService).removeOAuth2ClientApprovalByUsername("user123", "123");
+	}
+
+	@Test
+	public void testSerializeDeserializeUser() throws IOException {
+		ProfileRestData user = ProfileRestData.builder()
+			.username("user")
+			.password("123123123")
+			.phoneNumber("1231123123123")
+			.build();
+		String json = objectMapper.writeValueAsString(user);
+		ProfileRestData user2 = objectMapper.readValue(json, ProfileRestData.class);
+		assertThat(user).isEqualTo(user2);
 	}
 
 	@Test
@@ -139,43 +194,5 @@ public class ProfileRestServiceTest {
 			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder().fromUserEntity(user).build()));
 		verify(profileService).updateProfilePicture(eq("user123"), any(), eq("image/png"));
 		image.close();
-	}
-
-	@Test
-	@WithMockUser("user123")
-	public void testFindOAuth2ClientApprovalByUsername() throws Exception {
-		final UserEntity user = new UserEntity().setUsername("user123");
-		final OAuth2ClientEntity client = new OAuth2ClientEntity().setId("client123").setName("client123");
-		final UserOAuth2ClientApprovalEntity approval1 = new UserOAuth2ClientApprovalEntity()
-			.setUser(user)
-			.setClient(client)
-			.setScope("scope1")
-			.setApprovalStatus(Approval.ApprovalStatus.APPROVED);
-		final UserOAuth2ClientApprovalEntity approval2 = new UserOAuth2ClientApprovalEntity()
-			.setUser(user)
-			.setClient(client)
-			.setScope("scope2")
-			.setApprovalStatus(Approval.ApprovalStatus.DENIED);
-		when(profileService.findOAuth2ClientApprovalByUsername("user123")).thenReturn(Arrays.asList(approval1, approval2));
-		MockHttpServletRequestBuilder request = get("/api/profile/connected-apps")
-			.contentType(MediaType.APPLICATION_JSON);
-		MockHttpServletResponse response = mockMvc.perform(request)
-			.andDo(document("user-profile-connected-apps-view"))
-			.andReturn()
-			.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
-		CollectionType collectionType = objectMapper.getTypeFactory().constructCollectionType(List.class, UserOAuth2ClientApprovalRestData.class);
-		List<UserOAuth2ClientApprovalRestData> returnedData = objectMapper
-			.readValue(response.getContentAsByteArray(), collectionType);
-		assertThat(returnedData).hasSize(1);
-		UserOAuth2ClientApprovalRestData restData = returnedData.get(0);
-		assertThat(restData.getClientId()).isEqualTo(client.getId());
-		assertThat(restData.getClientName()).isEqualTo(client.getName());
-		assertThat(restData.getUsername()).isEqualTo(user.getUsername());
-		ImmutableMap<String, Approval.ApprovalStatus> scopeAndStatus = restData.getScopeAndStatus();
-		assertThat(scopeAndStatus).hasSize(2);
-		assertThat(scopeAndStatus).containsEntry(approval1.getScope(), approval1.getApprovalStatus());
-		assertThat(scopeAndStatus).containsEntry(approval2.getScope(), approval2.getApprovalStatus());
-		verify(profileService).findOAuth2ClientApprovalByUsername("user123");
 	}
 }

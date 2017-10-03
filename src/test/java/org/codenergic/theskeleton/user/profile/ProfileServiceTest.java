@@ -81,6 +81,12 @@ public class ProfileServiceTest {
 	}
 
 	@Test
+	public void testRemoveOAuth2ClientApprovalByUsername() {
+		profileService.removeOAuth2ClientApprovalByUsername("user", "client");
+		verify(approvalRepository).deleteByUserUsernameAndClientId("user", "client");
+	}
+
+	@Test
 	public void testUpdateProfile() {
 		when(userRepository.findByUsername(anyString())).thenReturn(new UserEntity());
 		profileService.updateProfile("username", new UserEntity());

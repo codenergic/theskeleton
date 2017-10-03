@@ -46,6 +46,11 @@ public class ProfileRestService {
 		return convertToRestData(user);
 	}
 
+	@DeleteMapping("/connected-apps/{clientId}")
+	public void removeProfileConnectedApps(Authentication authentication, @PathVariable("clientId") String clientId) {
+		profileService.removeOAuth2ClientApprovalByUsername(authentication.getName(), clientId);
+	}
+
 	@PutMapping
 	public ProfileRestData updateProfile(Authentication authentication,
 			@RequestBody @Valid ProfileRestData profileRestData) {

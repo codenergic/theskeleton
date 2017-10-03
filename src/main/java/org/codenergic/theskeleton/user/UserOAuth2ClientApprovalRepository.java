@@ -20,6 +20,8 @@ import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import java.util.List;
 
 public interface UserOAuth2ClientApprovalRepository extends AuditingEntityRepository<UserOAuth2ClientApprovalEntity> {
+	void deleteByUserUsernameAndClientId(String username, String clientId);
+
 	List<UserOAuth2ClientApprovalEntity> findByUserUsername(String username);
 
 	List<UserOAuth2ClientApprovalEntity> findByUserUsernameAndClientId(String userId, String clientId);

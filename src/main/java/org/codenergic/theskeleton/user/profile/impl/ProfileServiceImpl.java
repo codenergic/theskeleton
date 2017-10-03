@@ -40,7 +40,7 @@ public class ProfileServiceImpl implements ProfileService {
 
 	@Autowired
 	public void createBucketIfNotExists(ScheduledExecutorService executorService) {
-		executorService.schedule((Runnable) () -> {
+		executorService.schedule(() -> {
 			try {
 				logger.info("Checking bucket: {}", PICTURE_BUCKET_NAME);
 				if (minioClient.bucketExists(PICTURE_BUCKET_NAME))
@@ -64,6 +64,11 @@ public class ProfileServiceImpl implements ProfileService {
 	@Transactional(readOnly = true)
 	public UserEntity findProfileByUsername(String username) {
 		return userRepository.findByUsername(username);
+	}
+
+	@Override
+	public void removeOAuth2ClientApprovalByUsername(String username, String clientId) {
+		clientApprovalRepository.deleteByUserUsernameAndClientId(username, clientId);
 	}
 
 	@Override

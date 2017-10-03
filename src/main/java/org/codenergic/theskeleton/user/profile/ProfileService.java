@@ -15,6 +15,9 @@ public interface ProfileService {
 	UserEntity findProfileByUsername(String username);
 
 	@PreAuthorize("#username == principal.username")
+	void removeOAuth2ClientApprovalByUsername(String username, String clientId);
+
+	@PreAuthorize("#username == principal.username")
 	UserEntity updateProfile(String username, UserEntity user);
 
 	@PreAuthorize("#username == principal.username")
