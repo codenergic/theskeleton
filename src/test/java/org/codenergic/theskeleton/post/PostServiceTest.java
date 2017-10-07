@@ -15,15 +15,6 @@
  */
 package org.codenergic.theskeleton.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -31,22 +22,26 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
+import java.util.Arrays;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 public class PostServiceTest {
-
-	@Mock
-	private PostRepository postRepository;
-
-	private PostService postService;
-
-	public static final PostEntity DUMMY_POST = new PostEntity()
+	static final PostEntity DUMMY_POST = new PostEntity()
 		.setId("123")
 		.setTitle("It's a disastah")
 		.setContent("some text are <b>bold</b>,<i>italic</i> or <u>underline</u>");
-
-	public static final PostEntity DUMMY_POST2 = new PostEntity()
+	static final PostEntity DUMMY_POST2 = new PostEntity()
 		.setId("12345")
 		.setTitle("Minas Tirith")
 		.setContent("Pippin looked out from the shelter of Gandalf\"s cloak. He wondered if he was awake");
+
+	@Mock
+	private PostRepository postRepository;
+	private PostService postService;
 
 	@Before
 	public void init() {
@@ -55,23 +50,17 @@ public class PostServiceTest {
 	}
 
 	@Test
-	public void testSavePost() {
-		postService.savePost(DUMMY_POST);
-	}
-
-	@Test
-	public void testUpdatePost() {
-		when(postRepository.findOne(anyString())).thenReturn(null);
-		when(postRepository.findOne(eq("123"))).thenReturn(DUMMY_POST2);
-		when(postRepository.save(eq(DUMMY_POST))).thenReturn(DUMMY_POST);
-		assertThat(postService.updatePost("123", DUMMY_POST2)).isEqualTo(DUMMY_POST2);
-	}
-
-	@Test
 	public void testDeletePost() {
 		when(postRepository.findOne("123")).thenReturn(DUMMY_POST);
 		postService.deletePost("123");
 		verify(postRepository).delete(DUMMY_POST);
+	}
+
+	@Test
+	public void testFindPostById() {
+		when(postRepository.findOne("123")).thenReturn(DUMMY_POST2);
+		assertThat(postService.findPostById("123")).isEqualTo(DUMMY_POST2);
+		verify(postRepository).findOne("123");
 	}
 
 	@Test
@@ -83,6 +72,21 @@ public class PostServiceTest {
 		assertThat(result.getNumberOfElements()).isEqualTo(1);
 		assertThat(result).isEqualTo(dbResult);
 		verify(postRepository).findByTitleContaining(eq("disastah"), any());
+	}
+
+	@Test
+	public void testSavePost() {
+		when(postRepository.save(DUMMY_POST)).thenReturn(DUMMY_POST2);
+		PostEntity savedPost = postService.savePost(DUMMY_POST);
+		assertThat(savedPost).isEqualTo(DUMMY_POST2);
+		verify(postRepository).save(DUMMY_POST);
+	}
+
+	@Test
+	public void testUpdatePost() {
+		when(postRepository.findOne(eq("123"))).thenReturn(DUMMY_POST2);
+		assertThat(postService.updatePost("123", DUMMY_POST2)).isEqualTo(DUMMY_POST2);
+		verify(postRepository).findOne(eq("123"));
 	}
 
 }
