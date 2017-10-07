@@ -1,0 +1,43 @@
+=== Read
+
+.request
+include::{snippets}/user-profile-view/http-request.adoc[]
+
+.response
+include::{snippets}/user-profile-view/http-response.adoc[]
+
+=== Update
+
+.request
+include::{snippets}/user-profile-update/http-request.adoc[]
+
+.response
+include::{snippets}/user-profile-update/http-response.adoc[]
+
+=== Update Password
+
+.request
+include::{snippets}/user-profile-password-update/http-request.adoc[]
+
+.response
+include::{snippets}/user-profile-password-update/http-response.adoc[]
+
+=== Update Profile Picture
+
+.request
+[source,http,options="nowrap"]
+----
+PUT /api/profile/picture HTTP/1.1
+Content-Type: image/png
+----
+
+.response
+include::{snippets}/user-profile-picture-update/http-response.adoc[]
+
+=== Get Connected Clients
+
+.request
+include::{snippets}/user-profile-connected-apps-view/http-request.adoc[]
+
+.response
+include::{snippets}/user-profile-connected-apps-view/http-response.adoc[]

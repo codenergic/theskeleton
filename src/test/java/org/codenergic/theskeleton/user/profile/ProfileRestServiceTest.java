@@ -141,7 +141,9 @@ public class ProfileRestServiceTest {
 	@WithMockUser("user123")
 	public void testUpdateProfile() throws Exception {
 		final UserEntity user = new UserEntity()
-			.setId("user125");
+			.setId("user125")
+			.setUsername("user")
+			.setEmail("user@server");
 		when(profileService.updateProfile(eq("user123"), any())).thenReturn(user);
 		MockHttpServletRequestBuilder request = put("/api/profile")
 			.content("{\"username\": \"user1234\"}")
@@ -160,7 +162,9 @@ public class ProfileRestServiceTest {
 	@WithMockUser("user123")
 	public void testUpdateProfilePassword() throws Exception {
 		final UserEntity user = new UserEntity()
-			.setId("user123");
+			.setId("user123")
+			.setUsername("user")
+			.setEmail("user@server");
 		when(profileService.updateProfilePassword(eq("user123"), any())).thenReturn(user);
 		MockHttpServletRequestBuilder request = put("/api/profile/password")
 			.content("{\"username\": \"user123\"}")
@@ -179,7 +183,9 @@ public class ProfileRestServiceTest {
 	@WithMockUser("user123")
 	public void testUpdateProfilePicture() throws Exception {
 		final UserEntity user = new UserEntity()
-			.setId("user123");
+			.setId("user123")
+			.setUsername("user")
+			.setEmail("user@server");
 		when(profileService.updateProfilePicture(eq("user123"), any(), eq("image/png"))).thenReturn(user);
 		InputStream image = ClassLoader.getSystemResourceAsStream("static/logo.png");
 		MockHttpServletRequestBuilder request = put("/api/profile/picture")
