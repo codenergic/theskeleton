@@ -1,4 +1,4 @@
-package org.codenergic.theskeleton.registration;
+package org.codenergic.theskeleton.tokenstore;
 
 import org.codenergic.theskeleton.core.data.AbstractEntity;
 import org.codenergic.theskeleton.user.UserEntity;
@@ -9,8 +9,8 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Table(name = "ts_registration")
-public class RegistrationEntity extends AbstractEntity {
+@Table(name = "ts_token_store")
+public class TokenStoreEntity extends AbstractEntity {
 
 	@NotNull
 	@Column(length = 200, unique = true)
@@ -20,12 +20,14 @@ public class RegistrationEntity extends AbstractEntity {
 	private UserEntity user;
 	@Column(name = "expiry_date")
 	private Date expiryDate;
+	@Enumerated(EnumType.ORDINAL)
+	private TokenStoreType type;
 
 	public String getToken() {
 		return token;
 	}
 
-	public RegistrationEntity setToken(String token) {
+	public TokenStoreEntity setToken(String token) {
 		this.token = token;
 		return this;
 	}
@@ -38,7 +40,7 @@ public class RegistrationEntity extends AbstractEntity {
 		return user;
 	}
 
-	public RegistrationEntity setUser(UserEntity user) {
+	public TokenStoreEntity setUser(UserEntity user) {
 		this.user = user;
 		return this;
 	}
@@ -47,8 +49,17 @@ public class RegistrationEntity extends AbstractEntity {
 		return expiryDate;
 	}
 
-	public RegistrationEntity setExpiryDate(Date expiryDate) {
+	public TokenStoreEntity setExpiryDate(Date expiryDate) {
 		this.expiryDate = expiryDate;
+		return this;
+	}
+
+	public TokenStoreType getType() {
+		return type;
+	}
+
+	public TokenStoreEntity setType(TokenStoreType type) {
+		this.type = type;
 		return this;
 	}
 }

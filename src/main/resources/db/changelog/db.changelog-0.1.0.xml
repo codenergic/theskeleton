@@ -269,7 +269,7 @@
 		</createTable>
 	</changeSet>
 	<changeSet id="0004" author="diaxz">
-		<createTable tableName="ts_registration">
+		<createTable tableName="ts_token_store">
 			<column name="id" type="varchar(255)">
 				<constraints primaryKey="true" nullable="false" />
 			</column>
@@ -282,6 +282,7 @@
 			</column>
 			<column name="token" type="varchar(255)" />
 			<column name="expiry_date" type="datetime" />
+			<column name="type" type="integer"/>
 		</createTable>
 	</changeSet>
 </databaseChangeLog>

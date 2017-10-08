@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Change Password - TheSkeleton</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" href="/webjars/bootstrap/4.0.0-alpha.6-1/css/bootstrap.min.css" />
+	<style type="text/css">
+		body {
+			min-height: 75rem;
+			padding-top: 6rem;
+			background-color: #eee;
+		}
+	</style>
+</head>
+<body>
+<nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
+	<div class="container">
+		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<a class="navbar-brand" href="">
+			The<strong>Skeleton</strong>
+		</a>
+	</div>
+</nav>
+
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+			<form class="form-changepass" action="" th:object="${changePasswordForm}" method="POST">
+				<div class="card">
+					<div class="card-block">
+						<h3 class="card-title">Forgot Password</h3>
+						<hr />
+						<div class="form-group" th:classappend="${#fields.hasErrors('email')} ? 'has-danger' : ''">
+							<label for="inputEmail" class="col-form-label">Email</label>
+							<input type="email" th:field="*{email}" name="email" id="inputEmail" class="form-control" placeholder="Email" required="required" />
+							<small class="form-control-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Not a valid email address</small>
+						</div>
+						<button class="btn btn-lg btn-primary btn-block" type="submit">Send Recovery Email</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+</body>
+</html>

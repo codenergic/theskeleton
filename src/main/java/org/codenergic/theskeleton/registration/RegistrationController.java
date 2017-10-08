@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.registration;
 
+import org.codenergic.theskeleton.tokenstore.TokenStoreService;
+import org.codenergic.theskeleton.tokenstore.TokenStoreType;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +26,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
@@ -34,11 +35,12 @@ public class RegistrationController {
 	private static final String REGISTRATION_CONFIRMATION = "registration_confirmation";
 	private static final String REGISTRATION_ACTIVATION = "registration_activation";
 
-
 	private RegistrationService registrationService;
+	private TokenStoreService tokenStoreService;
 
-	public RegistrationController(RegistrationService registrationService) {
+	public RegistrationController(RegistrationService registrationService, TokenStoreService tokenStoreService) {
 		this.registrationService = registrationService;
+		this.tokenStoreService = tokenStoreService;
 	}
 
 	@GetMapping
@@ -47,18 +49,16 @@ public class RegistrationController {
 	}
 
 	@PostMapping
-	public String register(HttpServletRequest httpServletRequest, @Valid RegistrationForm registrationForm,
-						   BindingResult bindingResult) {
+	public String register(@Valid RegistrationForm registrationForm, BindingResult bindingResult) {
 		if (bindingResult.hasErrors())
 			return registrationView(registrationForm);
 		try {
 			UserEntity user = registrationService.registerUser(registrationForm);
-			if (user != null && user.getId() != null){
-				String host = httpServletRequest.getServerName() + ":" + httpServletRequest.getServerPort();
-				registrationService.sendConfirmationNotification(user, host);
+			if (user != null && user.getId() != null) {
+				tokenStoreService.sendTokenNotification(TokenStoreType.USER_ACTIVATION, user);
 			}
-		} catch (RegistrationException e){
-			bindingResult.rejectValue("username","error.registrationForm", e.getMessage());
+		} catch (RegistrationException e) {
+			bindingResult.rejectValue("username", "error.registrationForm", e.getMessage());
 			return registrationView(registrationForm);
 		}
 		return REGISTRATION_CONFIRMATION;

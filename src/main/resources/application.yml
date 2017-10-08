@@ -47,6 +47,8 @@ spring:
           region:
             factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
           use_second_level_cache: true
+  thymeleaf:
+    cache: false
   mail:
     host: localhost
     port: 1025
@@ -61,3 +63,5 @@ spring:
           starttls:
             enable: false
             required: false
+email:
+    baseurl: http://localhost:8080

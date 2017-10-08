@@ -1,33 +1,26 @@
 package org.codenergic.theskeleton.registration.impl;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.codenergic.theskeleton.core.data.Activeable;
-import org.codenergic.theskeleton.core.mail.EmailService;
 import org.codenergic.theskeleton.registration.*;
+import org.codenergic.theskeleton.tokenstore.TokenStoreEntity;
+import org.codenergic.theskeleton.tokenstore.TokenStoreRepository;
+import org.codenergic.theskeleton.tokenstore.TokenStoreType;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;
-import org.joda.time.DateTime;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import java.util.HashMap;
-import java.util.Map;
-
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 	private UserRepository userRepository;
-	private RegistrationRepository registrationRepository;
+	private TokenStoreRepository tokenStoreRepository;
 	private PasswordEncoder passwordEncoder;
-	private EmailService emailService;
-	public RegistrationServiceImpl(UserRepository userRepository, RegistrationRepository registrationRepository,
-								   PasswordEncoder passwordEncoder, EmailService emailService) {
+	public RegistrationServiceImpl(UserRepository userRepository, TokenStoreRepository tokenStoreRepository,
+								   PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
-		this.registrationRepository = registrationRepository;
+		this.tokenStoreRepository = tokenStoreRepository;
 		this.passwordEncoder = passwordEncoder;
-		this.emailService = emailService;
 	}
 
 	@Override
@@ -56,38 +49,37 @@ public class RegistrationServiceImpl implements RegistrationService {
 	}
 
 	@Override
-	@Transactional
-	public RegistrationEntity sendConfirmationNotification(UserEntity user, String host) {
-		String token = RandomStringUtils.randomAlphabetic(24);
-		RegistrationEntity registration = new RegistrationEntity()
-			.setToken(token)
-			.setUser(user)
-			.setExpiryDate(DateTime.now().plusDays(15).toDate());
-		Map<String, Object> params = new HashMap<>();
-		params.put("activationUrl", "http://" + host + "/registration/activate?at=" + token);
-		String subject = "Registration Confirmation";
-		String template = "email/registration.html";
-		try {
-			emailService.sendEmail(null, new InternetAddress(user.getEmail()), subject, params, template);
-		} catch (AddressException e) {
-			throw new RegistrationException("Unable to send activation link");
-		}
-		return registrationRepository.save(registration);
+	public UserEntity findUserByEmail(String email) {
+		return userRepository.findByEmail(email);
 	}
 
 	@Override
 	@Transactional
 	public boolean activateUser(String activationToken) {
-		RegistrationEntity registrationEntity = registrationRepository.findByToken(activationToken);
-		if (registrationEntity == null)
+		TokenStoreEntity tokenStoreEntity = tokenStoreRepository.findByTokenAndType(activationToken, TokenStoreType.USER_ACTIVATION);
+		if (tokenStoreEntity == null)
 			throw new RegistrationException("Invalid Activation Key");
-		if (registrationEntity.isTokenExpired())
+		if (tokenStoreEntity.isTokenExpired())
 			throw new RegistrationException("Activation Key is Expired");
-		if (Activeable.Status.INACTIVE.getStatus() == registrationEntity.getStatus())
+		if (Activeable.Status.INACTIVE.getStatus() == tokenStoreEntity.getStatus())
 			throw new RegistrationException("Your Account is already activated");
-		UserEntity user = registrationEntity.getUser();
+		UserEntity user = tokenStoreEntity.getUser();
 		user.setEnabled(true);
-		registrationEntity.setStatus(Activeable.Status.INACTIVE.getStatus());
+		tokenStoreEntity.setStatus(Activeable.Status.INACTIVE.getStatus());
+		return true;
+	}
+
+	@Override
+	@Transactional
+	public boolean changePassword(String activationToken, String password) {
+		TokenStoreEntity tokenStoreEntity = tokenStoreRepository.findByTokenAndType(activationToken, TokenStoreType.CHANGE_PASSWORD);
+		if (tokenStoreEntity == null)
+			throw new RegistrationException("Invalid Activation Key");
+		if (tokenStoreEntity.isTokenExpired())
+			throw new RegistrationException("Activation Key is Expired");
+		UserEntity user = tokenStoreEntity.getUser();
+		user.setPassword(passwordEncoder.encode(password));
+		tokenStoreEntity.setStatus(Activeable.Status.INACTIVE.getStatus());
 		return true;
 	}
 }
