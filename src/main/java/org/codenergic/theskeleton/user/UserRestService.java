@@ -19,7 +19,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import jdk.nashorn.internal.parser.Token;
 import org.codenergic.theskeleton.role.RoleRestData;
+import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
@@ -38,10 +40,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserRestService {
 	private UserService userService;
 	private UserAdminService userAdminService;
+	private TokenStoreService tokenStoreService;
 
-	public UserRestService(UserService userService, UserAdminService userAdminService) {
+	public UserRestService(UserService userService, UserAdminService userAdminService, TokenStoreService tokenStoreService) {
 		this.userService = userService;
 		this.userAdminService = userAdminService;
+		this.tokenStoreService = tokenStoreService;
 	}
 
 	@PutMapping("/{username}/roles")
@@ -51,6 +55,7 @@ public class UserRestService {
 
 	@DeleteMapping("/{username}")
 	public void deleteUser(@PathVariable("username") String username) {
+		tokenStoreService.deleteTokenByUser(userService.findUserByUsername(username));
 		userAdminService.deleteUser(username);
 	}
 

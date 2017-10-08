@@ -11,6 +11,7 @@ import org.codenergic.theskeleton.user.UserEntity;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -47,6 +48,13 @@ public class TokenStoreServiceImpl implements TokenStoreService {
 	public TokenStoreEntity findByTokenAndType(String token, TokenStoreType type) {
 		return tokenStoreRepository.findByTokenAndType(token, type);
 	}
+
+	@Override
+	@Transactional
+	public void deleteTokenByUser(UserEntity userEntity) {
+		tokenStoreRepository.deleteTokenStoreEntityByUser(userEntity);
+	}
+
 
 	private void sendEmail(TokenStoreEntity token, UserEntity user) {
 		Map<String, Object> params = new HashMap<>();
