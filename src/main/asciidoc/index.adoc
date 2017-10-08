@@ -15,5 +15,8 @@ include::role.adoc[]
 == User
 include::user.adoc[]
 
+== Profile
+include::profile.adoc[]
+
 == Post
 include::post.adoc[]

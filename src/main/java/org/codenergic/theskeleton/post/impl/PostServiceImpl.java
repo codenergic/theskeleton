@@ -63,6 +63,11 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public PostEntity findPostById(String id) {
+		return postRepository.findOne(id);
+	}
+
+	@Override
 	public Page<PostEntity> findPostByTitleContaining(String title, Pageable pageable) {
 		return postRepository.findByTitleContaining(title, pageable);
 	}

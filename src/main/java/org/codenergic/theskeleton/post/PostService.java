@@ -29,14 +29,17 @@ public interface PostService {
 	}
 
 	@PreAuthorize("permitAll")
+	void deletePost(@NotNull String id);
+
+	@PreAuthorize("permitAll")
+	PostEntity findPostById(String id);
+
+	@PreAuthorize("permitAll")
+	Page<PostEntity> findPostByTitleContaining(@NotNull String title, Pageable pageable);
+
+	@PreAuthorize("permitAll")
 	PostEntity savePost(@NotNull @Valid PostEntity post);
 
 	@PreAuthorize("permitAll")
 	PostEntity updatePost(@NotNull String id, @NotNull @Valid PostEntity post);
-
-	@PreAuthorize("permitAll")
-	void deletePost(@NotNull String id);
-
-	@PreAuthorize("permitAll")
-	Page<PostEntity> findPostByTitleContaining(@NotNull String title, Pageable pageable);
 }
