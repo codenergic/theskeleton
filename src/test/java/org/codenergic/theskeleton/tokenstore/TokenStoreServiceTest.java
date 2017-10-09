@@ -29,10 +29,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.mail.internet.MimeMessage;
+import java.util.Date;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { EmailServiceTest.EmailTestConfiguration.class, EmailConfig.class, EmailServiceImpl.class },
@@ -59,6 +63,24 @@ public class TokenStoreServiceTest {
 	@After
 	public void stop() {
 		greenMail.stop();
+	}
+
+	@Test
+	public void testDeleteTokenByUser() {
+		UserEntity user = new UserEntity().setId("123");
+		doAnswer(i -> null).when(tokenStoreRepository).deleteTokenStoreEntityByUser(user);
+		tokenStoreService.deleteTokenByUser(user);
+		verify(tokenStoreRepository).deleteTokenStoreEntityByUser(user);
+	}
+
+	@Test
+	public void testFindTokenAndType() {
+		when(tokenStoreRepository.findByTokenAndType("token", TokenStoreType.USER_ACTIVATION))
+			.thenReturn(new TokenStoreEntity().setToken("123").setExpiryDate(new Date()));
+		TokenStoreEntity token = tokenStoreService.findByTokenAndType("token", TokenStoreType.USER_ACTIVATION);
+		assertThat(token.getToken()).isEqualTo("123");
+		assertThat(token.getExpiryDate().getTime()).isLessThanOrEqualTo(new Date().getTime());
+		verify(tokenStoreRepository).findByTokenAndType("token", TokenStoreType.USER_ACTIVATION);
 	}
 
 	@Test
