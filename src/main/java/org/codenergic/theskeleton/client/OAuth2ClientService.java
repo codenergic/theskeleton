@@ -30,7 +30,6 @@ public interface OAuth2ClientService extends ClientDetailsService {
 	@PreAuthorize("hasAuthority('client_delete')")
 	void deleteClient(String id);
 
-	@PreAuthorize("hasAuthority('client_read')")
 	OAuth2ClientEntity findClientById(String id);
 
 	@PreAuthorize("hasAuthority('client_read_all')")
