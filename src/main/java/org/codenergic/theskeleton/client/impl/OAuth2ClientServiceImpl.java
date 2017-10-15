@@ -15,6 +15,7 @@
  */
 package org.codenergic.theskeleton.client.impl;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.client.OAuth2ClientEntity;
@@ -37,6 +38,18 @@ public class OAuth2ClientServiceImpl implements OAuth2ClientService {
 	public OAuth2ClientServiceImpl(OAuth2ClientRepository clientRepository, PasswordEncoder passwordEncoder) {
 		this.clientRepository = clientRepository;
 		this.passwordEncoder = passwordEncoder;
+	}
+
+	private void assertClientNotNull(OAuth2ClientEntity client) {
+		Objects.requireNonNull(client, "Client not found");
+	}
+
+	@Override
+	@Transactional
+	public void deleteClient(String id) {
+		OAuth2ClientEntity o = findClientById(id);
+		assertClientNotNull(o);
+		clientRepository.delete(o);
 	}
 
 	@Override
