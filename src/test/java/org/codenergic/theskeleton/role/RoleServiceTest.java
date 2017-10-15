@@ -15,26 +15,8 @@
  */
 package org.codenergic.theskeleton.role;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 import org.codenergic.theskeleton.privilege.PrivilegeEntity;
 import org.codenergic.theskeleton.privilege.PrivilegeRepository;
-import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RolePrivilegeEntity;
-import org.codenergic.theskeleton.role.RolePrivilegeRepository;
-import org.codenergic.theskeleton.role.RoleRepository;
-import org.codenergic.theskeleton.role.RoleService;
-import org.codenergic.theskeleton.role.impl.RoleServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -43,6 +25,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class RoleServiceTest {
 	private RoleService roleService;
@@ -56,7 +48,7 @@ public class RoleServiceTest {
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.roleService = new RoleServiceImpl(roleRepository, privilegeRepository, rolePrivilegeRepository);
+		this.roleService = RoleService.newInstance(roleRepository, privilegeRepository, rolePrivilegeRepository);
 	}
 
 	@Test

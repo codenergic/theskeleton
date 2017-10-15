@@ -22,8 +22,10 @@ import java.util.stream.Collectors;
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
 import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RoleRestData;
+import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -51,7 +53,8 @@ public class UserRestServiceTest {
 	private UserAdminService userAdminService;
 	@MockBean
 	private UserService userService;
-
+	@MockBean
+	private TokenStoreService tokenStoreService;
 	@Test
 	public void testSerializeDeserializeUser() throws IOException {
 		UserRestData user = UserRestData.builder()

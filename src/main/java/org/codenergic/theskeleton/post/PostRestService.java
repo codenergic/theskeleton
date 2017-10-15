@@ -15,25 +15,39 @@
  */
 package org.codenergic.theskeleton.post;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/posts")
 public class PostRestService {
-	@Autowired
 	private PostService postService;
+
+	public PostRestService(PostService postService) {
+		this.postService = postService;
+	}
+
+	@DeleteMapping("/{id}")
+	public void deleteRole(@PathVariable("id") final String id) {
+		postService.deletePost(id);
+	}
+
+	@GetMapping("/{id}")
+	public PostRestData findPostById(@PathVariable("id") String id) {
+		PostEntity post = postService.findPostById(id);
+		if (post == null)
+			return null;
+		return PostRestData.builder().fromPostEntity(post).build();
+	}
+
+	@GetMapping
+	public Page<PostRestData> findPostByTitleContaining(
+		@RequestParam(name = "title", defaultValue = "") String title, Pageable pageable) {
+		return postService.findPostByTitleContaining(title, pageable)
+			.map(p -> PostRestData.builder().fromPostEntity(p).build());
+	}
 
 	@PostMapping
 	public PostRestData savePost(@RequestBody @Validated(PostRestData.New.class) PostRestData postRestData) {
@@ -45,15 +59,5 @@ public class PostRestService {
 	public PostRestData updatePost(@PathVariable("id") String id, @RequestBody @Validated(PostRestData.Existing.class) final PostRestData postRestData) {
 		PostEntity post = postService.updatePost(id, postRestData.toPostEntity());
 		return PostRestData.builder().fromPostEntity(post).build();
-	}
-
-	@DeleteMapping("/{id}")
-	public void deleteRole(@PathVariable("id") final String id) { postService.deletePost(id); }
-
-	@GetMapping
-	public Page<PostRestData> findPostByTitleContaining(
-		@RequestParam(name = "title", defaultValue = "") String title, Pageable pageable) {
-		return postService.findPostByTitleContaining(title, pageable)
-			.map(p -> PostRestData.builder().fromPostEntity(p).build());
 	}
 }

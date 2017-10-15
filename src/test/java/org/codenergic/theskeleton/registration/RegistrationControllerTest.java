@@ -1,5 +1,6 @@
 package org.codenergic.theskeleton.registration;
 
+import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,8 @@ public class RegistrationControllerTest {
 	private MockMvc mockMvc;
 	@MockBean
 	private RegistrationService registrationService;
+	@MockBean
+	private TokenStoreService tokenStoreService;
 	@Test
 	public void testRegisterUserAlreadyExist() throws Exception {
 		String errorMsg = "Username or email already exists";
@@ -44,7 +47,7 @@ public class RegistrationControllerTest {
 	public void testRegisterUser() throws Exception {
 		UserEntity user = new UserEntity().setId("123");
 		when(registrationService.registerUser(any())).thenReturn(user);
-		when(registrationService.sendConfirmationNotification(any(),any())).thenReturn(any());
+		when(tokenStoreService.sendTokenNotification(any(),any())).thenReturn(any());
 		MockHttpServletRequestBuilder request = post("/registration")
 			.param("username", "testuser")
 			.param("password", "securepassword")

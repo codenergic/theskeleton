@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Confirmation - TheSkeleton</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" href="/webjars/bootstrap/4.0.0-alpha.6-1/css/bootstrap.min.css" />
+	<style type="text/css">
+		body {
+			min-height: 75rem;
+			padding-top: 6rem;
+			background-color: #eee;
+		}
+	</style>
+</head>
+<body>
+<nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
+	<div class="container">
+		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<a class="navbar-brand" href="">
+			The<strong>Skeleton</strong>
+		</a>
+	</div>
+</nav>
+
+<div class="container" th:switch="${message}">
+	<div class="row" th:case="'changepass'">
+		Account recovery email sent to&nbsp;<span th:text="${changePasswordForm.email}"></span>
+		If you don't see this email in your inbox within 15 minutes, look for it in your junk mail folder. If you find it there, please mark it as "Not Junk"
+	</div>
+	<div class="row" th:case="'update'">
+		Password successfully updated, you may back to&nbsp;<a th:href="@{/login}">login</a>&nbsp;page.
+	</div>
+	<div class="row" th:case="'error'">
+		<span th:text="${error}"/>
+	</div>
+</div>
+</body>
+</html>
