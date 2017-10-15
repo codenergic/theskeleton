@@ -18,9 +18,13 @@ package org.codenergic.theskeleton.client;
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OAuth2ClientRepository extends AuditingEntityRepository<OAuth2ClientEntity> {
 	Page<OAuth2ClientEntity> findByCreatedByUserId(String userId, Pageable pageable);
+
+	@Query("FROM OAuth2ClientEntity o WHERE o.name LIKE %?1% OR o.description LIKE %?1%")
+	Page<OAuth2ClientEntity> findByNameOrDescriptionContaining(String keyword, Pageable pageable);
 }

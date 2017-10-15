@@ -15,10 +15,8 @@
  */
 package org.codenergic.theskeleton.client;
 
-import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,14 +25,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/clients")
-public class Oauth2ClientRestController {
+public class OAuth2ClientRestController {
 	private OAuth2ClientService oAuth2ClientService;
 
-	public Oauth2ClientRestController(OAuth2ClientService oAuth2ClientService) {
+	public OAuth2ClientRestController(OAuth2ClientService oAuth2ClientService) {
 		this.oAuth2ClientService = oAuth2ClientService;
 	}
 
@@ -54,8 +53,9 @@ public class Oauth2ClientRestController {
 	}
 
 	@GetMapping
-	public Page<OAuth2ClientRestData> findClients(@AuthenticationPrincipal UserEntity user, final Pageable pageable) {
-		return oAuth2ClientService.findClientByOwner(user.getId(), pageable)
+	public Page<OAuth2ClientRestData> findClients(@RequestParam(name = "q", defaultValue = "") final String keywords, 
+			final Pageable pageable) {
+		return oAuth2ClientService.findClients(keywords, pageable)
 				.map(this::convertEntityToRestData);
 	}
 

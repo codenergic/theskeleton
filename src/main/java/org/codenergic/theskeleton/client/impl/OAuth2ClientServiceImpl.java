@@ -68,6 +68,11 @@ public class OAuth2ClientServiceImpl implements OAuth2ClientService {
 	}
 
 	@Override
+	public Page<OAuth2ClientEntity> findClients(String keyword, Pageable pageable) {
+		return clientRepository.findByNameOrDescriptionContaining(keyword, pageable);
+	}
+
+	@Override
 	@Transactional
 	public OAuth2ClientEntity generateSecret(String clientId) {
 		OAuth2ClientEntity client = findClientById(clientId);

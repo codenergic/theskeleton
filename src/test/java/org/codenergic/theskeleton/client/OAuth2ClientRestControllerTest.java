@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.codenergic.theskeleton.client.OAuth2GrantType.AUTHORIZATION_CODE;
 import static org.codenergic.theskeleton.client.OAuth2GrantType.IMPLICIT;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,7 +35,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
-import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -54,9 +54,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-@WebMvcTest(controllers = {Oauth2ClientRestController.class})
+@WebMvcTest(controllers = {OAuth2ClientRestController.class})
 @EnableRestDocs
-public class Oauth2ClientRestControllerTest {
+public class OAuth2ClientRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 	@Autowired
@@ -64,8 +64,8 @@ public class Oauth2ClientRestControllerTest {
 	@MockBean
 	private OAuth2ClientService oAuth2ClientService;
 
-//	@Test
-//	@WithMockUser("user123")
+	@Test
+	@WithMockUser("user123")
 	public void testDeleteClient() throws Exception {
 		mockMvc.perform(delete("/api/clients/client123")
 				.contentType(MediaType.APPLICATION_JSON))
@@ -73,8 +73,8 @@ public class Oauth2ClientRestControllerTest {
 			.andDo(document("client-delete"));
 	}
 
-//	@Test
-//	@WithMockUser("user123")
+	@Test
+	@WithMockUser("user123")
 	public void testFindClientById() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
 			.setId("client123")
@@ -99,12 +99,8 @@ public class Oauth2ClientRestControllerTest {
 	}
 
 	@Test
-//	@WithMockUser("user123")
+	@WithMockUser("user123")
 	public void testFindClients() throws Exception {
-		final UserEntity user = new UserEntity()
-				.setId("user123")
-				.setUsername("user123")
-				.setPassword("123456");
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
 			.setId("client123")
 			.setName("client")
@@ -114,9 +110,8 @@ public class Oauth2ClientRestControllerTest {
 			.setAutoApprove(false)
 			.setAuthorizedGrantTypes(new HashSet<>(Arrays.asList(AUTHORIZATION_CODE, IMPLICIT)));
 		Page<OAuth2ClientEntity> clients = new PageImpl<>(Arrays.asList(client));
-		when(oAuth2ClientService.findClientByOwner(eq("admin"), any())).thenReturn(clients);
+		when(oAuth2ClientService.findClients(anyString(), any())).thenReturn(clients);
 		MockHttpServletRequestBuilder request = get("/api/clients")
-			.with(SecurityMockMvcRequestPostProcessors.user(user))
 			.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 			.andExpect(status().isOk())
@@ -126,11 +121,11 @@ public class Oauth2ClientRestControllerTest {
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(
 				clients.map(c -> OAuth2ClientRestData.builder().fromOAuth2ClientEntity(c).build())));
-		verify(oAuth2ClientService).findClientByOwner(eq("admin"), any());
+		verify(oAuth2ClientService).findClients(anyString(), any());
 	}
 
-//	@Test
-//	@WithMockUser("user123")
+	@Test
+	@WithMockUser("user123")
 	public void testGenerateClientSecret() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
 				.setId("client123");
@@ -148,8 +143,8 @@ public class Oauth2ClientRestControllerTest {
 		verify(oAuth2ClientService).generateSecret(eq("client123"));
 	}
 
-//	@Test
-//	@WithMockUser("user123")
+	@Test
+	@WithMockUser("user123")
 	public void testSaveClient() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
 				.setId("client123")
@@ -175,7 +170,7 @@ public class Oauth2ClientRestControllerTest {
 		verify(oAuth2ClientService).saveClient(any());
 	}
 
-//	@Test
+	@Test
 	public void testSerializeDeserializeClient() throws IOException {
 		OAuth2ClientRestData client = OAuth2ClientRestData.builder()
 			.id("client123")
@@ -191,8 +186,8 @@ public class Oauth2ClientRestControllerTest {
 		assertThat(client).isEqualTo(client2);
 	}
 
-//	@Test
-//	@WithMockUser("user123")
+	@Test
+	@WithMockUser("user123")
 	public void testUpdateClient() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
 				.setId("client123");

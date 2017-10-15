@@ -134,7 +134,13 @@
 				('0000015bb4a150730007bf4700000008', 'role_read', 'Role Read', 1, ${now}, ${now}),
 				('0000015bb4a150730007bf4700000009', 'role_read_all', 'Role Read All', 1, ${now}, ${now}),
 				('0000015bb4a150730007bf4700000010', 'role_delete', 'Role Delete', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000011', 'role_assign_privilege', 'Role Assign Privilege', 1, ${now}, ${now});
+				('0000015bb4a150730007bf4700000011', 'role_assign_privilege', 'Role Assign Privilege', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000012', 'client_write', 'Client Write', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000013', 'client_update', 'Client Update', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000014', 'client_read', 'Client Read', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000015', 'client_read_all', 'Client Read All', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000016', 'client_delete', 'Client Delete', 1, ${now}, ${now}),
+				('0000015bb4a150730007bf4700000017', 'client_generate_secret', 'Client Delete', 1, ${now}, ${now});
 		</sql>
 		<createTable tableName="ts_role_privilege">
 			<column name="id" type="varchar(255)">

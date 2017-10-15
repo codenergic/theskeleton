@@ -33,8 +33,11 @@ public interface OAuth2ClientService extends ClientDetailsService {
 	@PreAuthorize("hasAuthority('client_read')")
 	OAuth2ClientEntity findClientById(String id);
 
-//	@PreAuthorize("hasAuthority('client_read_all')")
+	@PreAuthorize("hasAuthority('client_read_all')")
 	Page<OAuth2ClientEntity> findClientByOwner(String userId, Pageable pageable);
+
+	@PreAuthorize("hasAuthority('client_read_all')")
+	Page<OAuth2ClientEntity> findClients(String keyword, Pageable pageable);
 
 	@PreAuthorize("hasAuthority('client_generate_secret')")
 	OAuth2ClientEntity generateSecret(String clientId);

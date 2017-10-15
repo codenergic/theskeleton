@@ -15,6 +15,9 @@ include::role.adoc[]
 == User
 include::user.adoc[]
 
+== Client
+include::client.adoc[]
+
 == Profile
 include::profile.adoc[]
 

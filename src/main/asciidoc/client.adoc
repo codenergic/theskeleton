@@ -1,0 +1,47 @@
+=== Read
+
+.request
+include::{snippets}/client-read/http-request.adoc[]
+
+.response
+include::{snippets}/client-read/http-response.adoc[]
+
+=== Read All
+
+.request
+include::{snippets}/client-read-all/http-request.adoc[]
+
+.response
+include::{snippets}/client-read-all/http-response.adoc[]
+
+=== Create
+
+.request
+include::{snippets}/client-create/http-request.adoc[]
+
+.response
+include::{snippets}/client-create/http-response.adoc[]
+
+=== Update
+
+.request
+include::{snippets}/client-update/http-request.adoc[]
+
+.response
+include::{snippets}/client-update/http-response.adoc[]
+
+=== Delete
+
+.request
+include::{snippets}/client-delete/http-request.adoc[]
+
+.response
+include::{snippets}/client-delete/http-response.adoc[]
+
+=== Generate Secret
+
+.request
+include::{snippets}/client-generate-secret/http-request.adoc[]
+
+.response
+include::{snippets}/client-generate-secret/http-response.adoc[]

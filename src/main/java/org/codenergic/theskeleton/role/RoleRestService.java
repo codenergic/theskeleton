@@ -48,7 +48,7 @@ public class RoleRestService {
 	@GetMapping("/{idOrCode}")
 	public RoleRestData findRoleByIdOrCode(@PathVariable("idOrCode") final String idOrCode) {
 		RoleEntity role = roleService.findRoleByIdOrCode(idOrCode);
-		return role == null ? null : RoleRestData.builder().fromRoleEntity(role).build();
+		return convertEntityToRestData(role);
 	}
 
 	@GetMapping
@@ -71,19 +71,19 @@ public class RoleRestService {
 	}
 
 	@PutMapping("/{code}/privileges")
-	public RoleRestData addRoleToUser(@PathVariable("code") String code, @RequestBody Map<String, String> body) {
+	public RoleRestData addPrivilegeToRole(@PathVariable("code") String code, @RequestBody Map<String, String> body) {
 		return convertEntityToRestData(roleService.addPrivilegeToRole(code, body.get("privilege")));
 	}
 
 	@GetMapping("/{code}/privileges")
-	public Set<PrivilegeRestData> findRolesByUserUsername(@PathVariable("code") String code) {
+	public Set<PrivilegeRestData> findPrivilegesByRoleCode(@PathVariable("code") String code) {
 		return roleService.findPrivilegesByRoleCode(code).stream()
-				.map(r -> PrivilegeRestData.builder().fromPrivilegeEntity(r).build())
+				.map(p -> PrivilegeRestData.builder().fromPrivilegeEntity(p).build())
 				.collect(Collectors.toSet());
 	}
 
 	@DeleteMapping("/{code}/privileges")
-	public RoleRestData removeRoleFromUser(@PathVariable("code") String code, @RequestBody Map<String, String> body) {
+	public RoleRestData removePrivilegeFromRole(@PathVariable("code") String code, @RequestBody Map<String, String> body) {
 		return convertEntityToRestData(roleService.removePrivilegeFromRole(code, body.get("privilege")));
 	}
 
