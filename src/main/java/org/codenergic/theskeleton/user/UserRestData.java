@@ -19,9 +19,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.auto.value.AutoValue;
 import org.codenergic.theskeleton.core.data.RestData;
+import org.codenergic.theskeleton.core.web.ValidationConstants;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.annotation.Nullable;
+import javax.validation.constraints.Pattern;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,6 +40,7 @@ abstract class UserRestData implements RestData {
 
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
+	@Pattern(regexp = ValidationConstants.EMAIL_REGEX, message = "Not a valid email address")
 	abstract String getEmail();
 
 	@Nullable
