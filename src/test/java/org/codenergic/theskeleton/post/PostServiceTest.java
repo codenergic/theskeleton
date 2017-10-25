@@ -22,10 +22,11 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,9 +52,8 @@ public class PostServiceTest {
 
 	@Test
 	public void testDeletePost() {
-		when(postRepository.findOne("123")).thenReturn(DUMMY_POST);
 		postService.deletePost("123");
-		verify(postRepository).delete(DUMMY_POST);
+		verify(postRepository).delete("123");
 	}
 
 	@Test
@@ -64,8 +64,16 @@ public class PostServiceTest {
 	}
 
 	@Test
+	public void testFindPostByPoster() {
+		Page<PostEntity> dbResult = new PageImpl<>(Collections.singletonList(DUMMY_POST));
+		when(postRepository.findByPosterUsername(eq("user"), any())).thenReturn(dbResult);
+		assertThat(postService.findPostByPoster("user", null)).isEqualTo(dbResult);
+		verify(postRepository).findByPosterUsername(eq("user"), any());
+	}
+
+	@Test
 	public void testFindPostByTitleContaining() {
-		Page<PostEntity> dbResult = new PageImpl<>(Arrays.asList(DUMMY_POST));
+		Page<PostEntity> dbResult = new PageImpl<>(Collections.singletonList(DUMMY_POST));
 		when(postRepository.findByTitleContaining(eq("disastah"), any()))
 			.thenReturn(dbResult);
 		Page<PostEntity> result = postService.findPostByTitleContaining("disastah", null);

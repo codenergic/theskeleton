@@ -28,18 +28,21 @@ public interface PostService {
 		return new PostServiceImpl(postRepository);
 	}
 
-	@PreAuthorize("permitAll")
+	@PreAuthorize("isAuthenticated()")
 	void deletePost(@NotNull String id);
 
-	@PreAuthorize("permitAll")
+	@PreAuthorize("isAuthenticated()")
 	PostEntity findPostById(String id);
 
-	@PreAuthorize("permitAll")
+	@PreAuthorize("permitAll()")
+	Page<PostEntity> findPostByPoster(String username, Pageable pageable);
+
+	@PreAuthorize("permitAll()")
 	Page<PostEntity> findPostByTitleContaining(@NotNull String title, Pageable pageable);
 
-	@PreAuthorize("permitAll")
+	@PreAuthorize("#post.poster.username == principal.username")
 	PostEntity savePost(@NotNull @Valid PostEntity post);
 
-	@PreAuthorize("permitAll")
+	@PreAuthorize("#post.poster.username == principal.username")
 	PostEntity updatePost(@NotNull String id, @NotNull @Valid PostEntity post);
 }

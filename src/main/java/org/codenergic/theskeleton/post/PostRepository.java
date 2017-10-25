@@ -22,5 +22,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostRepository extends AuditingEntityRepository<PostEntity> {
+	Page<PostEntity> findByPosterUsername(String posterUsername, Pageable pageable);
+
+	Page<PostEntity> findByResponseToId(String postId, Pageable pageable);
+
 	Page<PostEntity> findByTitleContaining(String title, Pageable pageable);
 }

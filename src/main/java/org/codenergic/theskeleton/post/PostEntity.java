@@ -15,13 +15,11 @@
  */
 package org.codenergic.theskeleton.post;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-
 import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
+import org.codenergic.theskeleton.user.UserEntity;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 @Entity
@@ -30,13 +28,64 @@ public class PostEntity extends AbstractAuditingEntity {
 	@NotNull
 	@Column(name = "title")
 	private String title;
+	private String slug;
 	@Lob
 	@Column(name = "content")
 	private String content;
+	@ManyToOne
+	@JoinColumn(name = "poster_user_id")
+	private UserEntity poster;
+	@ManyToOne
+	@JoinColumn(name = "response_to_post_id")
+	private PostEntity responseTo;
+	@Column(name = "is_response")
+	private boolean isResponse = false;
+	@Enumerated(EnumType.STRING)
+	@Column(name = "post_status")
+	private Status status = Status.DRAFT;
 
-	@Override
-	public PostEntity setId(String id) {
-		super.setId(id);
+	public String getContent() {
+		return content;
+	}
+
+	public PostEntity setContent(String content) {
+		this.content = content;
+		return this;
+	}
+
+	public Status getPostStatus() {
+		return status;
+	}
+
+	public PostEntity setPostStatus(Status status) {
+		this.status = status;
+		return this;
+	}
+
+	public UserEntity getPoster() {
+		return poster;
+	}
+
+	public PostEntity setPoster(UserEntity poster) {
+		this.poster = poster;
+		return this;
+	}
+
+	public PostEntity getResponseTo() {
+		return responseTo;
+	}
+
+	public PostEntity setResponseTo(PostEntity responseTo) {
+		this.responseTo = responseTo;
+		return this;
+	}
+
+	public String getSlug() {
+		return slug;
+	}
+
+	public PostEntity setSlug(String slug) {
+		this.slug = slug;
 		return this;
 	}
 
@@ -49,12 +98,22 @@ public class PostEntity extends AbstractAuditingEntity {
 		return this;
 	}
 
-	public String getContent() {
-		return content;
+	public boolean isResponse() {
+		return isResponse;
 	}
 
-	public PostEntity setContent(String content) {
-		this.content = content;
+	public PostEntity setResponse(boolean response) {
+		isResponse = response;
 		return this;
+	}
+
+	@Override
+	public PostEntity setId(String id) {
+		super.setId(id);
+		return this;
+	}
+
+	public enum Status {
+		BLOCKED, DRAFT, POSTED
 	}
 }

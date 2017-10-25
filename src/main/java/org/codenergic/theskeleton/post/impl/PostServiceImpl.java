@@ -15,6 +15,7 @@
  */
 package org.codenergic.theskeleton.post.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.codenergic.theskeleton.post.PostEntity;
 import org.codenergic.theskeleton.post.PostRepository;
 import org.codenergic.theskeleton.post.PostService;
@@ -35,31 +36,9 @@ public class PostServiceImpl implements PostService {
 		this.postRepository = postRepository;
 	}
 
-	private void assertPostNotNull(PostEntity post) {
-		Objects.requireNonNull(post, "Post not found");
-	}
-
-	@Override
-	@Transactional
-	public PostEntity savePost(PostEntity post) {
-		return postRepository.save(post);
-	}
-
-	@Override
-	@Transactional
-	public PostEntity updatePost(String id, PostEntity post) {
-		PostEntity p = postRepository.findOne(id);
-		assertPostNotNull(p);
-		p.setTitle(post.getTitle());
-		p.setContent(post.getContent());
-		return p;
-	}
-
 	@Override
 	public void deletePost(String id) {
-		PostEntity e = postRepository.findOne(id);
-		assertPostNotNull(e);
-		postRepository.delete(e);
+		postRepository.delete(id);
 	}
 
 	@Override
@@ -68,7 +47,31 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public Page<PostEntity> findPostByPoster(String username, Pageable pageable) {
+		return postRepository.findByPosterUsername(username, pageable);
+	}
+
+	@Override
 	public Page<PostEntity> findPostByTitleContaining(String title, Pageable pageable) {
 		return postRepository.findByTitleContaining(title, pageable);
+	}
+
+	@Override
+	@Transactional
+	public PostEntity savePost(PostEntity post) {
+		post.setSlug(StringUtils.replace(post.getTitle().toLowerCase(), " ", "-"));
+		post.setPostStatus(PostEntity.Status.POSTED);
+		return postRepository.save(post);
+	}
+
+	@Override
+	@Transactional
+	public PostEntity updatePost(String id, PostEntity post) {
+		PostEntity p = postRepository.findOne(id);
+		Objects.requireNonNull(post, "Post not found");
+		p.setTitle(post.getTitle());
+		p.setContent(post.getContent());
+		p.setSlug(StringUtils.replace(p.getTitle().toLowerCase(), " ", "-"));
+		return p;
 	}
 }
