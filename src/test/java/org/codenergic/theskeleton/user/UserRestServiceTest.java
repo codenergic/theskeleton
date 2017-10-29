@@ -1,31 +1,12 @@
 package org.codenergic.theskeleton.user;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
 import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RoleRestData;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -38,7 +19,21 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
@@ -249,7 +244,7 @@ public class UserRestServiceTest {
 				.setId("user123");
 		when(userAdminService.saveUser(any())).thenReturn(user);
 		ResultActions resultActions = mockMvc.perform(post("/api/users")
-					.content("{\"username\": \"user123\", \"email\": \"user@server\"}")
+					.content("{\"username\": \"user123\", \"email\": \"user@server.com\"}")
 					.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andDo(document("user-create"));
@@ -262,12 +257,23 @@ public class UserRestServiceTest {
 	}
 
 	@Test
+	public void testSaveInvalidUserEmail() throws Exception {
+		MockHttpServletResponse response = mockMvc.perform(post("/api/users")
+			.content("{\"username\": \"user123\", \"email\": \"user123\"}")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isBadRequest())
+			.andReturn()
+			.getResponse();
+		assertThat(response.getStatus()).isEqualTo(400);
+	}
+
+	@Test
 	public void testUpdateUser() throws Exception {
 		final UserEntity user = new UserEntity()
 				.setId("user123");
 		when(userAdminService.updateUser(eq("user123"), any())).thenReturn(user);
 		ResultActions resultActions = mockMvc.perform(put("/api/users/user123")
-					.content("{\"username\": \"user123\", \"email\": \"user@server\"}")
+					.content("{\"username\": \"user123\", \"email\": \"user@server.com\"}")
 					.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andDo(document("user-update"));

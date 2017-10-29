@@ -40,7 +40,7 @@ abstract class UserRestData implements RestData {
 
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
-	@Pattern(regexp = ValidationConstants.EMAIL_REGEX, message = "Not a valid email address")
+	@Pattern(regexp = ValidationConstants.EMAIL_REGEX, message = "Not a valid email address", groups = {New.class, Existing.class})
 	abstract String getEmail();
 
 	@Nullable
