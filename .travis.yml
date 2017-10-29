@@ -20,7 +20,7 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: rsync -r --delete-after --quiet $TRAVIS_BUILD_DIR/target/*.jar theskeleton@azure.ns.codenergic.org:/home/theskeleton/theskeleton-$TRAVIS_BUILD_ID.jar ; ssh theskeleton@azure.ns.codenergic.org 'pkill -f theskeleton' ; ssh theskeleton@azure.ns.codenergic.org 'screen -d -m /home/theskeleton/theskeleton-$TRAVIS_BUILD_ID.jar --logging.file=/home/theskeleton/theskeleton-$TRAVIS_BUILD_ID.log'
+  script: rsync -r --delete-after --quiet --exclude '*-docker-info.jar' $TRAVIS_BUILD_DIR/target/*.jar theskeleton@azure.ns.codenergic.org:/home/theskeleton/theskeleton-$TRAVIS_BUILD_ID.jar ; ssh theskeleton@azure.ns.codenergic.org 'pkill -f theskeleton' ; ssh theskeleton@azure.ns.codenergic.org 'screen -d -m /home/theskeleton/theskeleton-$TRAVIS_BUILD_ID.jar --logging.file=/home/theskeleton/theskeleton-$TRAVIS_BUILD_ID.log'
 addons:
   sonarcloud:
     organization: codenergic
