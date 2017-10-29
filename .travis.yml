@@ -1,10 +1,17 @@
 language: java
 jdk:
 - oraclejdk8
+services:
+- docker
 script:
 - mvn clean install sonar:sonar
+- mvn dockerfile:build
 after_success:
 - bash <(curl -s https://codecov.io/bash)
+- if [ "$TRAVIS_BRANCH" == "master" ]; then
+  docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  docker push codenergic/theskeleton;
+  fi
 before_deploy:
 - openssl aes-256-cbc -K $encrypted_e24db14852c4_key -iv $encrypted_e24db14852c4_iv -in deploy_rsa.enc -out /tmp/deploy_rsa -d
 - eval "$(ssh-agent -s)"
