@@ -33,18 +33,21 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 @EnableAuthorizationServer
 @ConditionalOnWebApplication
 public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
-	@Autowired
-	private AccessTokenConverter accessTokenConverter;
-	@Autowired
-	private ApprovalStore approvalStore;
-	@Autowired
-	private AuthenticationManager authenticationManager;
-	@Autowired
-	private OAuth2ClientService clientService;
-	@Autowired
-	private TokenEnhancer tokenEnhancer;
-	@Autowired
-	private TokenStore tokenStore;
+	private final AccessTokenConverter accessTokenConverter;
+	private final ApprovalStore approvalStore;
+	private final AuthenticationManager authenticationManager;
+	private final OAuth2ClientService clientService;
+	private final TokenEnhancer tokenEnhancer;
+	private final TokenStore tokenStore;
+
+	public OAuth2AuthorizationServerConfig(AccessTokenConverter accessTokenConverter, ApprovalStore approvalStore, AuthenticationManager authenticationManager, OAuth2ClientService clientService, TokenEnhancer tokenEnhancer, TokenStore tokenStore) {
+		this.accessTokenConverter = accessTokenConverter;
+		this.approvalStore = approvalStore;
+		this.authenticationManager = authenticationManager;
+		this.clientService = clientService;
+		this.tokenEnhancer = tokenEnhancer;
+		this.tokenStore = tokenStore;
+	}
 
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {

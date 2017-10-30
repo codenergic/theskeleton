@@ -43,10 +43,13 @@ import java.util.Collections;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @ConditionalOnWebApplication
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-	@Autowired
-	private UserService userService;
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final UserService userService;
+	private final PasswordEncoder passwordEncoder;
+
+	public WebSecurityConfig(UserService userService, PasswordEncoder passwordEncoder) {
+		this.userService = userService;
+		this.passwordEncoder = passwordEncoder;
+	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
