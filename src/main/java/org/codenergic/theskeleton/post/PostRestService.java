@@ -42,9 +42,13 @@ public class PostRestService {
 		return PostRestData.builder().fromPostEntity(post).build();
 	}
 
+	@GetMapping(params = { "username" })
+	public Page<PostRestData> findPostByPoster(@RequestParam("username") String username, Pageable pageable) {
+		return postService.findPostByPoster(username, pageable).map(p -> PostRestData.builder().fromPostEntity(p).build());
+	}
+
 	@GetMapping
-	public Page<PostRestData> findPostByTitleContaining(
-		@RequestParam(name = "title", defaultValue = "") String title, Pageable pageable) {
+	public Page<PostRestData> findPostByTitleContaining(@RequestParam(name = "title", defaultValue = "") String title, Pageable pageable) {
 		return postService.findPostByTitleContaining(title, pageable)
 			.map(p -> PostRestData.builder().fromPostEntity(p).build());
 	}

@@ -29,16 +29,15 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -85,14 +84,28 @@ public class PostRestServiceTest {
 	}
 
 	@Test
-	public void testFindPostByTitleContaining() throws Exception {
-		final Page<PostEntity> post = new PageImpl<>(Arrays.asList(PostServiceTest.DUMMY_POST));
-		when(postService.findPostByTitleContaining(contains("disastah"), any())).thenReturn(post);
-		ResultActions resultActions = mockMvc.perform(get("/api/posts?title=disastah")
+	public void testFindPostByPoster() throws Exception {
+		final Page<PostEntity> post = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST));
+		when(postService.findPostByPoster(contains("user"), any())).thenReturn(post);
+		MockHttpServletResponse response = mockMvc.perform(get("/api/posts?username=user")
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andDo(document("post-read-all"));
-		MockHttpServletResponse response = resultActions
+			.andDo(document("post-read-all-by-user"))
+			.andReturn()
+			.getResponse();
+		assertThat(response.getContentAsByteArray())
+			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
+		verify(postService).findPostByPoster(eq("user"), any());
+	}
+
+	@Test
+	public void testFindPostByTitleContaining() throws Exception {
+		final Page<PostEntity> post = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST));
+		when(postService.findPostByTitleContaining(contains("disastah"), any())).thenReturn(post);
+		MockHttpServletResponse response = mockMvc.perform(get("/api/posts?title=disastah")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(document("post-read-all"))
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
@@ -103,12 +116,11 @@ public class PostRestServiceTest {
 	@Test
 	public void testSavePost() throws Exception {
 		when(postService.savePost(any())).thenReturn(PostServiceTest.DUMMY_POST);
-		ResultActions resultActions = mockMvc.perform(post("/api/posts")
+		MockHttpServletResponse response = mockMvc.perform(post("/api/posts")
 			.content("{\"title\": \"It's a disastah\", \"content\": \"Seriously a disastah\"}")
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
-			.andDo(document("post-create"));
-		MockHttpServletResponse response = resultActions
+			.andDo(document("post-create"))
 			.andReturn()
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
@@ -135,12 +147,11 @@ public class PostRestServiceTest {
 		byte[] jsonInput = objectMapper.writeValueAsBytes(
 			PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST).build());
 		when(postService.updatePost(eq("123"), any())).thenReturn(PostServiceTest.DUMMY_POST2);
-		ResultActions resultActions = mockMvc.perform(put("/api/posts/123")
+		MockHttpServletResponse response = mockMvc.perform(put("/api/posts/123")
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(jsonInput))
 			.andExpect(status().isOk())
-			.andDo(document("post-update"));
-		MockHttpServletResponse response = resultActions
+			.andDo(document("post-update"))
 			.andReturn()
 			.getResponse();
 		verify(postService).updatePost(eq("123"), any());
