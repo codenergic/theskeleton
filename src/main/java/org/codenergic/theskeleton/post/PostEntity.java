@@ -42,7 +42,7 @@ public class PostEntity extends AbstractAuditingEntity {
 	private boolean isResponse = false;
 	@Enumerated(EnumType.STRING)
 	@Column(name = "post_status")
-	private Status status = Status.DRAFT;
+	private Status postStatus = Status.DRAFT;
 
 	public String getContent() {
 		return content;
@@ -54,11 +54,11 @@ public class PostEntity extends AbstractAuditingEntity {
 	}
 
 	public Status getPostStatus() {
-		return status;
+		return postStatus;
 	}
 
 	public PostEntity setPostStatus(Status status) {
-		this.status = status;
+		this.postStatus = status;
 		return this;
 	}
 
