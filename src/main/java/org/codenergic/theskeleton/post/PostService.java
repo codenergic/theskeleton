@@ -40,7 +40,7 @@ public interface PostService {
 	@PreAuthorize("permitAll()")
 	Page<PostEntity> findPostByTitleContaining(@NotNull String title, Pageable pageable);
 
-	@PreAuthorize("#post.poster.username == principal.username")
+	@PreAuthorize("isAuthenticated()")
 	PostEntity savePost(@NotNull @Valid PostEntity post);
 
 	@PreAuthorize("#post.poster.username == principal.username")
