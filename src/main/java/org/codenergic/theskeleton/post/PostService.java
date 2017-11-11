@@ -32,16 +32,25 @@ public interface PostService {
 	void deletePost(@NotNull String id);
 
 	@PreAuthorize("isAuthenticated()")
-	PostEntity findPostById(String id);
+	PostEntity findPostById(@NotNull String id);
 
 	@PreAuthorize("permitAll()")
-	Page<PostEntity> findPostByPoster(String username, Pageable pageable);
+	Page<PostEntity> findPostByPoster(@NotNull String username, Pageable pageable);
 
 	@PreAuthorize("permitAll()")
 	Page<PostEntity> findPostByTitleContaining(@NotNull String title, Pageable pageable);
 
 	@PreAuthorize("isAuthenticated()")
+	PostEntity publishPost(@NotNull String id);
+
+	@PreAuthorize("isAuthenticated()")
+	PostEntity replyPost(@NotNull String postId, @NotNull @Valid PostEntity replyPost);
+
+	@PreAuthorize("isAuthenticated()")
 	PostEntity savePost(@NotNull @Valid PostEntity post);
+
+	@PreAuthorize("isAuthenticated()")
+	PostEntity unPublishPost(@NotNull String id);
 
 	@PreAuthorize("#post.poster.username == principal.username")
 	PostEntity updatePost(@NotNull String id, @NotNull @Valid PostEntity post);

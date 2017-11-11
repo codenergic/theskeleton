@@ -114,6 +114,6 @@ public class PostEntity extends AbstractAuditingEntity {
 	}
 
 	public enum Status {
-		BLOCKED, DRAFT, POSTED
+		BLOCKED, DRAFT, PUBLISHED
 	}
 }
