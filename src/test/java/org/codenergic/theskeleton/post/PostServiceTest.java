@@ -15,6 +15,7 @@
  */
 package org.codenergic.theskeleton.post;
 
+import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.PageImpl;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -34,11 +36,14 @@ public class PostServiceTest {
 	static final PostEntity DUMMY_POST = new PostEntity()
 		.setId("123")
 		.setTitle("It's a disastah")
-		.setContent("some text are <b>bold</b>,<i>italic</i> or <u>underline</u>");
+		.setContent("some text are <b>bold</b>,<i>italic</i> or <u>underline</u>")
+		.setResponse(false)
+		.setPoster(new UserEntity());
 	static final PostEntity DUMMY_POST2 = new PostEntity()
 		.setId("12345")
 		.setTitle("Minas Tirith")
-		.setContent("Pippin looked out from the shelter of Gandalf\"s cloak. He wondered if he was awake");
+		.setContent("Pippin looked out from the shelter of Gandalf\"s cloak. He wondered if he was awake")
+		.setSlug("testing");
 
 	@Mock
 	private PostRepository postRepository;
@@ -83,6 +88,31 @@ public class PostServiceTest {
 	}
 
 	@Test
+	public void testPublishAndUnPublishPost() {
+		when(postRepository.findOne("1234")).thenReturn(null);
+		assertThatThrownBy(() -> postService.publishPost("1234")).isInstanceOf(IllegalArgumentException.class);
+		verify(postRepository).findOne("1234");
+		when(postRepository.findOne("123")).thenReturn(new PostEntity().setPostStatus(PostEntity.Status.DRAFT));
+		assertThat(postService.publishPost("123").getPostStatus()).isEqualTo(PostEntity.Status.PUBLISHED);
+		verify(postRepository).findOne("123");
+		when(postRepository.findOne("321")).thenReturn(new PostEntity().setPostStatus(PostEntity.Status.PUBLISHED));
+		assertThat(postService.unPublishPost("321").getPostStatus()).isEqualTo(PostEntity.Status.DRAFT);
+		verify(postRepository).findOne("321");
+	}
+
+	@Test
+	public void testReplyPost() {
+		when(postRepository.findOne("123")).thenReturn(DUMMY_POST);
+		when(postRepository.save(any(PostEntity.class))).then(invocation -> invocation.getArgument(0));
+		PostEntity reply = postService.replyPost("123", DUMMY_POST2);
+		assertThat(reply.isResponse()).isTrue();
+		assertThat(reply.getResponseTo()).isEqualTo(DUMMY_POST);
+		assertThat(reply.getSlug()).isNotEmpty();
+		verify(postRepository).findOne("123");
+		verify(postRepository).save(any(PostEntity.class));
+	}
+
+	@Test
 	public void testSavePost() {
 		when(postRepository.save(DUMMY_POST)).thenReturn(DUMMY_POST2);
 		PostEntity savedPost = postService.savePost(DUMMY_POST);
@@ -96,5 +126,4 @@ public class PostServiceTest {
 		assertThat(postService.updatePost("123", DUMMY_POST2)).isEqualTo(DUMMY_POST2);
 		verify(postRepository).findOne(eq("123"));
 	}
-
 }
