@@ -41,23 +41,26 @@ public class RegistrationForm implements Serializable {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	public RegistrationForm setUsername(String username) {
 		this.username = username;
+		return this;
 	}
 
 	public String getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	public RegistrationForm setPassword(String password) {
 		this.password = password;
+		return this;
 	}
 
 	public String getEmail() {
 		return email;
 	}
 
-	public void setEmail(String email) {
+	public RegistrationForm setEmail(String email) {
 		this.email = email;
+		return this;
 	}
 }
