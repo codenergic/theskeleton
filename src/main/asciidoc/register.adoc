@@ -1,0 +1,5 @@
+.request
+include::{snippets}/registration/http-request.adoc[]
+
+.response
+include::{snippets}/registration/http-response.adoc[]

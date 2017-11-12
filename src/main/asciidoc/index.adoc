@@ -6,6 +6,9 @@ Service running at https://theskeleton.codenergic.org/:
 
 :numbered:
 
+== Register
+include::register.adoc[]
+
 == Privilege
 include::privilege.adoc[]
 
