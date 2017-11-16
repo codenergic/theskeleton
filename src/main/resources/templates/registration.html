@@ -1,61 +1,84 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Registration - TheSkeleton</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <link rel="stylesheet" href="/webjars/bootstrap/4.0.0-alpha.6-1/css/bootstrap.min.css" />
-  <style type="text/css">
-  body {
-    min-height: 75rem;
-    padding-top: 6rem;
-    background-color: #eee;
-  }
-  </style>
+	<title>Registration - TheSkeleton</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" href="/webjars/bootstrap/4.0.0-alpha.6-1/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="/webjars/ionicons/2.0.1/css/ionicons.min.css" />
+	<style type="text/css">
+		body {
+			padding-top: 4rem;
+			background-color: #eee;
+		}
+		.bg-grey {
+			background-color: #eee;
+		}
+		.card {
+			border-radius: 0;
+		}
+	</style>
 </head>
 <body>
-  <nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
-    <div class="container">
-      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <a class="navbar-brand" href="">
-        The<strong>Skeleton</strong>
-      </a>
-    </div>
-  </nav>
-
-  <div class="container">
-    <div class="row">
-      <div class="col-xs-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-4 offset-lg-4">
-        <form class="form-signin" action="" th:object="${registrationForm}" method="POST">
-          <div class="card">
-            <div class="card-block">
-              <h3 class="card-title">Registration</h3>
-              <hr />
-              <div class="form-group" th:classappend="${#fields.hasErrors('username')} ? 'has-danger' : ''">
-                <label for="inputUsername" class="col-form-label">Username</label>
-                <input type="text" th:field="*{username}" name="username" id="inputUsername" class="form-control" placeholder="Username" required="required" autofocus="autofocus" />
-                <small class="form-control-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username must be at least 6 character</small>
-              </div>
-              <div class="form-group" th:classappend="${#fields.hasErrors('password')} ? 'has-danger' : ''">
-                <label for="inputPassword" class="col-form-label">Password</label>
-                <input type="password" th:field="*{password}" name="password" id="inputPassword" class="form-control" placeholder="Password" required="required" />
-                <small class="form-control-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password must be at least 8 character</small>
-              </div>
-              <div class="form-group" th:classappend="${#fields.hasErrors('email')} ? 'has-danger' : ''">
-                <label for="inputEmail" class="col-form-label">Email</label>
-                <input type="email" th:field="*{email}" name="email" id="inputEmail" class="form-control" placeholder="Email" required="required" />
-                <small class="form-control-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Not a valid email address</small>
-              </div>
-              <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
-              <p class="text-muted">Already have an account? <a href="login">Sign in here</a></p>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
+	<div class="app flex-row align-items-center">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-md-6">
+					<div class="card p-4 bg-grey" style="border: none;">
+						<div class="card-body text-center">
+							<h1>TheSkeleton</h1>
+						</div>
+					</div>
+					<div class="card mx-4">
+						<form class="form-signin" th:object="${registrationForm}" method="POST">
+							<div class="card-body p-4">
+								<h1>Register</h1>
+								<p class="text-muted">Create your account</p>
+								<div class="form-group" th:classappend="${#fields.hasErrors('username')} ? 'has-danger' : ''">
+									<div class="input-group mb-3">
+										<span class="input-group-addon"><i class="ion-person"></i></span>
+										<input type="text" class="form-control" placeholder="Username" th:field="*{username}" required="required" autofocus="autofocus"/>
+									</div>
+									<em class="error form-control-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username must be at least 6 character</em>
+								</div>
+								<div class="form-group" th:classappend="${#fields.hasErrors('email')} ? 'has-danger' : ''">
+									<div class="input-group mb-3">
+										<span class="input-group-addon"><i class="ion-email"></i></span>
+										<input type="email" class="form-control" placeholder="Email" th:field="*{email}" required="required" />
+									</div>
+									<em class="error form-control-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Not a valid email address</em>
+								</div>
+								<div class="form-group" th:classappend="${#fields.hasErrors('password')} ? 'has-danger' : ''">
+									<div class="input-group mb-3">
+										<span class="input-group-addon"><i class="ion-locked"></i></span>
+										<input type="password" class="form-control" placeholder="Password" th:field="*{password}" required="required" />
+									</div>
+									<em class="error form-control-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password must be at least 8 character</em>
+								</div>
+								<!-- <div class="input-group mb-4">
+									<span class="input-group-addon"><i class="ion-locked"></i></span>
+									<input type="password" class="form-control" placeholder="Repeat password" th:field="*{cpassword}" required="required" />
+									<small class="form-control-feedback" th:if="${#fields.hasErrors('cpassword')}" th:errors="*{cpassword}">Password must be at least 8 character</small>
+								</div> -->
+								
+								<button type="submit" class="btn btn-block btn-success">Create Account</button>
+							</div>
+						</form>
+						<!-- <div class="card-footer p-4">
+							<div class="row">
+								<div class="col-6">
+									<button class="btn btn-block btn-facebook" type="button"><span>facebook</span></button>
+								</div>
+								<div class="col-6">
+									<button class="btn btn-block btn-twitter" type="button"><span>twitter</span></button>
+								</div>
+							</div>
+						</div> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
