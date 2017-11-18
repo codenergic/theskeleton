@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jdk.nashorn.internal.parser.Token;
 import org.codenergic.theskeleton.role.RoleRestData;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.springframework.data.domain.Page;

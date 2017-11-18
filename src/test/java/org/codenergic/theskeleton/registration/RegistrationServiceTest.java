@@ -36,7 +36,7 @@ public class RegistrationServiceTest {
 	}
 
 	@Test
-	public void testRegisterUserEmailDoesntExists() {
+	public void testRegisterUserEmailDoesNotExists() {
 		when(userRepository.existsByEmail(anyString())).thenReturn(false);
 		when(userRepository.existsByUsername(anyString())).thenReturn(true);
 		RegistrationForm registrationForm = new RegistrationForm();
@@ -50,7 +50,7 @@ public class RegistrationServiceTest {
 	}
 
 	@Test
-	public void testRegisterUserUsernameDoesntExists() {
+	public void testRegisterUserUsernameDoesNotExists() {
 		when(userRepository.existsByEmail(anyString())).thenReturn(true);
 		when(userRepository.existsByUsername(anyString())).thenReturn(false);
 		RegistrationForm registrationForm = new RegistrationForm();
@@ -116,7 +116,7 @@ public class RegistrationServiceTest {
 			.thenReturn(tokenStoreEntity);
 
 		registrationService.changePassword("TOKEN1234", "notsecurepassword");
-		assertThat(tokenStoreEntity.getUser().getPassword().equals("notsecurepassword"));
+		assertThat(tokenStoreEntity.getUser().getPassword()).isEqualTo("notsecurepassword");
 
 		//expired token
 		tokenStoreEntity.setExpiryDate(DateTime.now().minusDays(15).toDate());

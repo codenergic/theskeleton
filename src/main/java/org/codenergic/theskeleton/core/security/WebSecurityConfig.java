@@ -16,7 +16,6 @@
 package org.codenergic.theskeleton.core.security;
 
 import org.codenergic.theskeleton.user.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;

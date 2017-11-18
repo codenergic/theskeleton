@@ -22,6 +22,8 @@ public class ChangePasswordController {
 	private static final String CHANGEPASS = "changepass";
 	private static final String CHANGEPASS_CONFIRMATION = "changepass_confirmation";
 	private static final String CHANGEPASS_UPDATE = "changepass_update";
+	private static final String ERROR = "error";
+	private static final String MESSAGE = "message";
 
 	private RegistrationService registrationService;
 	private TokenStoreService tokenStoreService;
@@ -48,7 +50,7 @@ public class ChangePasswordController {
 		} else {
 			tokenStoreService.sendTokenNotification(TokenStoreType.CHANGE_PASSWORD, user);
 		}
-		model.addAttribute("message", "changepass");
+		model.addAttribute(MESSAGE, CHANGEPASS);
 		return CHANGEPASS_CONFIRMATION;
 	}
 
@@ -70,11 +72,11 @@ public class ChangePasswordController {
 		try {
 			registrationService.changePassword(resetToken, updatePasswordForm.getPassword());
 		} catch (RegistrationException e) {
-			model.addAttribute("message", "error");
-			model.addAttribute("error", e.getMessage());
+			model.addAttribute(MESSAGE, ERROR);
+			model.addAttribute(ERROR, e.getMessage());
 			return CHANGEPASS_CONFIRMATION;
 		}
-		model.addAttribute("message", "update");
+		model.addAttribute(MESSAGE, "update");
 		return CHANGEPASS_CONFIRMATION;
 	}
 }

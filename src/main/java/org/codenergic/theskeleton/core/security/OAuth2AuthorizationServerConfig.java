@@ -16,7 +16,6 @@
 package org.codenergic.theskeleton.core.security;
 
 import org.codenergic.theskeleton.client.OAuth2ClientService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

@@ -15,16 +15,11 @@
  */
 package org.codenergic.theskeleton.privilege;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-
 import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
 import org.springframework.security.core.GrantedAuthority;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "ts_privilege")
@@ -61,6 +56,6 @@ public class PrivilegeEntity extends AbstractAuditingEntity implements GrantedAu
 	@Override
 	@Transient
 	public String getAuthority() {
-		return name;
+		return getName();
 	}
 }
