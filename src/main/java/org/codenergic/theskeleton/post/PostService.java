@@ -15,7 +15,6 @@
  */
 package org.codenergic.theskeleton.post;
 
-import org.codenergic.theskeleton.post.impl.PostServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,10 +23,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 public interface PostService {
-	static PostService newInstance(PostRepository postRepository) {
-		return new PostServiceImpl(postRepository);
-	}
-
 	@PreAuthorize("isAuthenticated()")
 	void deletePost(@NotNull String id);
 

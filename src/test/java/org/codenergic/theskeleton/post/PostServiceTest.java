@@ -15,6 +15,7 @@
  */
 package org.codenergic.theskeleton.post;
 
+import org.codenergic.theskeleton.post.impl.PostServiceImpl;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +53,8 @@ public class PostServiceTest {
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.postService = PostService.newInstance(postRepository);
+		this.postService = new PostServiceImpl(postRepository) {
+		};
 	}
 
 	@Test

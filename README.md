@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/codenergic/theskeleton.svg?branch=master)](https://travis-ci.org/codenergic/theskeleton)
 [![codecov](https://codecov.io/gh/codenergic/theskeleton/branch/master/graph/badge.svg)](https://codecov.io/gh/codenergic/theskeleton)
-[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=org.codenergic.theskeleton:theskeleton-web)](https://sonarcloud.io/dashboard/index/org.codenergic.theskeleton:theskeleton-web)
+[![Quality Gate](https://sonarcloud.io/api/badges/gate?key=org.codenergic.theskeleton:theskeleton-server)](https://sonarcloud.io/dashboard/index/org.codenergic.theskeleton:theskeleton-server)
 
 # TheSkeleton
 The skeleton is the project starter based on spring boot.
