@@ -38,9 +38,18 @@ abstract class PostRestData implements RestData {
 	@Nullable
 	abstract String getId();
 
+	@Nullable
+	abstract String getResponseTo();
+
+	@Nullable
+	abstract String getStatus();
+
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	abstract String getTitle();
+
+	@Nullable
+	abstract Boolean getResponse();
 
 	PostEntity toPostEntity() {
 		return new PostEntity()
@@ -59,15 +68,26 @@ abstract class PostRestData implements RestData {
 		default Builder fromPostEntity(PostEntity post) {
 			return id(post.getId())
 				.content(post.getContent())
+				.responseTo(post.getResponseTo() == null ? null : post.getResponseTo().getId())
+				.response(post.getResponseTo() == null)
+				.status(post.getPostStatus().name())
 				.title(post.getTitle());
 		}
 
 		Builder id(String id);
 
+		Builder response(Boolean isResponse);
+
+		Builder responseTo(String postId);
+
+		Builder status(String status);
+
 		Builder title(String title);
 	}
 
-	public interface New {}
+	public interface New {
+	}
 
-	public interface Existing {}
+	public interface Existing {
+	}
 }

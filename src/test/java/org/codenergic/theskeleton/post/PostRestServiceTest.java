@@ -114,6 +114,59 @@ public class PostRestServiceTest {
 	}
 
 	@Test
+	public void testPublishAndUnPublishPost() throws Exception {
+		when(postService.publishPost("123")).thenReturn(PostServiceTest.DUMMY_POST.setPostStatus(PostEntity.Status.PUBLISHED));
+		MockHttpServletResponse response = mockMvc.perform(put("/api/posts/123/publish")
+			.content("true").contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(document("post-publish"))
+			.andReturn()
+			.getResponse();
+		PostRestData expectedResponse = PostRestData.builder()
+			.fromPostEntity(PostServiceTest.DUMMY_POST)
+			.status(PostEntity.Status.PUBLISHED.name())
+			.build();
+		assertThat(response.getStatus()).isEqualTo(200);
+		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expectedResponse));
+		verify(postService).publishPost("123");
+
+		when(postService.unPublishPost("123")).thenReturn(PostServiceTest.DUMMY_POST.setPostStatus(PostEntity.Status.DRAFT));
+		response = mockMvc.perform(put("/api/posts/123/publish")
+			.content("false").contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(document("post-unpublish"))
+			.andReturn()
+			.getResponse();
+		expectedResponse = PostRestData.builder()
+			.fromPostEntity(PostServiceTest.DUMMY_POST)
+			.status(PostEntity.Status.DRAFT.name())
+			.build();
+		assertThat(response.getStatus()).isEqualTo(200);
+		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expectedResponse));
+		verify(postService).unPublishPost("123");
+	}
+
+	@Test
+	public void testReplyPost() throws Exception {
+		when(postService.replyPost(eq("123"), any()))
+			.thenReturn(PostServiceTest.DUMMY_POST2.setResponse(true).setResponseTo(PostServiceTest.DUMMY_POST));
+		MockHttpServletResponse response = mockMvc.perform(post("/api/posts/123/responses")
+			.content(objectMapper.writeValueAsBytes(PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST2).build()))
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(document("post-reply"))
+			.andReturn()
+			.getResponse();
+		PostRestData expectedResponse = PostRestData.builder()
+			.fromPostEntity(PostServiceTest.DUMMY_POST2)
+			.build();
+		assertThat(response.getStatus()).isEqualTo(200);
+		assertThat(response.getContentAsByteArray())
+			.isEqualTo(objectMapper.writeValueAsBytes(expectedResponse));
+		verify(postService).replyPost(eq("123"), any());
+	}
+
+	@Test
 	public void testSavePost() throws Exception {
 		when(postService.savePost(any())).thenReturn(PostServiceTest.DUMMY_POST);
 		MockHttpServletResponse response = mockMvc.perform(post("/api/posts")
