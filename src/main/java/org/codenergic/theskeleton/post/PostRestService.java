@@ -37,43 +37,49 @@ public class PostRestService {
 	@GetMapping("/{id}")
 	public PostRestData findPostById(@PathVariable("id") String id) {
 		PostEntity post = postService.findPostById(id);
-		if (post == null)
-			return null;
-		return PostRestData.builder().fromPostEntity(post).build();
+		return post == null ? null : mapPostEntityToData(post);
 	}
 
 	@GetMapping(params = {"username"})
 	public Page<PostRestData> findPostByPoster(@RequestParam("username") String username, Pageable pageable) {
-		return postService.findPostByPoster(username, pageable).map(p -> PostRestData.builder().fromPostEntity(p).build());
+		return postService.findPostByPoster(username, pageable).map(this::mapPostEntityToData);
 	}
 
 	@GetMapping
 	public Page<PostRestData> findPostByTitleContaining(@RequestParam(name = "title", defaultValue = "") String title, Pageable pageable) {
-		return postService.findPostByTitleContaining(title, pageable)
-			.map(p -> PostRestData.builder().fromPostEntity(p).build());
+		return postService.findPostByTitleContaining(title, pageable).map(this::mapPostEntityToData);
+	}
+
+	@GetMapping("/{id}/responses")
+	public Page<PostRestData> findPostReplies(@PathVariable("id") String id, Pageable pageable) {
+		return postService.findPostReplies(id, pageable).map(this::mapPostEntityToData);
+	}
+
+	private PostRestData mapPostEntityToData(PostEntity post) {
+		return PostRestData.builder().fromPostEntity(post).build();
 	}
 
 	@PutMapping("/{id}/publish")
 	public PostRestData publishPost(@PathVariable("id") String id, @RequestBody boolean publish) {
 		PostEntity post = publish ? postService.publishPost(id) : postService.unPublishPost(id);
-		return PostRestData.builder().fromPostEntity(post).build();
+		return mapPostEntityToData(post);
 	}
 
 	@PostMapping("/{id}/responses")
 	public PostRestData replyPost(@PathVariable("id") String id, @RequestBody PostRestData reply) {
 		PostEntity postReply = postService.replyPost(id, reply.toPostEntity());
-		return PostRestData.builder().fromPostEntity(postReply).build();
+		return mapPostEntityToData(postReply);
 	}
 
 	@PostMapping
 	public PostRestData savePost(@RequestBody @Validated(PostRestData.New.class) PostRestData postRestData) {
 		PostEntity post = postService.savePost(postRestData.toPostEntity());
-		return PostRestData.builder().fromPostEntity(post).build();
+		return mapPostEntityToData(post);
 	}
 
 	@PutMapping("/{id}")
 	public PostRestData updatePost(@PathVariable("id") String id, @RequestBody @Validated(PostRestData.Existing.class) final PostRestData postRestData) {
 		PostEntity post = postService.updatePost(id, postRestData.toPostEntity());
-		return PostRestData.builder().fromPostEntity(post).build();
+		return mapPostEntityToData(post);
 	}
 }

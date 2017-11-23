@@ -63,6 +63,11 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public Page<PostEntity> findPostReplies(String postId, Pageable pageable) {
+		return postRepository.findByResponseToId(postId, pageable);
+	}
+
+	@Override
 	@Transactional
 	public PostEntity publishPost(String id) {
 		return updatePostStatus(id, PostEntity.Status.PUBLISHED);

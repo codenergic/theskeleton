@@ -114,6 +114,21 @@ public class PostRestServiceTest {
 	}
 
 	@Test
+	public void testFindPostReplies() throws Exception {
+		final Page<PostEntity> post = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST));
+		when(postService.findPostReplies(contains("123"), any())).thenReturn(post);
+		MockHttpServletResponse response = mockMvc.perform(get("/api/posts/123/responses")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(document("post-read-all-responses"))
+			.andReturn()
+			.getResponse();
+		assertThat(response.getContentAsByteArray())
+			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
+		verify(postService).findPostReplies(eq("123"), any());
+	}
+
+	@Test
 	public void testPublishAndUnPublishPost() throws Exception {
 		when(postService.publishPost("123")).thenReturn(PostServiceTest.DUMMY_POST.setPostStatus(PostEntity.Status.PUBLISHED));
 		MockHttpServletResponse response = mockMvc.perform(put("/api/posts/123/publish")

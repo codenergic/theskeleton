@@ -35,6 +35,9 @@ public interface PostService {
 	@PreAuthorize("permitAll()")
 	Page<PostEntity> findPostByTitleContaining(@NotNull String title, Pageable pageable);
 
+	@PreAuthorize("permitAll()")
+	Page<PostEntity> findPostReplies(String postId, Pageable pageable);
+
 	@PreAuthorize("isAuthenticated()")
 	PostEntity publishPost(@NotNull String id);
 

@@ -90,6 +90,14 @@ public class PostServiceTest {
 	}
 
 	@Test
+	public void testFindPostReplies() {
+		Page<PostEntity> dbResult = new PageImpl<>(Collections.singletonList(DUMMY_POST));
+		when(postRepository.findByResponseToId(eq("123"), any())).thenReturn(dbResult);
+		assertThat(postService.findPostReplies("123", null)).isEqualTo(dbResult);
+		verify(postRepository).findByResponseToId(eq("123"), any());
+	}
+
+	@Test
 	public void testPublishAndUnPublishPost() {
 		when(postRepository.findOne("1234")).thenReturn(null);
 		assertThatThrownBy(() -> postService.publishPost("1234")).isInstanceOf(IllegalArgumentException.class);
