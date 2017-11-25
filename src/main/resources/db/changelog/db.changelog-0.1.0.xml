@@ -278,7 +278,7 @@
 			<column name="poster_user_id" type="varchar(255)">
 				<constraints foreignKeyName="fk_post_poster_user_id" references="ts_user(id)" />
 			</column>
-			<column name="is_response" type="bit(1)" />
+			<column name="is_response" type="boolean" />
 			<column name="post_status" type="varchar(20)" />
 			<column name="response_to_post_id" type="varchar(255)">
 				<constraints foreignKeyName="fk_post_response_to_post_id" references="ts_post(id)" />
