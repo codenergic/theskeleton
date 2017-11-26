@@ -28,7 +28,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -44,10 +46,28 @@ import java.util.Collections;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private final UserService userService;
 	private final PasswordEncoder passwordEncoder;
+	private final RememberMeServices rememberMeServices;
+	private final SessionRegistry sessionRegistry;
 
-	public WebSecurityConfig(UserService userService, PasswordEncoder passwordEncoder) {
+	@SuppressWarnings("unchecked")
+	public WebSecurityConfig(UserService userService, PasswordEncoder passwordEncoder,
+							 RememberMeServices rememberMeServices, SessionRegistry sessionRegistry) {
 		this.userService = userService;
 		this.passwordEncoder = passwordEncoder;
+		this.rememberMeServices = rememberMeServices;
+		this.sessionRegistry = sessionRegistry;
+	}
+
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userService)
+				.passwordEncoder(passwordEncoder);
 	}
 
 	@Override
@@ -62,6 +82,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and()
 			.rememberMe()
 				.rememberMeParameter("remember-me")
+				.rememberMeServices(rememberMeServices)
 				.and()
 			.logout()
 				.logoutUrl("/auth/logout")
@@ -72,24 +93,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.frameOptions().sameOrigin()
 				.and()
 			.sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+				.maximumSessions(10)
+				.sessionRegistry(sessionRegistry)
+				.and()
+			.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
 				.and()
 			.csrf()
 				.requireCsrfProtectionMatcher(new AntPathRequestMatcher("/oauth/authorize"))
 				.disable()
 			.cors();
-	}
-
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userService)
-				.passwordEncoder(passwordEncoder);
-	}
-
-	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
 	}
 
 	/**

@@ -3,26 +3,45 @@ package org.codenergic.theskeleton.user.profile;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalRestData;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/profile")
 public class ProfileRestService {
-	private ProfileService profileService;
+	private final ProfileService profileService;
+	private final SessionRegistry sessionRegistry;
 
-	public ProfileRestService(ProfileService profileService) {
+	public ProfileRestService(ProfileService profileService, SessionRegistry sessionRegistry) {
 		this.profileService = profileService;
+		this.sessionRegistry = sessionRegistry;
 	}
 
 	private ProfileRestData convertToRestData(UserEntity user) {
 		return ProfileRestData.builder().fromUserEntity(user).build();
+	}
+
+	@GetMapping("/sessions")
+	public List<SessionInformation> findProfileActiveSessions(Authentication authentication) {
+		if (authentication == null || authentication.getPrincipal() == null)
+			return Collections.emptyList();
+		List<SessionInformation> sessionInfos = new ArrayList<>();
+		for (Object principal : sessionRegistry.getAllPrincipals()) {
+			UserEntity user = (UserEntity) principal;
+			if (!user.getUsername().equals(authentication.getName()))
+				continue;
+			sessionInfos.addAll(sessionRegistry.getAllSessions(user, true));
+		}
+		return sessionInfos.stream()
+			.map(i -> new SessionInformation(authentication.getName(), i.getSessionId(), i.getLastRequest()))
+			.collect(Collectors.toList());
 	}
 
 	@GetMapping("/connected-apps")
