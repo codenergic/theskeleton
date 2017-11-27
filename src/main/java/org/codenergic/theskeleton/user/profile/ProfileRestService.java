@@ -32,14 +32,14 @@ public class ProfileRestService {
 	public List<SessionInformation> findProfileActiveSessions(Authentication authentication) {
 		if (authentication == null || authentication.getPrincipal() == null)
 			return Collections.emptyList();
-		List<SessionInformation> sessionInfos = new ArrayList<>();
+		List<SessionInformation> sessions = new ArrayList<>();
 		for (Object principal : sessionRegistry.getAllPrincipals()) {
 			UserEntity user = (UserEntity) principal;
 			if (!user.getUsername().equals(authentication.getName()))
 				continue;
-			sessionInfos.addAll(sessionRegistry.getAllSessions(user, true));
+			sessions.addAll(sessionRegistry.getAllSessions(user, true));
 		}
-		return sessionInfos.stream()
+		return sessions.stream()
 			.map(i -> new SessionInformation(authentication.getName(), i.getSessionId(), i.getLastRequest()))
 			.collect(Collectors.toList());
 	}

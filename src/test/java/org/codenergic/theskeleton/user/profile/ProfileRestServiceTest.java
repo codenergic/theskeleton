@@ -18,6 +18,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.oauth2.provider.approval.Approval;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -26,19 +28,18 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Principal;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = {ProfileRestService.class})
@@ -52,6 +53,30 @@ public class ProfileRestServiceTest {
 	private MinioClient minioClient;
 	@MockBean
 	private ProfileService profileService;
+	@MockBean
+	private SessionRegistry sessionRegistry;
+
+	@Test
+	@WithMockUser("user123")
+	public void testFindProfileActiveSessions() throws Exception {
+		final UserEntity user = new UserEntity().setUsername("user123");
+		when(sessionRegistry.getAllPrincipals()).thenReturn(Collections.singletonList(user));
+		final SessionInformation sessionInformation = new SessionInformation("1", "1", new Date());
+		when(sessionRegistry.getAllSessions(user, true))
+			.thenReturn(Collections.singletonList(sessionInformation));
+		MockHttpServletRequestBuilder request = get("/api/profile/sessions")
+			.contentType(MediaType.APPLICATION_JSON);
+		MockHttpServletResponse response = mockMvc.perform(request)
+			.andDo(document("user-profile-sessions-list"))
+			.andReturn()
+			.getResponse();
+		assertThat(response.getStatus()).isEqualTo(200);
+		List<SessionInformation> expectedValue = Collections
+			.singletonList(new SessionInformation("user123", "1", sessionInformation.getLastRequest()));
+		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expectedValue));
+		verify(sessionRegistry).getAllPrincipals();
+		verify(sessionRegistry).getAllSessions(user, true);
+	}
 
 	@Test
 	@WithMockUser("user123")
