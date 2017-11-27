@@ -70,6 +70,11 @@ public class ProfileRestService {
 		profileService.removeOAuth2ClientApprovalByUsername(authentication.getName(), clientId);
 	}
 
+	@DeleteMapping("/sessions")
+	public void revokeProfileSession(@RequestBody String sessionId) {
+		sessionRegistry.removeSessionInformation(sessionId);
+	}
+
 	@PutMapping
 	public ProfileRestData updateProfile(Authentication authentication,
 			@RequestBody @Valid ProfileRestData profileRestData) {

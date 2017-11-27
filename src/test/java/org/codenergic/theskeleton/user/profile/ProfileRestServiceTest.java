@@ -151,6 +151,21 @@ public class ProfileRestServiceTest {
 	}
 
 	@Test
+	@WithMockUser("user123")
+	public void testRevokeProfileSession() throws Exception {
+		MockHttpServletRequestBuilder request = delete("/api/profile/sessions")
+			.content("123")
+			.contentType(MediaType.APPLICATION_JSON);
+		MockHttpServletResponse response = mockMvc.perform(request)
+			.andDo(document("user-profile-sessions-revoke"))
+			.andReturn()
+			.getResponse();
+		assertThat(response.getStatus()).isEqualTo(200);
+		assertThat(response.getContentLength()).isEqualTo(0);
+		verify(sessionRegistry).removeSessionInformation("123");
+	}
+
+	@Test
 	public void testSerializeDeserializeUser() throws IOException {
 		ProfileRestData user = ProfileRestData.builder()
 			.username("user")
