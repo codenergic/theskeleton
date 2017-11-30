@@ -28,7 +28,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -141,7 +140,7 @@ public class ProfileRestServiceTest {
 		doAnswer(invocation -> null)
 			.when(profileService)
 			.removeOAuth2ClientApprovalByUsername("user123", "123");
-		MockHttpServletResponse response = mockMvc.perform(delete("/api/profile/connected-apps/123"))
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/profile/connected-apps").content("123"))
 			.andDo(document("user-profile-connected-apps-remove"))
 			.andReturn()
 			.getResponse();
