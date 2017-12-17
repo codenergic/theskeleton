@@ -37,9 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-@WebMvcTest(controllers = { UserRestService.class }, secure = false)
+@WebMvcTest(controllers = { UserRestController.class }, secure = false)
 @EnableRestDocs
-public class UserRestServiceTest {
+public class UserRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 	@Autowired

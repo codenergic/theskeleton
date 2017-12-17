@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/posts")
-public class PostRestService {
+public class PostRestController {
 	private PostService postService;
 
-	public PostRestService(PostService postService) {
+	public PostRestController(PostService postService) {
 		this.postService = postService;
 	}
 

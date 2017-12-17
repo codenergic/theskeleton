@@ -27,10 +27,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/roles")
-public class RoleRestService {
+public class RoleRestController {
 	private final RoleService roleService;
 
-	public RoleRestService(RoleService roleService) {
+	public RoleRestController(RoleService roleService) {
 		this.roleService = roleService;
 	}
 

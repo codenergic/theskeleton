@@ -57,9 +57,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-@WebMvcTest(controllers = { RoleRestService.class }, secure = false)
+@WebMvcTest(controllers = { RoleRestController.class }, secure = false)
 @EnableRestDocs
-public class RoleRestServiceTest {
+public class RoleRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 	@Autowired
@@ -193,7 +193,7 @@ public class RoleRestServiceTest {
 				.andExpect(status().isOk())
 				.andDo(document("role-delete"));
 	}
-	
+
 	@Test
 	public void testAddPrivilegeToRole() throws Exception {
 		final RoleEntity role = new RoleEntity()
