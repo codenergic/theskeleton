@@ -46,9 +46,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-@WebMvcTest(controllers = { PrivilegeRestService.class }, secure = false)
+@WebMvcTest(controllers = { PrivilegeRestController.class }, secure = false)
 @EnableRestDocs
-public class PrivilegeRestServiceTest {
+public class PrivilegeRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 	@Autowired

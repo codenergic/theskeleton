@@ -36,12 +36,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserRestService {
+public class UserRestController {
 	private UserService userService;
 	private UserAdminService userAdminService;
 	private TokenStoreService tokenStoreService;
 
-	public UserRestService(UserService userService, UserAdminService userAdminService, TokenStoreService tokenStoreService) {
+	public UserRestController(UserService userService, UserAdminService userAdminService, TokenStoreService tokenStoreService) {
 		this.userService = userService;
 		this.userAdminService = userAdminService;
 		this.tokenStoreService = tokenStoreService;

@@ -41,9 +41,9 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = {ProfileRestService.class})
+@WebMvcTest(controllers = {ProfileRestController.class})
 @EnableRestDocs
-public class ProfileRestServiceTest {
+public class ProfileRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
 	@Autowired

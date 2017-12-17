@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/privileges")
-public class PrivilegeRestService {
+public class PrivilegeRestController {
 	private final PrivilegeService privilegeService;
 
-	public PrivilegeRestService(PrivilegeService privilegeService) {
+	public PrivilegeRestController(PrivilegeService privilegeService) {
 		this.privilegeService = privilegeService;
 	}
 

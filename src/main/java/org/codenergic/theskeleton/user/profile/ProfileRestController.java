@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/profile")
-public class ProfileRestService {
+public class ProfileRestController {
 	private final ProfileService profileService;
 	private final SessionRegistry sessionRegistry;
 
-	public ProfileRestService(ProfileService profileService, SessionRegistry sessionRegistry) {
+	public ProfileRestController(ProfileService profileService, SessionRegistry sessionRegistry) {
 		this.profileService = profileService;
 		this.sessionRegistry = sessionRegistry;
 	}
