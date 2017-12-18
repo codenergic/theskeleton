@@ -7,9 +7,6 @@ import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalRepository;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.codenergic.theskeleton.user.profile.ProfileService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,14 +15,11 @@ import java.io.InputStream;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
 public class ProfileServiceImpl implements ProfileService {
 	private static final String PICTURE_BUCKET_NAME = "profile-pictures";
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final UserRepository userRepository;
 	private final MinioClient minioClient;
 	private final PasswordEncoder passwordEncoder;
@@ -36,23 +30,6 @@ public class ProfileServiceImpl implements ProfileService {
 		this.userRepository = userRepository;
 		this.minioClient = minioClient;
 		this.passwordEncoder = passwordEncoder;
-	}
-
-	@Autowired
-	public void createBucketIfNotExists(ScheduledExecutorService executorService) {
-		executorService.schedule(() -> {
-			try {
-				logger.info("Checking bucket: {}", PICTURE_BUCKET_NAME);
-				if (minioClient.bucketExists(PICTURE_BUCKET_NAME))
-					return;
-				logger.info("Bucket doesn't exist, creating one");
-				minioClient.makeBucket(PICTURE_BUCKET_NAME);
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-			} finally {
-				logger.info("Bucket successfully created");
-			}
-		}, 5, TimeUnit.SECONDS);
 	}
 
 	@Override
