@@ -15,15 +15,6 @@
  */
 package org.codenergic.theskeleton.core.security;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.codenergic.theskeleton.client.OAuth2ClientService;
 import org.codenergic.theskeleton.core.security.SecurityTest.SecurityTestConfiguration;
 import org.codenergic.theskeleton.user.UserEntity;
@@ -36,10 +27,18 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.security.oauth2.provider.token.UserAuthenticationConverter;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { SecurityTestConfiguration.class }, webEnvironment = WebEnvironment.MOCK)
@@ -60,9 +59,10 @@ public class SecurityTest {
 		Authentication authentication = mock(Authentication.class);
 		when(authentication.getPrincipal()).thenReturn(new UserEntity().setId("123"));
 		Map<String, ?> response = authenticationConverter.convertUserAuthentication(authentication);
-		assertThat(response).hasSize(2);
+		assertThat(response).hasSize(3);
 		assertThat(response).containsKey("user_name");
 		assertThat(response).containsKey("user_id");
+		assertThat(response).containsKey("email");
 		assertThat(response.get("user_id")).isEqualTo("123");
 		verify(authentication, times(2)).getPrincipal();
 	}
@@ -72,12 +72,14 @@ public class SecurityTest {
 		UserAuthenticationConverter authenticationConverter = new UserAccessTokenAuthenticationConverter();
 		Map<String, Object> map = new HashMap<>();
 		map.put("user_name", "username");
-		assertThat(authenticationConverter.extractAuthentication(map)).isNull();
+		assertThatThrownBy(() -> authenticationConverter.extractAuthentication(map)).isInstanceOf(BadCredentialsException.class);
 		map.put("user_id", "123");
+		assertThatThrownBy(() -> authenticationConverter.extractAuthentication(map)).isInstanceOf(BadCredentialsException.class);
+		map.put("email", "user@example.com");
 		Authentication authentication = authenticationConverter.extractAuthentication(map);
 		assertThat(authentication.getPrincipal()).isInstanceOf(UserEntity.class);
-		map.remove("user_name");
-		assertThat(authenticationConverter.extractAuthentication(map)).isNull();
+		map.remove("email");
+		assertThatThrownBy(() -> authenticationConverter.extractAuthentication(map)).isInstanceOf(BadCredentialsException.class);
 	}
 
 	@Configuration
