@@ -66,5 +66,12 @@ spring:
           starttls:
             enable: false
             required: false
+  social:
+    facebook:
+      app-id: 897090537127510
+      app-secret: 38fc52cda45ce507ae37df2d3105ebbf
+    google:
+      app-id: 1031466054059-efbl8kv8luoegprdsdubkq4kba3qvcuo.apps.googleusercontent.com
+      app-secret: pTj_xuAmNSmx0nOhTTsMpCZN
 email:
     baseurl: http://localhost:8080
