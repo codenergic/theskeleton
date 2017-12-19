@@ -21,6 +21,9 @@ s3:
     endpoint: http://localhost:8082
     access-key: supersecret
     secret-key: supersecret123
+    buckets:
+      - profile-pictures
+      - galleries
 security:
   oauth2:
     resource:
