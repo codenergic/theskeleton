@@ -302,4 +302,44 @@
 			<column name="type" type="integer"/>
 		</createTable>
 	</changeSet>
+	<changeSet id="0005" author="vickyfaizal">
+		<createTable tableName="ts_social_connection">
+			<column name="id" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="status" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by_client" type="varchar(255)" />
+			<column name="created_by" type="varchar(255)" />
+			<column name="created_date" type="datetime" />
+			<column name="last_modified_by_client" type="varchar(255)" />
+			<column name="last_modified_by" type="varchar(255)" />
+			<column name="last_modified_date" type="datetime" />
+			<column name="access_token" type="clob">
+				<constraints nullable="false" />
+			</column>
+			<column name="display_name" type="varchar(255)" />
+			<column name="expire_time" type="bigint">
+				<constraints nullable="false" />
+			</column>
+			<column name="image_url" type="clob"/>
+			<column name="profile_url" type="clob"/>
+			<column name="provider" type="varchar(255)" />
+			<column name="provider_user_id" type="varchar(255)" />
+			<column name="rank" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="refresh_token" type="clob"/>
+			<column name="secret" type="clob"/>
+			<column name="user_id" type="varchar(255)">
+				<constraints nullable="false" foreignKeyName="fk_social_connection_user_id"
+							 references="ts_user(id)" />
+			</column>
+		</createTable>
+		<addUniqueConstraint constraintName="uk_social_connection_user_id_provider_rank"
+			tableName="ts_social_connection" columnNames="user_id, provider, rank" />
+		<addUniqueConstraint constraintName="uk_social_connection_user_id_provider_provider_user_id"
+			tableName="ts_social_connection" columnNames="user_id, provider, provider_user_id" />
+	</changeSet>
 </databaseChangeLog>
