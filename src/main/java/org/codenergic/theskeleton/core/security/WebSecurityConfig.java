@@ -15,6 +15,9 @@
  */
 package org.codenergic.theskeleton.core.security;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.codenergic.theskeleton.user.UserService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -37,9 +40,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -50,7 +50,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private final RememberMeServices rememberMeServices;
 	private final SessionRegistry sessionRegistry;
 
-	@SuppressWarnings("unchecked")
 	public WebSecurityConfig(UserService userService, PasswordEncoder passwordEncoder,
 							 RememberMeServices rememberMeServices, SessionRegistry sessionRegistry) {
 		this.userService = userService;

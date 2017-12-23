@@ -1,5 +1,14 @@
 package org.codenergic.theskeleton.registration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.codenergic.theskeleton.core.social.SocialServiceLocator;
 import org.codenergic.theskeleton.registration.impl.RegistrationServiceImpl;
 import org.codenergic.theskeleton.tokenstore.TokenStoreEntity;
 import org.codenergic.theskeleton.tokenstore.TokenStoreRepository;
@@ -14,25 +23,20 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-
 public class RegistrationServiceTest {
-
 	@Mock
 	private UserRepository userRepository;
 	@Mock
 	private TokenStoreRepository tokenStoreRepository;
 	private RegistrationService registrationService;
 	private PasswordEncoder passwordEncoder = NoOpPasswordEncoder.getInstance();
+	private SocialServiceLocator socialServiceLocator;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		registrationService = new RegistrationServiceImpl(userRepository, tokenStoreRepository, passwordEncoder);
+		registrationService = new RegistrationServiceImpl(userRepository, tokenStoreRepository, 
+				passwordEncoder, socialServiceLocator);
 	}
 
 	@Test

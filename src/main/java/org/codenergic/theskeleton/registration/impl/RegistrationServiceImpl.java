@@ -1,26 +1,35 @@
 package org.codenergic.theskeleton.registration.impl;
 
 import org.codenergic.theskeleton.core.data.Activeable;
-import org.codenergic.theskeleton.registration.*;
+import org.codenergic.theskeleton.core.social.SocialService;
+import org.codenergic.theskeleton.core.social.SocialServiceLocator;
+import org.codenergic.theskeleton.registration.RegistrationException;
+import org.codenergic.theskeleton.registration.RegistrationForm;
+import org.codenergic.theskeleton.registration.RegistrationService;
 import org.codenergic.theskeleton.tokenstore.TokenStoreEntity;
 import org.codenergic.theskeleton.tokenstore.TokenStoreRepository;
 import org.codenergic.theskeleton.tokenstore.TokenStoreType;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionSignUp;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class RegistrationServiceImpl implements RegistrationService {
+@Transactional(readOnly = true)
+public class RegistrationServiceImpl implements RegistrationService, ConnectionSignUp {
 	private UserRepository userRepository;
 	private TokenStoreRepository tokenStoreRepository;
 	private PasswordEncoder passwordEncoder;
+	private SocialServiceLocator socialServiceLocator;
 	public RegistrationServiceImpl(UserRepository userRepository, TokenStoreRepository tokenStoreRepository,
-								   PasswordEncoder passwordEncoder) {
+			PasswordEncoder passwordEncoder, SocialServiceLocator socialServiceLocator) {
 		this.userRepository = userRepository;
 		this.tokenStoreRepository = tokenStoreRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.socialServiceLocator = socialServiceLocator;
 	}
 
 	@Override
@@ -81,5 +90,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 		user.setPassword(passwordEncoder.encode(password));
 		tokenStoreEntity.setStatus(Activeable.Status.INACTIVE.getStatus());
 		return true;
+	}
+
+	@Override
+	@Transactional
+	public String execute(Connection<?> connection) {
+		SocialService<?> socialService = socialServiceLocator.getSocialService(connection.getKey().getProviderId());
+		UserEntity createdUser = socialService.createUser(connection);
+		UserEntity user = userRepository.findByEmail(createdUser.getEmail());
+		return user != null ? user.getId() : userRepository.save(createdUser).getId();
 	}
 }
