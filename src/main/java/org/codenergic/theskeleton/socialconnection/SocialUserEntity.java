@@ -19,7 +19,7 @@ import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.social.security.SocialUserDetails;
 
 public class SocialUserEntity extends UserEntity implements SocialUserDetails {
-	public SocialUserEntity(UserEntity userEntity) {
+	SocialUserEntity(UserEntity userEntity) {
 		super(userEntity);
 	}
 
