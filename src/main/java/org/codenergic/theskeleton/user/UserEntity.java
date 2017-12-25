@@ -15,26 +15,16 @@
  */
 package org.codenergic.theskeleton.user;
 
+import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
+import org.codenergic.theskeleton.role.RolePrivilegeEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-
-import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
-import org.codenergic.theskeleton.role.RolePrivilegeEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "ts_user")
@@ -71,10 +61,21 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 	@Column(name = "picture_url")
 	private String pictureUrl;
 
-	@Override
-	public UserEntity setId(String id) {
-		super.setId(id);
-		return this;
+	public UserEntity(UserEntity other) {
+		this.accountNonLocked = other.accountNonLocked;
+		this.credentialsNonExpired = other.credentialsNonExpired;
+		this.email = other.email;
+		this.enabled = other.enabled;
+		this.expiredAt = other.expiredAt;
+		this.password = other.password;
+		this.phoneNumber = other.phoneNumber;
+		this.username = other.username;
+		this.roles = other.roles;
+		this.authorities = other.authorities;
+		this.pictureUrl = other.pictureUrl;
+	}
+
+	public UserEntity() {
 	}
 
 	@Override
@@ -87,6 +88,24 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 		return this;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public UserEntity setEmail(String email) {
+		this.email = email;
+		return this;
+	}
+
+	public Date getExpiredAt() {
+		return expiredAt;
+	}
+
+	public UserEntity setExpiredAt(Date expiredAt) {
+		this.expiredAt = expiredAt;
+		return this;
+	}
+
 	@Override
 	public String getPassword() {
 		return password;
@@ -94,6 +113,33 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 
 	public UserEntity setPassword(String password) {
 		this.password = password;
+		return this;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public UserEntity setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+		return this;
+	}
+
+	public String getPictureUrl() {
+		return pictureUrl;
+	}
+
+	public UserEntity setPictureUrl(String pictureUrl) {
+		this.pictureUrl = pictureUrl;
+		return this;
+	}
+
+	public Set<UserRoleEntity> getRoles() {
+		return roles;
+	}
+
+	public UserEntity setRoles(Set<UserRoleEntity> roles) {
+		this.roles = roles;
 		return this;
 	}
 
@@ -143,48 +189,9 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 		return this;
 	}
 
-	public String getEmail() {
-		return email;
-	}
-
-	public UserEntity setEmail(String email) {
-		this.email = email;
-		return this;
-	}
-
-	public Date getExpiredAt() {
-		return expiredAt;
-	}
-
-	public UserEntity setExpiredAt(Date expiredAt) {
-		this.expiredAt = expiredAt;
-		return this;
-	}
-
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-
-	public UserEntity setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-		return this;
-	}
-
-	public Set<UserRoleEntity> getRoles() {
-		return roles;
-	}
-
-	public UserEntity setRoles(Set<UserRoleEntity> roles) {
-		this.roles = roles;
-		return this;
-	}
-
-	public String getPictureUrl() {
-		return pictureUrl;
-	}
-
-	public UserEntity setPictureUrl(String pictureUrl) {
-		this.pictureUrl = pictureUrl;
+	@Override
+	public UserEntity setId(String id) {
+		super.setId(id);
 		return this;
 	}
 }

@@ -31,6 +31,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.security.oauth2.provider.token.UserAuthenticationConverter;
+import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
@@ -99,6 +101,16 @@ public class SecurityTest {
 		@Bean
 		public OAuth2ClientService mockOAuth2ClientService() {
 			return mock(OAuth2ClientService.class);
+		}
+
+		@Bean
+		public UsersConnectionRepository usersConnectionRepository() {
+			return mock(UsersConnectionRepository.class);
+		}
+
+		@Bean
+		public SocialUserDetailsService socialUserDetailsService() {
+			return mock(SocialUserDetailsService.class);
 		}
 	}
 }

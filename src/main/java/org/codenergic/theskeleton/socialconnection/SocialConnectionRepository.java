@@ -15,32 +15,28 @@
  */
 package org.codenergic.theskeleton.socialconnection;
 
-import java.util.Collection;
-import java.util.List;
-
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
+
 @Repository
 public interface SocialConnectionRepository extends AuditingEntityRepository<SocialConnectionEntity> {
-	List<SocialConnectionEntity> findByUserIdOrderByRankAsc(String userId);
+	List<SocialConnectionEntity> findByProviderAndProviderUserId(String provider, String providerUserId);
 
-	List<SocialConnectionEntity> findByUserIdAndProviderOrderByRankAsc(String userId, String provider);
-
-	SocialConnectionEntity findByUserIdAndProviderAndProviderUserId(String userId, String provider, String providerUserId);
+	List<SocialConnectionEntity> findByProviderAndProviderUserIdIn(String provider, Collection<String> providerUserIds);
 
 	List<SocialConnectionEntity> findByUserIdAndProvider(String userId, String provider);
 
+	SocialConnectionEntity findByUserIdAndProviderAndProviderUserId(String userId, String provider, String providerUserId);
+
 	List<SocialConnectionEntity> findByUserIdAndProviderAndRank(String userId, String provider, int rank);
 
-	@Query("SELECT c.user.id FROM SocialConnectionEntity c WHERE c.provider = ?1 AND c.providerUserId = ?2")
-	List<String> findUserIdByProviderAndProviderUserId(String provider, String providerUserId);
+	List<SocialConnectionEntity> findByUserIdAndProviderOrderByRankAsc(String userId, String provider);
 
-	@Query("SELECT c.user.id FROM SocialConnectionEntity c WHERE c.provider = ?1 AND c.providerUserId IN ?2")
-	List<String> findUserIdByProviderAndProviderUserIdIn(String provider, Collection<String> providerUserIds);
-
-	int findRankByUserId(String userId, String provider);
+	List<SocialConnectionEntity> findByUserIdOrderByRankAsc(String userId);
 
 	@Query("SELECT COALESCE(MAX(c.rank) + 1, 1) "
 			+ "FROM SocialConnectionEntity c "
