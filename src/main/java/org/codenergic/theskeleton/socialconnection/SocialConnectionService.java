@@ -24,7 +24,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import javax.persistence.NoResultException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,9 +73,6 @@ public class SocialConnectionService implements ConnectionRepository {
 		socialConnections.forEach(socialConnection -> {
 			Connection<?> connection = connectionMapper.mapRow(socialConnection);
 			String providerId = connection.getKey().getProviderId();
-			if (connections.get(providerId).isEmpty()) {
-				connections.put(providerId, new LinkedList<>());
-			}
 			connections.add(providerId, connection);
 		});
 		return connections;
