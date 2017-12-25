@@ -15,25 +15,11 @@
  */
 package org.codenergic.theskeleton.user.impl;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RolePrivilegeEntity;
 import org.codenergic.theskeleton.role.RolePrivilegeRepository;
 import org.codenergic.theskeleton.role.RoleRepository;
-import org.codenergic.theskeleton.user.UserAdminService;
-import org.codenergic.theskeleton.user.UserEntity;
-import org.codenergic.theskeleton.user.UserRepository;
-import org.codenergic.theskeleton.user.UserRoleEntity;
-import org.codenergic.theskeleton.user.UserRoleRepository;
-import org.codenergic.theskeleton.user.UserService;
+import org.codenergic.theskeleton.user.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,6 +27,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -173,6 +162,8 @@ public class UserServiceImpl implements UserService, UserAdminService {
 		UserEntity user = findUserByUsername(username);
 		if (user == null)
 			user = findUserByEmail(username);
+		if (user == null)
+			user = userRepository.findOne(username);
 		if (user == null)
 			throw new UsernameNotFoundException("Cannot find user with username or email of " + username);
 		Set<RolePrivilegeEntity> rolePrivileges = new HashSet<>();

@@ -18,6 +18,9 @@ package org.codenergic.theskeleton.registration;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.codenergic.theskeleton.tokenstore.TokenStoreType;
 import org.codenergic.theskeleton.user.UserEntity;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.UserProfile;
+import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 
@@ -35,31 +39,40 @@ public class RegistrationController {
 	private static final String REGISTRATION_CONFIRMATION = "registration_confirmation";
 	private static final String REGISTRATION_ACTIVATION = "registration_activation";
 
-	private RegistrationService registrationService;
-	private TokenStoreService tokenStoreService;
+	private final RegistrationService registrationService;
+	private final TokenStoreService tokenStoreService;
+	private final ProviderSignInUtils providerSignInUtils;
 
-	public RegistrationController(RegistrationService registrationService, TokenStoreService tokenStoreService) {
+	public RegistrationController(RegistrationService registrationService, TokenStoreService tokenStoreService, ProviderSignInUtils providerSignInUtils) {
 		this.registrationService = registrationService;
 		this.tokenStoreService = tokenStoreService;
+		this.providerSignInUtils = providerSignInUtils;
 	}
 
 	@GetMapping
-	public String registrationView(RegistrationForm registrationForm) {
+	public String registrationView(RegistrationForm registrationForm, WebRequest request) {
+		Connection<?> connection = providerSignInUtils.getConnectionFromSession(request);
+		if (connection != null) {
+			UserProfile profile = connection.fetchUserProfile();
+			registrationForm.setUsername(profile.getUsername());
+			registrationForm.setEmail(profile.getEmail());
+		}
 		return REGISTRATION;
 	}
 
 	@PostMapping
-	public String register(@Valid RegistrationForm registrationForm, BindingResult bindingResult) {
+	public String register(@Valid RegistrationForm registrationForm, BindingResult bindingResult, WebRequest request) {
 		if (bindingResult.hasErrors())
-			return registrationView(registrationForm);
+			return registrationView(registrationForm, request);
 		try {
 			UserEntity user = registrationService.registerUser(registrationForm);
 			if (user != null && user.getId() != null) {
 				tokenStoreService.sendTokenNotification(TokenStoreType.USER_ACTIVATION, user);
+				providerSignInUtils.doPostSignUp(user.getId(), request);
 			}
 		} catch (RegistrationException e) {
 			bindingResult.rejectValue("username", "error.registrationForm", e.getMessage());
-			return registrationView(registrationForm);
+			return registrationView(registrationForm, request);
 		}
 		return REGISTRATION_CONFIRMATION;
 	}
