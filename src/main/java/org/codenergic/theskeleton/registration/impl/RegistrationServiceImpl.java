@@ -1,8 +1,6 @@
 package org.codenergic.theskeleton.registration.impl;
 
 import org.codenergic.theskeleton.core.data.Activeable;
-import org.codenergic.theskeleton.core.social.SocialService;
-import org.codenergic.theskeleton.core.social.SocialServiceLocator;
 import org.codenergic.theskeleton.registration.RegistrationException;
 import org.codenergic.theskeleton.registration.RegistrationForm;
 import org.codenergic.theskeleton.registration.RegistrationService;
@@ -23,13 +21,11 @@ public class RegistrationServiceImpl implements RegistrationService, ConnectionS
 	private UserRepository userRepository;
 	private TokenStoreRepository tokenStoreRepository;
 	private PasswordEncoder passwordEncoder;
-	private SocialServiceLocator socialServiceLocator;
-	public RegistrationServiceImpl(UserRepository userRepository, TokenStoreRepository tokenStoreRepository,
-			PasswordEncoder passwordEncoder, SocialServiceLocator socialServiceLocator) {
+
+	public RegistrationServiceImpl(UserRepository userRepository, TokenStoreRepository tokenStoreRepository, PasswordEncoder passwordEncoder) {
 		this.userRepository = userRepository;
 		this.tokenStoreRepository = tokenStoreRepository;
 		this.passwordEncoder = passwordEncoder;
-		this.socialServiceLocator = socialServiceLocator;
 	}
 
 	@Override
@@ -95,9 +91,6 @@ public class RegistrationServiceImpl implements RegistrationService, ConnectionS
 	@Override
 	@Transactional
 	public String execute(Connection<?> connection) {
-		SocialService<?> socialService = socialServiceLocator.getSocialService(connection.getKey().getProviderId());
-		UserEntity createdUser = socialService.createUser(connection);
-		UserEntity user = userRepository.findByEmail(createdUser.getEmail());
-		return user != null ? user.getId() : userRepository.save(createdUser).getId();
+		throw new UnsupportedOperationException();
 	}
 }

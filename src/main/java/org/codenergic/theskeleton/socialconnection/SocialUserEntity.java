@@ -4,21 +4,27 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ *  *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ *  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.core.social;
+package org.codenergic.theskeleton.socialconnection;
 
-import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.codenergic.theskeleton.user.UserEntity;
+import org.springframework.social.security.SocialUserDetails;
 
-public interface SocialServiceLocator extends ConnectionFactoryLocator {
-	SocialService<?> getSocialService(String name);
-	
-	<T> SocialService<T> getSocialService(Class<T> apiType);
+public class SocialUserEntity extends UserEntity implements SocialUserDetails {
+	public SocialUserEntity(UserEntity userEntity) {
+		super(userEntity);
+	}
+
+	@Override
+	public String getUserId() {
+		return getId();
+	}
 }
