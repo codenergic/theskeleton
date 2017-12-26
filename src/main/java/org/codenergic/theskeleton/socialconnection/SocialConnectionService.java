@@ -192,7 +192,7 @@ public class SocialConnectionService implements ConnectionRepository {
 		}
 
 		private ConnectionData mapConnectionData(SocialConnectionEntity connection) {
-			return new ConnectionData(connection.getProvider().toLowerCase(),
+			return new ConnectionData(connection.getProvider(),
 					connection.getProviderUserId(), connection.getDisplayName(),
 					connection.getProfileUrl(), connection.getImageUrl(), decrypt(connection.getAccessToken()),
 					decrypt(connection.getSecret()), decrypt(connection.getRefreshToken()),

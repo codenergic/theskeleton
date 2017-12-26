@@ -62,6 +62,7 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 	private String pictureUrl;
 
 	public UserEntity(UserEntity other) {
+		this.setId(other.getId());
 		this.accountNonLocked = other.accountNonLocked;
 		this.credentialsNonExpired = other.credentialsNonExpired;
 		this.email = other.email;
