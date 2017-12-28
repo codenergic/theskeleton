@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.socialconnection;
+package org.codenergic.theskeleton.social;
 
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.jpa.repository.Query;

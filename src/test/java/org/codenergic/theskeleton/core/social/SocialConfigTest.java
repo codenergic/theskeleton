@@ -15,7 +15,7 @@
  */
 package org.codenergic.theskeleton.core.social;
 
-import org.codenergic.theskeleton.socialconnection.SocialConnectionRepository;
+import org.codenergic.theskeleton.social.SocialConnectionRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

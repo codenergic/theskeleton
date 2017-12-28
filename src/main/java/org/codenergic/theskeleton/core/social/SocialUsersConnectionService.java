@@ -15,13 +15,12 @@
  */
 package org.codenergic.theskeleton.core.social;
 
-import org.codenergic.theskeleton.socialconnection.SocialConnectionEntity;
-import org.codenergic.theskeleton.socialconnection.SocialConnectionRepository;
-import org.codenergic.theskeleton.socialconnection.SocialConnectionService;
+import org.codenergic.theskeleton.social.SocialConnectionEntity;
+import org.codenergic.theskeleton.social.SocialConnectionRepository;
+import org.codenergic.theskeleton.social.SocialConnectionService;
 import org.springframework.social.connect.*;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

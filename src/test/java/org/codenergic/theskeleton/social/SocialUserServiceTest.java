@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.codenergic.theskeleton.socialconnection;
+package org.codenergic.theskeleton.social;
 
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;

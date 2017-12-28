@@ -70,12 +70,8 @@ spring:
     facebook:
       app-id: 897090537127510
       app-secret: 38fc52cda45ce507ae37df2d3105ebbf
-      redirect-uri: http://localhost:8090/login/social/facebook/callback
-      scope: email,public_profile,user_friends
     google:
       app-id: 1031466054059-efbl8kv8luoegprdsdubkq4kba3qvcuo.apps.googleusercontent.com
       app-secret: pTj_xuAmNSmx0nOhTTsMpCZN
-      redirect-uri: http://localhost:8090/login/social/google/callback
-      scope: https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email
 email:
     baseurl: http://localhost:8080

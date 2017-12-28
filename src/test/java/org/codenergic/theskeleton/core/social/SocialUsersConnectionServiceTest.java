@@ -15,8 +15,8 @@
  */
 package org.codenergic.theskeleton.core.social;
 
-import org.codenergic.theskeleton.socialconnection.SocialConnectionEntity;
-import org.codenergic.theskeleton.socialconnection.SocialConnectionRepository;
+import org.codenergic.theskeleton.social.SocialConnectionEntity;
+import org.codenergic.theskeleton.social.SocialConnectionRepository;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Before;
 import org.junit.Test;
