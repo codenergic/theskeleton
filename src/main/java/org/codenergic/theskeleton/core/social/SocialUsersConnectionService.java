@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 public class SocialUsersConnectionService implements UsersConnectionRepository {
 	private ConnectionFactoryLocator connectionFactoryLocator;
 	private SocialConnectionRepository connectionRepository;
-	private ConnectionSignUp connectionSignUp;
 
 	public SocialUsersConnectionService(ConnectionFactoryLocator locator, SocialConnectionRepository repository) {
 		this.connectionFactoryLocator = locator;
@@ -41,15 +40,6 @@ public class SocialUsersConnectionService implements UsersConnectionRepository {
 	public List<String> findUserIdsWithConnection(Connection<?> connection) {
 		ConnectionKey key = connection.getKey();
 		List<SocialConnectionEntity> localUsers = connectionRepository.findByProviderAndProviderUserId(key.getProviderId(), key.getProviderUserId());
-
-		if (localUsers.isEmpty() && connectionSignUp != null) {
-			String newUserId = connectionSignUp.execute(connection);
-			if (newUserId != null) {
-				createConnectionRepository(newUserId).addConnection(connection);
-				return Collections.singletonList(newUserId);
-			}
-		}
-
 		return localUsers.stream().map(u -> u.getUser().getId()).collect(Collectors.toList());
 	}
 
@@ -65,9 +55,5 @@ public class SocialUsersConnectionService implements UsersConnectionRepository {
 		if (userId == null)
 			throw new IllegalArgumentException("UserId cannot be null");
 		return new SocialConnectionService(userId, connectionRepository, connectionFactoryLocator);
-	}
-
-	public void setConnectionSignUp(ConnectionSignUp connectionSignUp) {
-		this.connectionSignUp = connectionSignUp;
 	}
 }
