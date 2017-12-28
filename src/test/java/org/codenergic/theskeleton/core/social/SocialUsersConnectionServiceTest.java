@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -90,5 +91,7 @@ public class SocialUsersConnectionServiceTest {
 	@Test
 	public void testCreateConnectionRepository() {
 		usersConnectionService.createConnectionRepository(USER_ID);
+		assertThatThrownBy(() -> usersConnectionService.createConnectionRepository(null))
+			.isInstanceOf(IllegalArgumentException.class);
 	}
 }
