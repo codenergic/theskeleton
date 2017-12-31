@@ -95,13 +95,7 @@ public class SocialConnectionService implements ConnectionRepository {
 
 	@Override
 	public MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUserIds) {
-		if (providerUserIds == null || providerUserIds.isEmpty()) {
-			throw new IllegalArgumentException("Unable to execute find: no providerUsers provided");
-		}
-
-		// TODO
-
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@SuppressWarnings("unchecked")

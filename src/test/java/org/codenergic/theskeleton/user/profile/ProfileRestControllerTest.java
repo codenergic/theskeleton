@@ -3,7 +3,6 @@ package org.codenergic.theskeleton.user.profile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.collect.ImmutableMap;
-import io.minio.MinioClient;
 import org.apache.commons.io.IOUtils;
 import org.codenergic.theskeleton.client.OAuth2ClientEntity;
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
@@ -12,7 +11,6 @@ import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalRestData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -48,8 +46,6 @@ public class ProfileRestControllerTest {
 	private MockMvc mockMvc;
 	@Autowired
 	private ObjectMapper objectMapper;
-	@Mock
-	private MinioClient minioClient;
 	@MockBean
 	private ProfileService profileService;
 	@MockBean

@@ -116,12 +116,7 @@ public class SocialConnectionServiceTest {
 	@Test
 	public void testFindConnectionsToUsers() {
 		assertThatThrownBy(() -> socialConnectionService.findConnectionsToUsers(new LinkedMultiValueMap<>()))
-			.isInstanceOf(IllegalArgumentException.class);
-		assertThatThrownBy(() -> socialConnectionService.findConnectionsToUsers(null))
-			.isInstanceOf(IllegalArgumentException.class);
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-		map.add("1", "1");
-		assertThat(socialConnectionService.findConnectionsToUsers(map)).isNull();
+			.isInstanceOf(UnsupportedOperationException.class);
 	}
 
 	@Test
