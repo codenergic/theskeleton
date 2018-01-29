@@ -342,4 +342,23 @@
 		<addUniqueConstraint constraintName="uk_social_connection_user_id_provider_provider_user_id"
 			tableName="ts_social_connection" columnNames="user_id, provider, provider_user_id" />
 	</changeSet>
+	<changeSet id="0006" author="dianw">
+		<createTable tableName="ts_gallery">
+			<column name="id" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="status" type="integer">
+				<constraints nullable="false" />
+			</column>
+			<column name="created_by_client" type="varchar(255)" />
+			<column name="created_by" type="varchar(255)" />
+			<column name="created_date" type="datetime" />
+			<column name="last_modified_by_client" type="varchar(255)" />
+			<column name="last_modified_by" type="varchar(255)" />
+			<column name="last_modified_date" type="datetime" />
+			<column name="image_url" type="clob">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
 </databaseChangeLog>
