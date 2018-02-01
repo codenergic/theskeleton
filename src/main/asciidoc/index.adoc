@@ -26,3 +26,6 @@ include::profile.adoc[]
 
 == Post
 include::post.adoc[]
+
+== Gallery
+include::gallery.adoc[]

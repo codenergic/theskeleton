@@ -1,0 +1,23 @@
+=== Read
+
+.request
+include::{snippets}/gallery-read/http-request.adoc[]
+
+.response
+include::{snippets}/gallery-read/http-response.adoc[]
+
+=== Upload
+
+.request
+include::{snippets}/gallery-save/http-request.adoc[]
+
+.response
+include::{snippets}/gallery-save/http-response.adoc[]
+
+=== Delete
+
+.request
+include::{snippets}/gallery-delete/http-request.adoc[]
+
+.response
+include::{snippets}/gallery-delete/http-response.adoc[]

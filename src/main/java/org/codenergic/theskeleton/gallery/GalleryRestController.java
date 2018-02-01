@@ -44,7 +44,7 @@ public class GalleryRestController {
 			.map(g -> GalleryRestData.builder().fromGalleryEntity(g).build());
 	}
 
-	@PostMapping(consumes = {"images/*"})
+	@PostMapping(consumes = {"image/*"})
 	public GalleryRestData saveImage(@AuthenticationPrincipal UserEntity userEntity, HttpServletRequest request) throws Exception {
 		try (InputStream inputStream = request.getInputStream()) {
 			GalleryEntity galleryEntity = galleryService.saveImage(userEntity.getId(), new GalleryEntity()
