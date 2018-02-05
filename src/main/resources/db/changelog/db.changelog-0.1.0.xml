@@ -4,41 +4,41 @@
 	<changeSet id="0001" author="dianw, vickyfaizal">
 		<createTable tableName="ts_user">
 			<column name="id" type="varchar(255)">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="created_by_client" type="varchar(255)" />
-			<column name="created_by" type="varchar(255)" />
-			<column name="created_date" type="datetime" />
-			<column name="last_modified_by_client" type="varchar(255)" />
-			<column name="last_modified_by" type="varchar(255)" />
-			<column name="last_modified_date" type="datetime" />
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
 			<column name="account_non_locked" type="boolean">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
 			<column name="credentials_non_expired" type="boolean">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
 			<column name="email" type="varchar(500)">
-				<constraints nullable="false" unique="true" />
+				<constraints nullable="false" unique="true"/>
 			</column>
 			<column name="enabled" type="boolean">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="expired_at" type="datetime" />
+			<column name="expired_at" type="datetime"/>
 			<column name="password" type="clob">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="phone_number" type="varchar(255)" />
+			<column name="phone_number" type="varchar(255)"/>
 			<column name="username" type="varchar(255)">
-				<constraints nullable="false" unique="true" />
+				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="picture_url" type="varchar(500)" />
+			<column name="picture_url" type="varchar(500)"/>
 		</createTable>
 		<sql>
-		insert into ts_user
+			insert into ts_user
 			(id, username, password, email, phone_number, account_non_locked,
 			 credentials_non_expired, enabled, expired_at, status, created_date, last_modified_date)
 		values
@@ -48,53 +48,53 @@
 		</sql>
 		<createTable tableName="ts_role">
 			<column name="id" type="varchar(255)">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="created_by_client" type="varchar(255)" />
-			<column name="created_by" type="varchar(255)" />
-			<column name="created_date" type="datetime" />
-			<column name="last_modified_by_client" type="varchar(255)" />
-			<column name="last_modified_by" type="varchar(255)" />
-			<column name="last_modified_date" type="datetime" />
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
 			<column name="code" type="varchar(200)">
-				<constraints nullable="false" unique="true" />
+				<constraints nullable="false" unique="true"/>
 			</column>
-			<column name="description" type="varchar(500)" />
+			<column name="description" type="varchar(500)"/>
 		</createTable>
 		<sql>
-		insert into ts_role (id, code, description, status, created_date, last_modified_date)
-		values
+			insert into ts_role (id, code, description, status, created_date, last_modified_date)
+			values
 			('0000015bb4a150730007bf0700000000', 'system', 'System', 1, ${now}, ${now}),
 			('0000015bb4a150750007bf0700000000', 'admin', 'Administrator', 1, ${now}, ${now}),
 			('0000015bb4a150750007bf0700000001', 'user', 'User', 1, ${now}, ${now});
 		</sql>
 		<createTable tableName="ts_user_role">
 			<column name="id" type="varchar(255)">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="created_by_client" type="varchar(255)" />
-			<column name="created_by" type="varchar(255)" />
-			<column name="created_date" type="datetime" />
-			<column name="last_modified_by_client" type="varchar(255)" />
-			<column name="last_modified_by" type="varchar(255)" />
-			<column name="last_modified_date" type="datetime" />
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
 			<column name="role_id" type="varchar(255)">
 				<constraints nullable="false" foreignKeyName="fk_user_role_role_id"
-					references="ts_role(id)" />
+							 references="ts_role(id)"/>
 			</column>
 			<column name="user_id" type="varchar(255)">
 				<constraints nullable="false" foreignKeyName="fk_user_role_user_id"
-					references="ts_user(id)" />
+							 references="ts_user(id)"/>
 			</column>
 		</createTable>
 		<addUniqueConstraint constraintName="uk_user_role_role_id_user_id"
-			tableName="ts_user_role" columnNames="user_id, role_id" />
+							 tableName="ts_user_role" columnNames="user_id, role_id"/>
 		<sql>
 		insert into ts_user_role (id, role_id, user_id, status, created_date, last_modified_date)
 		values
@@ -104,68 +104,68 @@
 		</sql>
 		<createTable tableName="ts_privilege">
 			<column name="id" type="varchar(255)">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="created_by_client" type="varchar(255)" />
-			<column name="created_by" type="varchar(255)" />
-			<column name="created_date" type="datetime" />
-			<column name="last_modified_by_client" type="varchar(255)" />
-			<column name="last_modified_by" type="varchar(255)" />
-			<column name="last_modified_date" type="datetime" />
-			<column name="description" type="varchar(500)" />
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
+			<column name="description" type="varchar(500)"/>
 			<column name="name" type="varchar(200)">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
 		</createTable>
 		<sql>
 			insert into ts_privilege (id, name, description, status, created_date, last_modified_date)
 			values
-				('0000015bb4a150730007bf4700000000', 'user_write', 'User Write', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000001', 'user_update', 'User Update', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000002', 'user_read', 'User Read', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000003', 'user_read_all', 'User Read All', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000004', 'user_delete', 'User Delete', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000005', 'user_assign_role', 'User Assign Role', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000006', 'role_write', 'Role Write', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000007', 'role_update', 'Role Update', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000008', 'role_read', 'Role Read', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000009', 'role_read_all', 'Role Read All', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000010', 'role_delete', 'Role Delete', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000011', 'role_assign_privilege', 'Role Assign Privilege', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000012', 'client_write', 'Client Write', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000013', 'client_update', 'Client Update', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000014', 'client_read', 'Client Read', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000015', 'client_read_all', 'Client Read All', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000016', 'client_delete', 'Client Delete', 1, ${now}, ${now}),
-				('0000015bb4a150730007bf4700000017', 'client_generate_secret', 'Client Delete', 1, ${now}, ${now});
+			('0000015bb4a150730007bf4700000000', 'user_write', 'User Write', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000001', 'user_update', 'User Update', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000002', 'user_read', 'User Read', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000003', 'user_read_all', 'User Read All', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000004', 'user_delete', 'User Delete', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000005', 'user_assign_role', 'User Assign Role', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000006', 'role_write', 'Role Write', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000007', 'role_update', 'Role Update', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000008', 'role_read', 'Role Read', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000009', 'role_read_all', 'Role Read All', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000010', 'role_delete', 'Role Delete', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000011', 'role_assign_privilege', 'Role Assign Privilege', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000012', 'client_write', 'Client Write', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000013', 'client_update', 'Client Update', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000014', 'client_read', 'Client Read', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000015', 'client_read_all', 'Client Read All', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000016', 'client_delete', 'Client Delete', 1, ${now}, ${now}),
+			('0000015bb4a150730007bf4700000017', 'client_generate_secret', 'Client Delete', 1, ${now}, ${now});
 		</sql>
 		<createTable tableName="ts_role_privilege">
 			<column name="id" type="varchar(255)">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="created_by_client" type="varchar(255)" />
-			<column name="created_by" type="varchar(255)" />
-			<column name="created_date" type="datetime" />
-			<column name="last_modified_by_client" type="varchar(255)" />
-			<column name="last_modified_by" type="varchar(255)" />
-			<column name="last_modified_date" type="datetime" />
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
 			<column name="privilege_id" type="varchar(255)">
 				<constraints nullable="false" foreignKeyName="fk_role_privilege_privilege_id"
-					references="ts_privilege(id)" />
+							 references="ts_privilege(id)"/>
 			</column>
 			<column name="role_id" type="varchar(255)">
 				<constraints nullable="false" foreignKeyName="fk_role_privilege_role_id"
-					references="ts_role(id)" />
+							 references="ts_role(id)"/>
 			</column>
 		</createTable>
 		<addUniqueConstraint constraintName="uk_role_privilege_privilege_id_role_id"
-			tableName="ts_role_privilege" columnNames="privilege_id, role_id" />
+							 tableName="ts_role_privilege" columnNames="privilege_id, role_id"/>
 		<sql>
 			insert into ts_role_privilege (id, role_id, privilege_id, status, created_date, last_modified_date)
 			values
@@ -186,40 +186,40 @@
 	<changeSet id="0002" author="dianw">
 		<createTable tableName="ts_oauth2_client">
 			<column name="id" type="varchar(255)">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="created_by_client" type="varchar(255)" />
-			<column name="created_by" type="varchar(255)" />
-			<column name="created_date" type="datetime" />
-			<column name="last_modified_by_client" type="varchar(255)" />
-			<column name="last_modified_by" type="varchar(255)" />
-			<column name="last_modified_date" type="datetime" />
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
 			<column name="authorized_grant_types" type="varchar(150)">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="auto_approve" type="boolean" />
+			<column name="auto_approve" type="boolean"/>
 			<column name="client_secret" type="clob">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="description" type="varchar(500)" />
+			<column name="description" type="varchar(500)"/>
 			<column name="name" type="varchar(300)">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="registered_redirect_uris" type="clob" />
-			<column name="resource_ids" type="varchar(255)" />
-			<column name="scopes" type="clob" />
-			<column name="scoped" type="boolean" />
-			<column name="secret_required" type="boolean" />
+			<column name="registered_redirect_uris" type="clob"/>
+			<column name="resource_ids" type="varchar(255)"/>
+			<column name="scopes" type="clob"/>
+			<column name="scoped" type="boolean"/>
+			<column name="secret_required" type="boolean"/>
 		</createTable>
 		<sql>
-		insert into ts_oauth2_client
+			insert into ts_oauth2_client
 			(id, authorized_grant_types, auto_approve, client_secret, description, name,
 			registered_redirect_uris, scopes, scoped, secret_required, status, created_date,
 			last_modified_date)
-		values
+			values
 			('0000015bb4a150850007bf0700000000', 'password,authorization_code,implicit,refresh_token', false,
 			'$2a$06$F0YQTRPvG8M9SPzIgk49GOgwOH7jcHaT2elonRrs9mSCftNtEgMmi', 'Default client', 'default',
 			'http://localhost:9000/,http://localhost:9000/oauth,https://theskeleton.codenergic.org,https://theskeleton.codenergic.org/oauth',
@@ -227,138 +227,162 @@
 		</sql>
 		<createTable tableName="ts_user_oauth2_client_approval">
 			<column name="id" type="varchar(255)">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="created_by_client" type="varchar(255)" />
-			<column name="created_by" type="varchar(255)" />
-			<column name="created_date" type="datetime" />
-			<column name="last_modified_by_client" type="varchar(255)" />
-			<column name="last_modified_by" type="varchar(255)" />
-			<column name="last_modified_date" type="datetime" />
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
 			<column name="approval_status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
 			<column name="oauth2_client_id" type="varchar(255)">
 				<constraints nullable="false" foreignKeyName="fk_user_oauth2_client_approval_oauth2_client_id"
-					references="ts_oauth2_client(id)" />
+							 references="ts_oauth2_client(id)"/>
 			</column>
 			<column name="user_id" type="varchar(255)">
 				<constraints nullable="false" foreignKeyName="fk_user_oauth2_client_approval_user_id"
-					references="ts_user(id)" />
+							 references="ts_user(id)"/>
 			</column>
 			<column name="scope" type="varchar(200)">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
 		</createTable>
 		<addUniqueConstraint constraintName="uk_user_oauth2_client_approval_oauth2_client_id_user_id_scope"
-			tableName="ts_user_oauth2_client_approval" columnNames="oauth2_client_id, user_id, scope" />
+							 tableName="ts_user_oauth2_client_approval" columnNames="oauth2_client_id, user_id, scope"/>
 	</changeSet>
 	<changeSet id="0003" author="diaxz">
 		<createTable tableName="ts_post">
 			<column name="id" type="varchar(255)">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="created_by_client" type="varchar(255)" />
-			<column name="created_by" type="varchar(255)" />
-			<column name="created_date" type="datetime" />
-			<column name="last_modified_by_client" type="varchar(255)" />
-			<column name="last_modified_by" type="varchar(255)" />
-			<column name="last_modified_date" type="datetime" />
-			<column name="content" type="clob" />
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
+			<column name="content" type="clob"/>
 			<column name="title" type="varchar(200)">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="slug" type="varchar(100)" />
+			<column name="slug" type="varchar(100)"/>
 			<column name="poster_user_id" type="varchar(255)">
-				<constraints foreignKeyName="fk_post_poster_user_id" references="ts_user(id)" />
+				<constraints foreignKeyName="fk_post_poster_user_id" references="ts_user(id)"/>
 			</column>
-			<column name="is_response" type="boolean" />
-			<column name="post_status" type="varchar(20)" />
+			<column name="is_response" type="boolean"/>
+			<column name="post_status" type="varchar(20)"/>
 			<column name="response_to_post_id" type="varchar(255)">
-				<constraints foreignKeyName="fk_post_response_to_post_id" references="ts_post(id)" />
+				<constraints foreignKeyName="fk_post_response_to_post_id" references="ts_post(id)"/>
 			</column>
 		</createTable>
 	</changeSet>
 	<changeSet id="0004" author="diaxz">
 		<createTable tableName="ts_token_store">
 			<column name="id" type="varchar(255)">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
 			<column name="user_id" type="varchar(255)">
 				<constraints nullable="false" foreignKeyName="fk_registration_user_id"
-							 references="ts_user(id)" />
+							 references="ts_user(id)"/>
 			</column>
-			<column name="token" type="varchar(255)" />
-			<column name="expiry_date" type="datetime" />
+			<column name="token" type="varchar(255)"/>
+			<column name="expiry_date" type="datetime"/>
 			<column name="type" type="integer"/>
 		</createTable>
 	</changeSet>
 	<changeSet id="0005" author="vickyfaizal">
 		<createTable tableName="ts_social_connection">
 			<column name="id" type="varchar(255)">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="created_by_client" type="varchar(255)" />
-			<column name="created_by" type="varchar(255)" />
-			<column name="created_date" type="datetime" />
-			<column name="last_modified_by_client" type="varchar(255)" />
-			<column name="last_modified_by" type="varchar(255)" />
-			<column name="last_modified_date" type="datetime" />
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
 			<column name="access_token" type="clob">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="display_name" type="varchar(255)" />
+			<column name="display_name" type="varchar(255)"/>
 			<column name="expire_time" type="bigint">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
 			<column name="image_url" type="clob"/>
 			<column name="profile_url" type="clob"/>
-			<column name="provider" type="varchar(255)" />
-			<column name="provider_user_id" type="varchar(255)" />
+			<column name="provider" type="varchar(255)"/>
+			<column name="provider_user_id" type="varchar(255)"/>
 			<column name="rank" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
 			<column name="refresh_token" type="clob"/>
 			<column name="secret" type="clob"/>
 			<column name="user_id" type="varchar(255)">
 				<constraints nullable="false" foreignKeyName="fk_social_connection_user_id"
-							 references="ts_user(id)" />
+							 references="ts_user(id)"/>
 			</column>
 		</createTable>
 		<addUniqueConstraint constraintName="uk_social_connection_user_id_provider_rank"
-			tableName="ts_social_connection" columnNames="user_id, provider, rank" />
+							 tableName="ts_social_connection" columnNames="user_id, provider, rank"/>
 		<addUniqueConstraint constraintName="uk_social_connection_user_id_provider_provider_user_id"
-			tableName="ts_social_connection" columnNames="user_id, provider, provider_user_id" />
+							 tableName="ts_social_connection" columnNames="user_id, provider, provider_user_id"/>
 	</changeSet>
 	<changeSet id="0006" author="dianw">
 		<createTable tableName="ts_gallery">
 			<column name="id" type="varchar(255)">
-				<constraints primaryKey="true" nullable="false" />
+				<constraints primaryKey="true" nullable="false"/>
 			</column>
 			<column name="status" type="integer">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
-			<column name="created_by_client" type="varchar(255)" />
-			<column name="created_by" type="varchar(255)" />
-			<column name="created_date" type="datetime" />
-			<column name="last_modified_by_client" type="varchar(255)" />
-			<column name="last_modified_by" type="varchar(255)" />
-			<column name="last_modified_date" type="datetime" />
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
 			<column name="image_url" type="clob">
-				<constraints nullable="false" />
+				<constraints nullable="false"/>
 			</column>
 		</createTable>
+	</changeSet>
+	<changeSet id="0007" author="dianw">
+		<createTable tableName="ts_user_follower">
+			<column name="id" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="status" type="integer">
+				<constraints nullable="false"/>
+			</column>
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
+			<column name="user_id" type="varchar(255)">
+				<constraints nullable="false" foreignKeyName="fk_user_follower_user_id" references="ts_user(id)"/>
+			</column>
+			<column name="follower_id" type="varchar(255)">
+				<constraints nullable="false" foreignKeyName="fk_user_follower_follower_id" references="ts_user(id)"/>
+			</column>
+		</createTable>
+		<addUniqueConstraint constraintName="uk_user_follower_user_id_follower_id"
+							 tableName="ts_user_follower" columnNames="user_id, follower_id" />
 	</changeSet>
 </databaseChangeLog>
