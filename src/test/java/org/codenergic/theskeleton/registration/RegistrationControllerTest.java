@@ -1,5 +1,6 @@
 package org.codenergic.theskeleton.registration;
 
+import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
 @WebMvcTest(controllers = {RegistrationController.class}, secure = false)
+@InjectUserDetailsService
 public class RegistrationControllerTest {
 	@Autowired
 	private MockMvc mockMvc;

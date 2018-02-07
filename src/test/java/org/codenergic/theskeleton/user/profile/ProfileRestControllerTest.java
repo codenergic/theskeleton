@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.io.IOUtils;
 import org.codenergic.theskeleton.client.OAuth2ClientEntity;
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
+import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalRestData;
@@ -41,6 +42,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = {ProfileRestController.class})
 @EnableRestDocs
+@InjectUserDetailsService
 public class ProfileRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;

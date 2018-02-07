@@ -37,6 +37,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
+import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
 import org.codenergic.theskeleton.privilege.PrivilegeEntity;
 import org.codenergic.theskeleton.privilege.PrivilegeRestData;
 import org.junit.Test;
@@ -59,6 +60,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableSpringDataWebSupport
 @WebMvcTest(controllers = { RoleRestController.class }, secure = false)
 @EnableRestDocs
+@InjectUserDetailsService
 public class RoleRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;

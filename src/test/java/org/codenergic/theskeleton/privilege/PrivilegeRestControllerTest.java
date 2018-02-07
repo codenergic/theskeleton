@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
+import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableSpringDataWebSupport
 @WebMvcTest(controllers = { PrivilegeRestController.class }, secure = false)
 @EnableRestDocs
+@InjectUserDetailsService
 public class PrivilegeRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;

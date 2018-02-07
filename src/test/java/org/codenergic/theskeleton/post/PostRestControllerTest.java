@@ -17,6 +17,7 @@ package org.codenergic.theskeleton.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
+import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @EnableSpringDataWebSupport
 @WebMvcTest(controllers = {PostRestController.class}, secure = false)
 @EnableRestDocs
+@InjectUserDetailsService
 public class PostRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;

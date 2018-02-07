@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
+import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Test;
@@ -44,6 +45,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableSpringDataWebSupport
 @WebMvcTest(controllers = {RegistrationRestController.class}, secure = false)
 @EnableRestDocs
+@InjectUserDetailsService
 public class RegistrationRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;

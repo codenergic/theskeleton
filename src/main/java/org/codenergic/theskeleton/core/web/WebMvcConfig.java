@@ -16,19 +16,34 @@
 package org.codenergic.theskeleton.core.web;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import java.util.List;
+
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
+	private final UserDetailsService userDetailsService;
+
+	public WebMvcConfig(UserDetailsService userDetailsService) {
+		this.userDetailsService = userDetailsService;
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addWebRequestInterceptor(new LoggedInUserInterceptor());
+	}
+
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**").allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
 	}
 
 	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addWebRequestInterceptor(new LoggedInUserInterceptor());
+	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+		argumentResolvers.add(new UserArgumentResolver(userDetailsService));
 	}
 }

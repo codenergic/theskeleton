@@ -19,6 +19,7 @@ package org.codenergic.theskeleton.user.profile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
+import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = {ProfileSocialRestController.class})
 @EnableRestDocs
+@InjectUserDetailsService
 public class ProfileSocialRestControllerTest {
 	@MockBean
 	private ConnectionRepository connectionRepository;

@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
+import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EnableSpringDataWebSupport
 @WebMvcTest(controllers = {OAuth2ClientRestController.class})
 @EnableRestDocs
+@InjectUserDetailsService
 public class OAuth2ClientRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
@@ -68,7 +70,7 @@ public class OAuth2ClientRestControllerTest {
 	@WithMockUser("user123")
 	public void testDeleteClient() throws Exception {
 		mockMvc.perform(delete("/api/clients/client123")
-				.contentType(MediaType.APPLICATION_JSON))
+			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andDo(document("client-delete"));
 	}
@@ -94,7 +96,7 @@ public class OAuth2ClientRestControllerTest {
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder()
-					.fromOAuth2ClientEntity(client).build()));
+				.fromOAuth2ClientEntity(client).build()));
 		verify(oAuth2ClientService).findClientById("client123");
 	}
 
@@ -128,7 +130,7 @@ public class OAuth2ClientRestControllerTest {
 	@WithMockUser("user123")
 	public void testGenerateClientSecret() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
-				.setId("client123");
+			.setId("client123");
 		when(oAuth2ClientService.generateSecret(eq("client123"))).thenReturn(client);
 		MockHttpServletRequestBuilder request = put("/api/clients/client123/generate-secret")
 			.contentType(MediaType.APPLICATION_JSON);
@@ -138,7 +140,7 @@ public class OAuth2ClientRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-		.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder()
+			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder()
 				.fromOAuth2ClientEntity(client).build()));
 		verify(oAuth2ClientService).generateSecret(eq("client123"));
 	}
@@ -147,17 +149,17 @@ public class OAuth2ClientRestControllerTest {
 	@WithMockUser("user123")
 	public void testSaveClient() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
-				.setId("client123")
-				.setName("client")
-				.setDescription("description")
-				.setSecretRequired(true)
-				.setAutoApprove(false)
-				.setAuthorizedGrantTypes(new HashSet<>(Arrays.asList(AUTHORIZATION_CODE, IMPLICIT)));
+			.setId("client123")
+			.setName("client")
+			.setDescription("description")
+			.setSecretRequired(true)
+			.setAutoApprove(false)
+			.setAuthorizedGrantTypes(new HashSet<>(Arrays.asList(AUTHORIZATION_CODE, IMPLICIT)));
 		when(oAuth2ClientService.saveClient(any())).thenReturn(client);
 		MockHttpServletRequestBuilder request = post("/api/clients")
-				.content("{\"name\": \"client\", \"description\": \"description\", "
-						+ "\"isSecretRequired\": true, \"isAutoApprove\": false, "
-						+ "\"authorizedGrantTypes\": [\"AUTHORIZATION_CODE\",\"IMPLICIT\"]}")
+			.content("{\"name\": \"client\", \"description\": \"description\", "
+				+ "\"isSecretRequired\": true, \"isAutoApprove\": false, "
+				+ "\"authorizedGrantTypes\": [\"AUTHORIZATION_CODE\",\"IMPLICIT\"]}")
 			.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 			.andExpect(status().isOk())
@@ -190,12 +192,12 @@ public class OAuth2ClientRestControllerTest {
 	@WithMockUser("user123")
 	public void testUpdateClient() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
-				.setId("client123");
+			.setId("client123");
 		when(oAuth2ClientService.updateClient(eq("client123"), any())).thenReturn(client);
 		MockHttpServletRequestBuilder request = put("/api/clients/client123")
 			.content("{\"name\": \"client\", \"description\": \"description\", \"clientSecret\": \"s3cret\", "
-					+ "\"isSecretRequired\": true, \"isAutoApprove\": false, "
-					+ "\"authorizedGrantTypes\": [\"AUTHORIZATION_CODE\",\"IMPLICIT\"]}")
+				+ "\"isSecretRequired\": true, \"isAutoApprove\": false, "
+				+ "\"authorizedGrantTypes\": [\"AUTHORIZATION_CODE\",\"IMPLICIT\"]}")
 			.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
 			.andExpect(status().isOk())
@@ -203,7 +205,7 @@ public class OAuth2ClientRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-		.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder()
+			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder()
 				.fromOAuth2ClientEntity(client).build()));
 		verify(oAuth2ClientService).updateClient(eq("client123"), any());
 	}
