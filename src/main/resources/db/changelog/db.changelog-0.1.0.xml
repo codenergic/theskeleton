@@ -385,4 +385,31 @@
 		<addUniqueConstraint constraintName="uk_user_follower_user_id_follower_id"
 							 tableName="ts_user_follower" columnNames="user_id, follower_id" />
 	</changeSet>
+	<changeSet id="0008" author="dianw">
+		<createTable tableName="ts_post_reaction">
+			<column name="id" type="varchar(255)">
+				<constraints primaryKey="true" nullable="false"/>
+			</column>
+			<column name="status" type="integer">
+				<constraints nullable="false"/>
+			</column>
+			<column name="created_by_client" type="varchar(255)"/>
+			<column name="created_by" type="varchar(255)"/>
+			<column name="created_date" type="datetime"/>
+			<column name="last_modified_by_client" type="varchar(255)"/>
+			<column name="last_modified_by" type="varchar(255)"/>
+			<column name="last_modified_date" type="datetime"/>
+			<column name="user_id" type="varchar(255)">
+				<constraints nullable="false" foreignKeyName="fk_post_reaction_user_id" references="ts_user(id)" />
+			</column>
+			<column name="post_id" type="varchar(255)">
+				<constraints nullable="false" foreignKeyName="fk_post_reaction_post_id" references="ts_post(id)" />
+			</column>
+			<column name="reaction_type" type="varchar(50)">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<addUniqueConstraint constraintName="uk_post_reaction_user_id_post_id_reaction_type"
+							 tableName="ts_post_reaction" columnNames="user_id, post_id, reaction_type" />
+	</changeSet>
 </databaseChangeLog>

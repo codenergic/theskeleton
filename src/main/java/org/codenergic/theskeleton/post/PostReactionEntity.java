@@ -22,7 +22,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "ts_reaction", uniqueConstraints = {@UniqueConstraint(columnNames = {"post_id", "user_id", "reaction_type"})})
+@Table(name = "ts_post_reaction", uniqueConstraints = {@UniqueConstraint(columnNames = {"post_id", "user_id", "reaction_type"})})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class PostReactionEntity extends AbstractAuditingEntity {
 	@NotNull
