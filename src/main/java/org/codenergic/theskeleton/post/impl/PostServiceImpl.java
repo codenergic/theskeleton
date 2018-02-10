@@ -18,6 +18,7 @@ package org.codenergic.theskeleton.post.impl;
 import com.github.slugify.Slugify;
 import org.apache.commons.lang3.StringUtils;
 import org.codenergic.theskeleton.post.PostEntity;
+import org.codenergic.theskeleton.post.PostFollowingRepository;
 import org.codenergic.theskeleton.post.PostRepository;
 import org.codenergic.theskeleton.post.PostService;
 import org.springframework.data.domain.Page;
@@ -29,11 +30,13 @@ import org.springframework.util.Assert;
 @Service
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
+	private final PostFollowingRepository postFollowingRepository;
 	private final PostRepository postRepository;
 	private final Slugify slugify = new Slugify();
 
-	public PostServiceImpl(PostRepository postRepository) {
+	public PostServiceImpl(PostRepository postRepository, PostFollowingRepository postFollowingRepository) {
 		this.postRepository = postRepository;
+		this.postFollowingRepository = postFollowingRepository;
 	}
 
 	@Override
@@ -50,6 +53,11 @@ public class PostServiceImpl implements PostService {
 		PostEntity post = findPostById(id);
 		Assert.notNull(post, "Post not found");
 		return post;
+	}
+
+	@Override
+	public Page<PostEntity> findPostByFollowerId(String followerId, Pageable pageable) {
+		return postFollowingRepository.findByFollowerId(followerId, pageable);
 	}
 
 	@Override

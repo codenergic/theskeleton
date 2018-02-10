@@ -15,46 +15,81 @@
  */
 package org.codenergic.theskeleton.post;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.codenergic.theskeleton.core.test.EnableRestDocs;
-import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.io.IOException;
-import java.util.Collections;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.IOException;
+import java.util.Collections;
+
+import org.codenergic.theskeleton.core.test.EnableRestDocs;
+import org.codenergic.theskeleton.core.web.UserArgumentResolver;
+import org.codenergic.theskeleton.user.UserEntity;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.method.annotation.AuthenticationPrincipalArgumentResolver;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @RunWith(SpringRunner.class)
-@EnableSpringDataWebSupport
-@WebMvcTest(controllers = {PostRestController.class}, secure = false)
+@ContextConfiguration
+@WebAppConfiguration
 @EnableRestDocs
-@InjectUserDetailsService
 public class PostRestControllerTest {
-	@Autowired
+	private static final String USER_ID = "user123";
+	private static final String USERNAME = "username123";
+
 	private MockMvc mockMvc;
+	private ObjectMapper objectMapper = new ObjectMapper();
 	@Autowired
-	private ObjectMapper objectMapper;
+	private RestDocumentationContextProvider restDocumentation;
 	@MockBean
 	private PostService postService;
+	@MockBean
+	private UserDetailsService userDetailsService;
+
+	@Before
+	public void init() throws Exception {
+		when(userDetailsService.loadUserByUsername(USERNAME)).thenReturn(new UserEntity().setId(USER_ID).setUsername(USERNAME));
+		mockMvc = MockMvcBuilders
+			.standaloneSetup(new PostRestController(postService))
+			.setCustomArgumentResolvers(new UserArgumentResolver(userDetailsService), new AuthenticationPrincipalArgumentResolver(),
+				new PageableHandlerMethodArgumentResolver())
+			.apply(documentationConfiguration(restDocumentation))
+			.build();
+		Authentication authentication = new UsernamePasswordAuthenticationToken(
+			new UserEntity().setId(USER_ID).setUsername(USERNAME), "1234");
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+	}
 
 	@Test
 	public void testDeletePost() throws Exception {
@@ -83,6 +118,21 @@ public class PostRestControllerTest {
 			.isEqualTo(objectMapper.writeValueAsBytes(PostRestData.builder()
 				.fromPostEntity(PostServiceTest.DUMMY_POST2).build()));
 		verify(postService).findPostById("123");
+	}
+
+	@Test
+	public void testfindPostByFollower() throws Exception {
+		final Page<PostEntity> post = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST));
+		when(postService.findPostByFollowerId(eq(USER_ID), any())).thenReturn(post);
+		MockHttpServletResponse response = mockMvc.perform(get("/api/posts/following")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(document("post-read-following"))
+			.andReturn()
+			.getResponse();
+		assertThat(response.getContentAsByteArray())
+			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
+		verify(postService).findPostByFollowerId(eq(USER_ID), any());
 	}
 
 	@Test

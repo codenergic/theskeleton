@@ -29,3 +29,11 @@ include::{snippets}/post-delete/http-request.adoc[]
 
 .response
 include::{snippets}/post-delete/http-response.adoc[]
+
+=== Read Following
+
+.request
+include::{snippets}/post-read-following/http-request.adoc[]
+
+.response
+include::{snippets}/post-read-following/http-response.adoc[]

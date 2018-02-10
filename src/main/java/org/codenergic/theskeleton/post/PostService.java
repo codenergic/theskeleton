@@ -29,6 +29,9 @@ public interface PostService {
 	@PreAuthorize("isAuthenticated()")
 	PostEntity findPostById(@NotNull String id);
 
+	@PreAuthorize("authentication.principal.id == #followerId")
+	Page<PostEntity> findPostByFollowerId(String followerId, Pageable pageable);
+
 	@PreAuthorize("permitAll()")
 	Page<PostEntity> findPostByPoster(@NotNull String username, Pageable pageable);
 

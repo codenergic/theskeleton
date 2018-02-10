@@ -15,6 +15,15 @@
  */
 package org.codenergic.theskeleton.post;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+
 import org.codenergic.theskeleton.post.impl.PostServiceImpl;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Before;
@@ -23,15 +32,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-
-import java.util.Collections;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class PostServiceTest {
 	static final PostEntity DUMMY_POST = new PostEntity()
@@ -47,14 +47,15 @@ public class PostServiceTest {
 		.setSlug("testing");
 
 	@Mock
+	private PostFollowingRepository postFollowingRepository;
+	@Mock
 	private PostRepository postRepository;
 	private PostService postService;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.postService = new PostServiceImpl(postRepository) {
-		};
+		this.postService = new PostServiceImpl(postRepository, postFollowingRepository) {};
 	}
 
 	@Test
@@ -68,6 +69,14 @@ public class PostServiceTest {
 		when(postRepository.findOne("123")).thenReturn(DUMMY_POST2);
 		assertThat(postService.findPostById("123")).isEqualTo(DUMMY_POST2);
 		verify(postRepository).findOne("123");
+	}
+
+	@Test
+	public void testFindPostByFollowerId() {
+		Page<PostEntity> dbResult = new PageImpl<>(Collections.singletonList(DUMMY_POST));
+		when(postFollowingRepository.findByFollowerId(eq("123"), any())).thenReturn(dbResult);
+		assertThat(postService.findPostByFollowerId("123", null)).isEqualTo(dbResult);
+		verify(postFollowingRepository).findByFollowerId(eq("123"), any());
 	}
 
 	@Test
