@@ -15,13 +15,13 @@
  */
 package org.codenergic.theskeleton.follower;
 
+import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserFollowerRepository extends PagingAndSortingRepository<UserFollowerEntity, String> {
+public interface UserFollowerRepository extends AuditingEntityRepository<UserFollowerEntity> {
 	long countByUserId(String userId);
 
 	Page<UserFollowerEntity> findByFollowerId(String followerId, Pageable pageable);

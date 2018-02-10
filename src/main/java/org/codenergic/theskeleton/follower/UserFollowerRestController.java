@@ -21,9 +21,7 @@ import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users/{username}")
@@ -34,7 +32,7 @@ public class UserFollowerRestController {
 		this.userFollowerService = userFollowerService;
 	}
 
-	@RequestMapping(path = "/followers", method = RequestMethod.GET)
+	@GetMapping("/followers")
 	public Page<UserFollowerRestData> findUserFollowers(@User UserEntity user, Pageable pageable) {
 		return userFollowerService.findUserFollowers(user.getId(), pageable)
 			.map(u -> UserFollowerRestData.builder()
@@ -43,7 +41,7 @@ public class UserFollowerRestController {
 				.build());
 	}
 
-	@RequestMapping(path = "/followings", method = RequestMethod.GET)
+	@GetMapping("/followings")
 	public Page<UserFollowerRestData> findUserFollowings(@User UserEntity user, Pageable pageable) {
 		return userFollowerService.findUserFollowings(user.getId(), pageable)
 			.map(u -> UserFollowerRestData.builder()
@@ -52,7 +50,7 @@ public class UserFollowerRestController {
 				.build());
 	}
 
-	@RequestMapping(path = "/followers", method = RequestMethod.PUT)
+	@PutMapping("/followers")
 	public UserFollowerRestData followUser(@User UserEntity user, @AuthenticationPrincipal UserEntity currentUser) {
 		UserFollowerEntity userFollower = userFollowerService.followUser(currentUser.getId(), user.getId());
 		return UserFollowerRestData.builder()
@@ -63,12 +61,12 @@ public class UserFollowerRestController {
 			.build();
 	}
 
-	@RequestMapping(path = "/followers", method = RequestMethod.GET, params = {"totals"})
+	@GetMapping(path = "/followers", params = {"totals"})
 	public long getNumberOfFollowers(@User UserEntity user) {
 		return userFollowerService.getNumberOfFollowers(user.getId());
 	}
 
-	@RequestMapping(path = "/followers", method = RequestMethod.DELETE)
+	@DeleteMapping("/followers")
 	public void unfollowUser(@User UserEntity user, @AuthenticationPrincipal UserEntity currentUser) {
 		userFollowerService.unfollowUser(currentUser.getId(), user.getId());
 	}
