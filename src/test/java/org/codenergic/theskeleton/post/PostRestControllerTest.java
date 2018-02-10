@@ -15,27 +15,11 @@
  */
 package org.codenergic.theskeleton.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.IOException;
-import java.util.Collections;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
 import org.codenergic.theskeleton.core.web.UserArgumentResolver;
 import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.user.UserRestData;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,7 +42,19 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration
@@ -75,13 +71,15 @@ public class PostRestControllerTest {
 	@MockBean
 	private PostService postService;
 	@MockBean
+	private PostReactionService postReactionService;
+	@MockBean
 	private UserDetailsService userDetailsService;
 
 	@Before
 	public void init() throws Exception {
 		when(userDetailsService.loadUserByUsername(USERNAME)).thenReturn(new UserEntity().setId(USER_ID).setUsername(USERNAME));
 		mockMvc = MockMvcBuilders
-			.standaloneSetup(new PostRestController(postService))
+			.standaloneSetup(new PostRestController(postService, postReactionService))
 			.setCustomArgumentResolvers(new UserArgumentResolver(userDetailsService), new AuthenticationPrincipalArgumentResolver(),
 				new PageableHandlerMethodArgumentResolver())
 			.apply(documentationConfiguration(restDocumentation))
@@ -105,6 +103,21 @@ public class PostRestControllerTest {
 	}
 
 	@Test
+	public void testFindPostByFollower() throws Exception {
+		final Page<PostEntity> post = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST));
+		when(postService.findPostByFollowerId(eq(USER_ID), any())).thenReturn(post);
+		MockHttpServletResponse response = mockMvc.perform(get("/api/posts/following")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(document("post-read-following"))
+			.andReturn()
+			.getResponse();
+		assertThat(response.getContentAsByteArray())
+			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
+		verify(postService).findPostByFollowerId(eq(USER_ID), any());
+	}
+
+	@Test
 	public void testFindPostById() throws Exception {
 		when(postService.findPostById("123")).thenReturn(PostServiceTest.DUMMY_POST2);
 		MockHttpServletResponse response = mockMvc.perform(get("/api/posts/123")
@@ -118,21 +131,6 @@ public class PostRestControllerTest {
 			.isEqualTo(objectMapper.writeValueAsBytes(PostRestData.builder()
 				.fromPostEntity(PostServiceTest.DUMMY_POST2).build()));
 		verify(postService).findPostById("123");
-	}
-
-	@Test
-	public void testfindPostByFollower() throws Exception {
-		final Page<PostEntity> post = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST));
-		when(postService.findPostByFollowerId(eq(USER_ID), any())).thenReturn(post);
-		MockHttpServletResponse response = mockMvc.perform(get("/api/posts/following")
-			.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(document("post-read-following"))
-			.andReturn()
-			.getResponse();
-		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
-		verify(postService).findPostByFollowerId(eq(USER_ID), any());
 	}
 
 	@Test
@@ -163,6 +161,26 @@ public class PostRestControllerTest {
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
 		verify(postService).findPostByTitleContaining(eq("disastah"), any());
+	}
+
+	@Test
+	public void testFindPostReactions() throws Exception {
+		when(postReactionService.findUserByPostReaction(eq("1234"), eq(PostReactionType.LIKE), any()))
+			.thenReturn(new PageImpl<>(Collections
+				.singletonList(new UserEntity().setUsername("user").setPictureUrl("1234"))));
+		MockHttpServletResponse response = mockMvc.perform(get("/api/posts/1234/reactions/likes")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(document("post-reactions-read"))
+			.andReturn()
+			.getResponse();
+		assertThat(response.getStatus()).isEqualTo(200);
+		Page<UserRestData> expectedResponse = new PageImpl<>(Collections.singletonList(UserRestData.builder()
+			.username("user")
+			.pictureUrl("1234")
+			.build()));
+		assertThat(response.getContentAsString()).isEqualTo(objectMapper.writeValueAsString(expectedResponse));
+		verify(postReactionService).findUserByPostReaction(eq("1234"), eq(PostReactionType.LIKE), any());
 	}
 
 	@Test
@@ -211,6 +229,19 @@ public class PostRestControllerTest {
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expectedResponse));
 		verify(postService).unPublishPost("123");
+	}
+
+	@Test
+	public void testReactToPost() throws Exception {
+		MockHttpServletResponse response = mockMvc.perform(put("/api/posts/1234/reactions")
+			.content("DISLIKE")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(document("post-react"))
+			.andReturn()
+			.getResponse();
+		assertThat(response.getStatus()).isEqualTo(200);
+		verify(postReactionService).reactToPost(anyString(), eq("1234"), eq(PostReactionType.DISLIKE));
 	}
 
 	@Test

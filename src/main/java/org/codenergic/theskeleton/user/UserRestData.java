@@ -30,8 +30,8 @@ import java.util.Set;
 @SuppressWarnings("serial")
 @AutoValue
 @JsonDeserialize(builder = AutoValue_UserRestData.Builder.class)
-abstract class UserRestData implements RestData {
-	static Builder builder() {
+public abstract class UserRestData implements RestData {
+	public static Builder builder() {
 		return new AutoValue_UserRestData.Builder();
 	}
 
@@ -55,6 +55,9 @@ abstract class UserRestData implements RestData {
 	@Nullable
 	abstract String getPhoneNumber();
 
+	@Nullable
+	abstract String getPictureUrl();
+
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	abstract String getUsername();
@@ -71,7 +74,7 @@ abstract class UserRestData implements RestData {
 
 	@AutoValue.Builder
 	@JsonPOJOBuilder(withPrefix = "")
-	interface Builder {
+	public interface Builder {
 		Builder authorities(Set<String> authorities);
 
 		UserRestData build();
@@ -83,7 +86,8 @@ abstract class UserRestData implements RestData {
 				.username(user.getUsername())
 				.email(user.getEmail())
 				.phoneNumber(user.getPhoneNumber())
-				.isNonLocked(user.isAccountNonLocked());
+				.isNonLocked(user.isAccountNonLocked())
+				.pictureUrl(user.getPictureUrl());
 		}
 
 		Builder id(String id);
@@ -94,10 +98,14 @@ abstract class UserRestData implements RestData {
 
 		Builder phoneNumber(String phoneNumber);
 
+		Builder pictureUrl(String pictureUrl);
+
 		Builder username(String username);
 	}
 
-	interface New {}
+	interface New {
+	}
 
-	interface Existing {}
+	interface Existing {
+	}
 }

@@ -16,17 +16,14 @@
 
 package org.codenergic.theskeleton.post;
 
-import org.assertj.core.api.Assertions;
 import org.codenergic.theskeleton.post.impl.PostReactionServiceImpl;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.Collections;
 import java.util.List;

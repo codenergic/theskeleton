@@ -16,29 +16,24 @@
 package org.codenergic.theskeleton.post;
 
 import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.user.UserRestData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/posts")
 public class PostRestController {
-	private PostService postService;
+	private final PostService postService;
+	private final PostReactionService postReactionService;
 
-	public PostRestController(PostService postService) {
+	public PostRestController(PostService postService, PostReactionService postReactionService) {
 		this.postService = postService;
+		this.postReactionService = postReactionService;
 	}
 
 	@DeleteMapping("/{id}")
@@ -46,16 +41,16 @@ public class PostRestController {
 		postService.deletePost(id);
 	}
 
-	@GetMapping("/{id}")
-	public PostRestData findPostById(@PathVariable("id") String id) {
-		PostEntity post = postService.findPostById(id);
-		return post == null ? null : mapPostEntityToData(post);
-	}
-
 	@GetMapping("/following")
 	public Page<PostRestData> findPostByFollower(@AuthenticationPrincipal UserEntity user,
 			@SortDefault(sort = "lastModifiedDate", direction = Sort.Direction.DESC) Pageable pageable) {
 		return postService.findPostByFollowerId(user.getId(), pageable).map(this::mapPostEntityToData);
+	}
+
+	@GetMapping("/{id}")
+	public PostRestData findPostById(@PathVariable("id") String id) {
+		PostEntity post = postService.findPostById(id);
+		return post == null ? null : mapPostEntityToData(post);
 	}
 
 	@GetMapping(params = { "username" })
@@ -67,6 +62,13 @@ public class PostRestController {
 	public Page<PostRestData> findPostByTitleContaining(@RequestParam(name = "title", defaultValue = "") String title,
 			Pageable pageable) {
 		return postService.findPostByTitleContaining(title, pageable).map(this::mapPostEntityToData);
+	}
+
+	@GetMapping("/{id}/reactions/{reaction}s")
+	public Page<UserRestData> findPostReactions(@PathVariable("id") String postId, @PathVariable("reaction") String reaction, Pageable pageable) {
+		PostReactionType reactionType = PostReactionType.valueOf(reaction.toUpperCase());
+		return postReactionService.findUserByPostReaction(postId, reactionType, pageable).map(user ->
+			UserRestData.builder().username(user.getUsername()).pictureUrl(user.getPictureUrl()).build());
 	}
 
 	@GetMapping("/{id}/responses")
@@ -82,6 +84,12 @@ public class PostRestController {
 	public PostRestData publishPost(@PathVariable("id") String id, @RequestBody boolean publish) {
 		PostEntity post = publish ? postService.publishPost(id) : postService.unPublishPost(id);
 		return mapPostEntityToData(post);
+	}
+
+	@PutMapping("/{id}/reactions")
+	public void reactToPost(@PathVariable("id") String postId, @RequestBody String reaction, @AuthenticationPrincipal UserEntity user) {
+		PostReactionType reactionType = PostReactionType.valueOf(reaction.toUpperCase());
+		postReactionService.reactToPost(user.getId(), postId, reactionType);
 	}
 
 	@PostMapping("/{id}/responses")
