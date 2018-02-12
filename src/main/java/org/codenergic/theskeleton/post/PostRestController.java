@@ -53,11 +53,6 @@ public class PostRestController {
 		return post == null ? null : mapPostEntityToData(post);
 	}
 
-	@GetMapping(params = { "username" })
-	public Page<PostRestData> findPostByPoster(@RequestParam("username") String username, Pageable pageable) {
-		return postService.findPostByPoster(username, pageable).map(this::mapPostEntityToData);
-	}
-
 	@GetMapping
 	public Page<PostRestData> findPostByTitleContaining(@RequestParam(name = "title", defaultValue = "") String title,
 			Pageable pageable) {

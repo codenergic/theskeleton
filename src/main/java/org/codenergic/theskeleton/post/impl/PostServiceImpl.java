@@ -17,10 +17,7 @@ package org.codenergic.theskeleton.post.impl;
 
 import com.github.slugify.Slugify;
 import org.apache.commons.lang3.StringUtils;
-import org.codenergic.theskeleton.post.PostEntity;
-import org.codenergic.theskeleton.post.PostFollowingRepository;
-import org.codenergic.theskeleton.post.PostRepository;
-import org.codenergic.theskeleton.post.PostService;
+import org.codenergic.theskeleton.post.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -45,24 +42,18 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public PostEntity findPostById(String id) {
-		return postRepository.findOne(id);
-	}
-
-	private PostEntity findPostByIdOrThrow(String id) {
-		PostEntity post = findPostById(id);
-		Assert.notNull(post, "Post not found");
-		return post;
-	}
-
-	@Override
 	public Page<PostEntity> findPostByFollowerId(String followerId, Pageable pageable) {
 		return postFollowingRepository.findByFollowerId(followerId, pageable);
 	}
 
 	@Override
-	public Page<PostEntity> findPostByPoster(String username, Pageable pageable) {
-		return postRepository.findByPosterUsername(username, pageable);
+	public PostEntity findPostById(String id) {
+		return postRepository.findOne(id);
+	}
+
+	@Override
+	public Page<PostEntity> findPostByPosterAndStatus(String userId, PostStatus postStatus, Pageable pageable) {
+		return postRepository.findByPosterIdAndPostStatus(userId, postStatus, pageable);
 	}
 
 	@Override
@@ -76,16 +67,21 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public Page<PostEntity> findPublishedPostByPoster(String userId, Pageable pageable) {
+		return postRepository.findByPosterIdAndPostStatus(userId, PostStatus.PUBLISHED, pageable);
+	}
+
+	@Override
 	@Transactional
 	public PostEntity publishPost(String id) {
-		return updatePostStatus(id, PostEntity.Status.PUBLISHED);
+		return updatePostStatus(id, PostStatus.PUBLISHED);
 	}
 
 	@Override
 	public PostEntity replyPost(String postId, PostEntity replyPost) {
 		PostEntity post = findPostByIdOrThrow(postId);
 		return postRepository.save(replyPost.setResponse(true)
-			.setPostStatus(PostEntity.Status.PUBLISHED)
+			.setPostStatus(PostStatus.PUBLISHED)
 			.setTitle(StringUtils.substring(replyPost.getContent(), 0, 20))
 			.setResponseTo(post));
 	}
@@ -94,18 +90,14 @@ public class PostServiceImpl implements PostService {
 	@Transactional
 	public PostEntity savePost(PostEntity post) {
 		post.setSlug(slugifyTitle(post.getTitle()));
-		post.setPostStatus(PostEntity.Status.DRAFT);
+		post.setPostStatus(PostStatus.DRAFT);
 		return postRepository.save(post);
-	}
-
-	private String slugifyTitle(String title) {
-		return StringUtils.substring(slugify.slugify(title), 0, 20);
 	}
 
 	@Override
 	@Transactional
 	public PostEntity unPublishPost(String id) {
-		return updatePostStatus(id, PostEntity.Status.DRAFT);
+		return updatePostStatus(id, PostStatus.DRAFT);
 	}
 
 	@Override
@@ -117,7 +109,17 @@ public class PostServiceImpl implements PostService {
 			.setSlug(slugifyTitle(post.getTitle()));
 	}
 
-	private PostEntity updatePostStatus(String id, PostEntity.Status status) {
+	private PostEntity findPostByIdOrThrow(String id) {
+		PostEntity post = findPostById(id);
+		Assert.notNull(post, "Post not found");
+		return post;
+	}
+
+	private String slugifyTitle(String title) {
+		return StringUtils.substring(slugify.slugify(title), 0, 20);
+	}
+
+	private PostEntity updatePostStatus(String id, PostStatus status) {
 		PostEntity p = findPostByIdOrThrow(id);
 		return p.setPostStatus(status);
 	}

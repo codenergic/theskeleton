@@ -134,21 +134,6 @@ public class PostRestControllerTest {
 	}
 
 	@Test
-	public void testFindPostByPoster() throws Exception {
-		final Page<PostEntity> post = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST));
-		when(postService.findPostByPoster(contains("user"), any())).thenReturn(post);
-		MockHttpServletResponse response = mockMvc.perform(get("/api/posts?username=user")
-			.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(document("post-read-all-by-user"))
-			.andReturn()
-			.getResponse();
-		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
-		verify(postService).findPostByPoster(eq("user"), any());
-	}
-
-	@Test
 	public void testFindPostByTitleContaining() throws Exception {
 		final Page<PostEntity> post = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST));
 		when(postService.findPostByTitleContaining(contains("disastah"), any())).thenReturn(post);
@@ -200,7 +185,7 @@ public class PostRestControllerTest {
 
 	@Test
 	public void testPublishAndUnPublishPost() throws Exception {
-		when(postService.publishPost("123")).thenReturn(PostServiceTest.DUMMY_POST.setPostStatus(PostEntity.Status.PUBLISHED));
+		when(postService.publishPost("123")).thenReturn(PostServiceTest.DUMMY_POST.setPostStatus(PostStatus.PUBLISHED));
 		MockHttpServletResponse response = mockMvc.perform(put("/api/posts/123/publish")
 			.content("true").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
@@ -209,13 +194,13 @@ public class PostRestControllerTest {
 			.getResponse();
 		PostRestData expectedResponse = PostRestData.builder()
 			.fromPostEntity(PostServiceTest.DUMMY_POST)
-			.status(PostEntity.Status.PUBLISHED.name())
+			.status(PostStatus.PUBLISHED.name())
 			.build();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expectedResponse));
 		verify(postService).publishPost("123");
 
-		when(postService.unPublishPost("123")).thenReturn(PostServiceTest.DUMMY_POST.setPostStatus(PostEntity.Status.DRAFT));
+		when(postService.unPublishPost("123")).thenReturn(PostServiceTest.DUMMY_POST.setPostStatus(PostStatus.DRAFT));
 		response = mockMvc.perform(put("/api/posts/123/publish")
 			.content("false").contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
@@ -224,7 +209,7 @@ public class PostRestControllerTest {
 			.getResponse();
 		expectedResponse = PostRestData.builder()
 			.fromPostEntity(PostServiceTest.DUMMY_POST)
-			.status(PostEntity.Status.DRAFT.name())
+			.status(PostStatus.DRAFT.name())
 			.build();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expectedResponse));

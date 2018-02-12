@@ -15,15 +15,6 @@
  */
 package org.codenergic.theskeleton.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Collections;
-
 import org.codenergic.theskeleton.post.impl.PostServiceImpl;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Before;
@@ -32,6 +23,18 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.codenergic.theskeleton.post.PostStatus.DRAFT;
+import static org.codenergic.theskeleton.post.PostStatus.PUBLISHED;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class PostServiceTest {
 	static final PostEntity DUMMY_POST = new PostEntity()
@@ -65,13 +68,6 @@ public class PostServiceTest {
 	}
 
 	@Test
-	public void testFindPostById() {
-		when(postRepository.findOne("123")).thenReturn(DUMMY_POST2);
-		assertThat(postService.findPostById("123")).isEqualTo(DUMMY_POST2);
-		verify(postRepository).findOne("123");
-	}
-
-	@Test
 	public void testFindPostByFollowerId() {
 		Page<PostEntity> dbResult = new PageImpl<>(Collections.singletonList(DUMMY_POST));
 		when(postFollowingRepository.findByFollowerId(eq("123"), any())).thenReturn(dbResult);
@@ -80,11 +76,20 @@ public class PostServiceTest {
 	}
 
 	@Test
-	public void testFindPostByPoster() {
-		Page<PostEntity> dbResult = new PageImpl<>(Collections.singletonList(DUMMY_POST));
-		when(postRepository.findByPosterUsername(eq("user"), any())).thenReturn(dbResult);
-		assertThat(postService.findPostByPoster("user", null)).isEqualTo(dbResult);
-		verify(postRepository).findByPosterUsername(eq("user"), any());
+	public void testFindPostById() {
+		when(postRepository.findOne("123")).thenReturn(DUMMY_POST2);
+		assertThat(postService.findPostById("123")).isEqualTo(DUMMY_POST2);
+		verify(postRepository).findOne("123");
+	}
+
+	@Test
+	public void testFindPostByPosterAndStatus() {
+		when(postRepository.findByPosterIdAndPostStatus(eq("1234"), eq(PUBLISHED), any()))
+			.thenReturn(new PageImpl<>(Arrays.asList(DUMMY_POST, DUMMY_POST2)));
+		Page<PostEntity> posts = postService.findPostByPosterAndStatus("1234", PUBLISHED, null);
+		assertThat(posts).hasSize(2);
+		assertThat(posts).containsExactly(DUMMY_POST, DUMMY_POST2);
+		verify(postRepository).findByPosterIdAndPostStatus(eq("1234"), eq(PUBLISHED), any());
 	}
 
 	@Test
@@ -107,15 +112,23 @@ public class PostServiceTest {
 	}
 
 	@Test
+	public void testFindPublishedPostByPoster() {
+		Page<PostEntity> dbResult = new PageImpl<>(Collections.singletonList(DUMMY_POST));
+		when(postRepository.findByPosterIdAndPostStatus(eq("user"), eq(PUBLISHED), any())).thenReturn(dbResult);
+		assertThat(postService.findPublishedPostByPoster("user", null)).isEqualTo(dbResult);
+		verify(postRepository).findByPosterIdAndPostStatus(eq("user"), eq(PUBLISHED), any());
+	}
+
+	@Test
 	public void testPublishAndUnPublishPost() {
 		when(postRepository.findOne("1234")).thenReturn(null);
 		assertThatThrownBy(() -> postService.publishPost("1234")).isInstanceOf(IllegalArgumentException.class);
 		verify(postRepository).findOne("1234");
-		when(postRepository.findOne("123")).thenReturn(new PostEntity().setPostStatus(PostEntity.Status.DRAFT));
-		assertThat(postService.publishPost("123").getPostStatus()).isEqualTo(PostEntity.Status.PUBLISHED);
+		when(postRepository.findOne("123")).thenReturn(new PostEntity().setPostStatus(DRAFT));
+		assertThat(postService.publishPost("123").getPostStatus()).isEqualTo(PUBLISHED);
 		verify(postRepository).findOne("123");
-		when(postRepository.findOne("321")).thenReturn(new PostEntity().setPostStatus(PostEntity.Status.PUBLISHED));
-		assertThat(postService.unPublishPost("321").getPostStatus()).isEqualTo(PostEntity.Status.DRAFT);
+		when(postRepository.findOne("321")).thenReturn(new PostEntity().setPostStatus(PUBLISHED));
+		assertThat(postService.unPublishPost("321").getPostStatus()).isEqualTo(DRAFT);
 		verify(postRepository).findOne("321");
 	}
 

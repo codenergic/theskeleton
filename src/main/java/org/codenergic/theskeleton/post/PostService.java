@@ -26,20 +26,23 @@ public interface PostService {
 	@PreAuthorize("isAuthenticated()")
 	void deletePost(@NotNull String id);
 
-	@PreAuthorize("isAuthenticated()")
-	PostEntity findPostById(@NotNull String id);
-
 	@PreAuthorize("authentication.principal.id == #followerId")
 	Page<PostEntity> findPostByFollowerId(String followerId, Pageable pageable);
 
 	@PreAuthorize("permitAll()")
-	Page<PostEntity> findPostByPoster(@NotNull String username, Pageable pageable);
+	PostEntity findPostById(@NotNull String id);
+
+	@PreAuthorize("principal.id == #userId")
+	Page<PostEntity> findPostByPosterAndStatus(String userId, PostStatus postStatus, Pageable pageable);
 
 	@PreAuthorize("permitAll()")
 	Page<PostEntity> findPostByTitleContaining(@NotNull String title, Pageable pageable);
 
 	@PreAuthorize("permitAll()")
 	Page<PostEntity> findPostReplies(String postId, Pageable pageable);
+
+	@PreAuthorize("permitAll()")
+	Page<PostEntity> findPublishedPostByPoster(@NotNull String userId, Pageable pageable);
 
 	@PreAuthorize("isAuthenticated()")
 	PostEntity publishPost(@NotNull String id);
@@ -53,6 +56,6 @@ public interface PostService {
 	@PreAuthorize("isAuthenticated()")
 	PostEntity unPublishPost(@NotNull String id);
 
-	@PreAuthorize("#post.poster.username == principal.username")
+	@PreAuthorize("principal.id == #post.poster.id")
 	PostEntity updatePost(@NotNull String id, @NotNull @Valid PostEntity post);
 }

@@ -42,7 +42,7 @@ public class PostEntity extends AbstractAuditingEntity {
 	private boolean isResponse = false;
 	@Enumerated(EnumType.STRING)
 	@Column(name = "post_status")
-	private Status postStatus = Status.DRAFT;
+	private PostStatus postStatus = PostStatus.DRAFT;
 
 	public String getContent() {
 		return content;
@@ -53,11 +53,11 @@ public class PostEntity extends AbstractAuditingEntity {
 		return this;
 	}
 
-	public Status getPostStatus() {
+	public PostStatus getPostStatus() {
 		return postStatus;
 	}
 
-	public PostEntity setPostStatus(Status status) {
+	public PostEntity setPostStatus(PostStatus status) {
 		this.postStatus = status;
 		return this;
 	}
@@ -111,9 +111,5 @@ public class PostEntity extends AbstractAuditingEntity {
 	public PostEntity setId(String id) {
 		super.setId(id);
 		return this;
-	}
-
-	public enum Status {
-		BLOCKED, DRAFT, PUBLISHED
 	}
 }
