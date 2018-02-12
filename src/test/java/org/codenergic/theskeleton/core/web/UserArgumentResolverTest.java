@@ -23,6 +23,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -95,5 +99,42 @@ public class UserArgumentResolverTest {
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsString()).isEmpty();
 		verify(userDetailsService, never()).loadUserByUsername(any());
+	}
+
+	@Test
+	public void testUserArgumentResolver5() throws Exception {
+		final MockHttpServletResponse response1 = mockMvc.perform(get("/test5/me")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andReturn()
+			.getResponse();
+		assertThat(response1.getStatus()).isEqualTo(200);
+		assertThat(response1.getContentAsString()).isEmpty();
+		verify(userDetailsService, never()).loadUserByUsername(any());
+
+		SecurityContextHolder.getContext()
+			.setAuthentication(new TestingAuthenticationToken(new UserEntity().setId("1234"), ""));
+		SecurityContextHolder.getContext().getAuthentication();
+		final MockHttpServletResponse response2 = mockMvc.perform(get("/test5/me")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andReturn()
+			.getResponse();
+		assertThat(response2.getStatus()).isEqualTo(200);
+		assertThat(response2.getContentAsString()).contains("\"id\":\"1234\"");
+		verify(userDetailsService, never()).loadUserByUsername(any());
+
+		when(userDetailsService.loadUserByUsername("1234")).thenReturn(new UserEntity().setId("12345"));
+		SecurityContextHolder.getContext()
+			.setAuthentication(new TestingAuthenticationToken("1234", ""));
+		SecurityContextHolder.getContext().getAuthentication();
+		final MockHttpServletResponse response3 = mockMvc.perform(get("/test5/me")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andReturn()
+			.getResponse();
+		assertThat(response3.getStatus()).isEqualTo(200);
+		assertThat(response3.getContentAsString()).contains("\"id\":\"12345\"");
+		verify(userDetailsService).loadUserByUsername("1234");
 	}
 }

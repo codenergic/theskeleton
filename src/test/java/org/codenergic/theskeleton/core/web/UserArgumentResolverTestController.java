@@ -40,4 +40,9 @@ class UserArgumentResolverTestController {
 	public UserEntity test4(@User(parameterName = "idx") UserEntity user) {
 		return user == null ? null : user.setId(user.getId().concat("12345"));
 	}
+
+	@RequestMapping("/test5/{username}")
+	public UserEntity test5(@User UserEntity user) {
+		return user;
+	}
 }
