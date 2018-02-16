@@ -19,6 +19,7 @@ import org.codenergic.theskeleton.client.OAuth2ClientService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -38,14 +39,18 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 	private final OAuth2ClientService clientService;
 	private final TokenEnhancer tokenEnhancer;
 	private final TokenStore tokenStore;
+	private final UserDetailsService userDetailsService;
 
-	public OAuth2AuthorizationServerConfig(AccessTokenConverter accessTokenConverter, ApprovalStore approvalStore, AuthenticationManager authenticationManager, OAuth2ClientService clientService, TokenEnhancer tokenEnhancer, TokenStore tokenStore) {
+	public OAuth2AuthorizationServerConfig(AccessTokenConverter accessTokenConverter, ApprovalStore approvalStore,
+										   AuthenticationManager authenticationManager, OAuth2ClientService clientService,
+										   TokenEnhancer tokenEnhancer, TokenStore tokenStore, UserDetailsService userDetailsService) {
 		this.accessTokenConverter = accessTokenConverter;
 		this.approvalStore = approvalStore;
 		this.authenticationManager = authenticationManager;
 		this.clientService = clientService;
 		this.tokenEnhancer = tokenEnhancer;
 		this.tokenStore = tokenStore;
+		this.userDetailsService = userDetailsService;
 	}
 
 	@Override
@@ -56,10 +61,11 @@ public class OAuth2AuthorizationServerConfig extends AuthorizationServerConfigur
 	@Override
 	public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 		endpoints
-				.authenticationManager(authenticationManager)
-				.accessTokenConverter(accessTokenConverter)
-				.approvalStore(approvalStore)
-				.tokenEnhancer(tokenEnhancer)
-				.tokenStore(tokenStore);
+			.authenticationManager(authenticationManager)
+			.accessTokenConverter(accessTokenConverter)
+			.approvalStore(approvalStore)
+			.tokenEnhancer(tokenEnhancer)
+			.tokenStore(tokenStore)
+			.userDetailsService(userDetailsService);
 	}
 }
