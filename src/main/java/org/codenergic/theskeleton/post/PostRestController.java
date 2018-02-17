@@ -94,8 +94,8 @@ public class PostRestController {
 	}
 
 	@PostMapping
-	public PostRestData savePost(@RequestBody @Validated(PostRestData.New.class) PostRestData postRestData) {
-		PostEntity post = postService.savePost(postRestData.toPostEntity());
+	public PostRestData savePost(@AuthenticationPrincipal UserEntity currentUser, @RequestBody @Validated(PostRestData.New.class) PostRestData postRestData) {
+		PostEntity post = postService.savePost(currentUser, postRestData.toPostEntity());
 		return mapPostEntityToData(post);
 	}
 

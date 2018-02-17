@@ -15,6 +15,7 @@
  */
 package org.codenergic.theskeleton.post;
 
+import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,13 +27,13 @@ public interface PostService {
 	@PreAuthorize("isAuthenticated()")
 	void deletePost(@NotNull String id);
 
-	@PreAuthorize("authentication.principal.id == #followerId")
+	@PreAuthorize("isAuthenticated() and principal.id == #followerId")
 	Page<PostEntity> findPostByFollowerId(String followerId, Pageable pageable);
 
 	@PreAuthorize("permitAll()")
 	PostEntity findPostById(@NotNull String id);
 
-	@PreAuthorize("principal.id == #userId")
+	@PreAuthorize("isAuthenticated() and principal.id == #userId")
 	Page<PostEntity> findPostByPosterAndStatus(String userId, PostStatus postStatus, Pageable pageable);
 
 	@PreAuthorize("permitAll()")
@@ -50,12 +51,12 @@ public interface PostService {
 	@PreAuthorize("isAuthenticated()")
 	PostEntity replyPost(@NotNull String postId, @NotNull @Valid PostEntity replyPost);
 
-	@PreAuthorize("isAuthenticated()")
-	PostEntity savePost(@NotNull @Valid PostEntity post);
+	@PreAuthorize("isAuthenticated() and principal == #currentUser")
+	PostEntity savePost(UserEntity currentUser, @NotNull @Valid PostEntity post);
 
 	@PreAuthorize("isAuthenticated()")
 	PostEntity unPublishPost(@NotNull String id);
 
-	@PreAuthorize("principal.id == #post.poster.id")
+	@PreAuthorize("isAuthenticated()")
 	PostEntity updatePost(@NotNull String id, @NotNull @Valid PostEntity post);
 }

@@ -147,7 +147,7 @@ public class PostServiceTest {
 	@Test
 	public void testSavePost() {
 		when(postRepository.save(DUMMY_POST)).thenReturn(DUMMY_POST2);
-		PostEntity savedPost = postService.savePost(DUMMY_POST);
+		PostEntity savedPost = postService.savePost(new UserEntity(), DUMMY_POST);
 		assertThat(savedPost).isEqualTo(DUMMY_POST2);
 		verify(postRepository).save(DUMMY_POST);
 	}

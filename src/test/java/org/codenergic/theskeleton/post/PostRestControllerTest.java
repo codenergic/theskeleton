@@ -251,7 +251,7 @@ public class PostRestControllerTest {
 
 	@Test
 	public void testSavePost() throws Exception {
-		when(postService.savePost(any())).thenReturn(PostServiceTest.DUMMY_POST);
+		when(postService.savePost(any(), any())).thenReturn(PostServiceTest.DUMMY_POST);
 		MockHttpServletResponse response = mockMvc.perform(post("/api/posts")
 			.content("{\"title\": \"It's a disastah\", \"content\": \"Seriously a disastah\"}")
 			.contentType(MediaType.APPLICATION_JSON))
@@ -263,7 +263,7 @@ public class PostRestControllerTest {
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(
 				PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST).build()));
-		verify(postService).savePost(any());
+		verify(postService).savePost(any(), any());
 	}
 
 	@Test

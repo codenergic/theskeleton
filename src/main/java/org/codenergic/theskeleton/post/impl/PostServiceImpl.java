@@ -18,6 +18,7 @@ package org.codenergic.theskeleton.post.impl;
 import com.github.slugify.Slugify;
 import org.apache.commons.lang3.StringUtils;
 import org.codenergic.theskeleton.post.*;
+import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -88,9 +89,10 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	@Transactional
-	public PostEntity savePost(PostEntity post) {
+	public PostEntity savePost(UserEntity currentUser, PostEntity post) {
 		post.setSlug(slugifyTitle(post.getTitle()));
 		post.setPostStatus(PostStatus.DRAFT);
+		post.setPoster(currentUser);
 		return postRepository.save(post);
 	}
 
