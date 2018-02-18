@@ -45,6 +45,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.codenergic.theskeleton.post.PostStatus.DRAFT;
@@ -90,6 +91,8 @@ public class UserPostRestControllerTest {
 
 	@Test
 	public void testFindUserPostByStatus() throws Exception {
+		PostServiceTest.DUMMY_POST2.setCreatedDate(new Date());
+		PostServiceTest.DUMMY_POST2.setLastModifiedDate(new Date());
 		PageImpl<PostEntity> result = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST2));
 		when(postService.findPostByPosterAndStatus(eq(USER_ID), eq(DRAFT), any())).thenReturn(result);
 		MockHttpServletResponse response = mockMvc.perform(get("/api/users/me/posts?status=draft")
@@ -106,6 +109,8 @@ public class UserPostRestControllerTest {
 
 	@Test
 	public void testFindUserPublishedPost() throws Exception {
+		PostServiceTest.DUMMY_POST.setCreatedDate(new Date());
+		PostServiceTest.DUMMY_POST.setLastModifiedDate(new Date());
 		PageImpl<PostEntity> result = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST));
 		when(postService.findPublishedPostByPoster(eq(USER_ID), any())).thenReturn(result);
 		MockHttpServletResponse response = mockMvc.perform(get("/api/users/me/posts")

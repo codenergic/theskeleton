@@ -16,12 +16,12 @@
 package org.codenergic.theskeleton.post;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.auto.value.AutoValue;
 import org.codenergic.theskeleton.core.data.RestData;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.annotation.Nullable;
+import java.util.Date;
 
 @SuppressWarnings("serial")
 @AutoValue
@@ -36,7 +36,16 @@ abstract class PostRestData implements RestData {
 	abstract String getContent();
 
 	@Nullable
+	abstract Date getCreatedDate();
+
+	@Nullable
 	abstract String getId();
+
+	@Nullable
+	abstract Date getLastUpdatedDate();
+
+	@Nullable
+	abstract Boolean getResponse();
 
 	@Nullable
 	abstract String getResponseTo();
@@ -48,9 +57,6 @@ abstract class PostRestData implements RestData {
 	@Nullable
 	abstract String getTitle();
 
-	@Nullable
-	abstract Boolean getResponse();
-
 	PostEntity toPostEntity() {
 		return new PostEntity()
 			.setContent(getContent())
@@ -59,11 +65,12 @@ abstract class PostRestData implements RestData {
 	}
 
 	@AutoValue.Builder
-	@JsonPOJOBuilder(withPrefix = "")
-	interface Builder {
+	interface Builder extends RestData.Builder {
 		PostRestData build();
 
 		Builder content(String content);
+
+		Builder createdDate(Date createdDate);
 
 		default Builder fromPostEntity(PostEntity post) {
 			return id(post.getId())
@@ -71,10 +78,14 @@ abstract class PostRestData implements RestData {
 				.responseTo(post.getResponseTo() == null ? null : post.getResponseTo().getId())
 				.response(post.getResponseTo() == null)
 				.status(post.getPostStatus().name())
-				.title(post.getTitle());
+				.title(post.getTitle())
+				.createdDate(post.getCreatedDate())
+				.lastUpdatedDate(post.getLastModifiedDate());
 		}
 
 		Builder id(String id);
+
+		Builder lastUpdatedDate(Date updatedDate);
 
 		Builder response(Boolean isResponse);
 

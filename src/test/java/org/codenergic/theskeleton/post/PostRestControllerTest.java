@@ -44,6 +44,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,7 +77,7 @@ public class PostRestControllerTest {
 	private UserDetailsService userDetailsService;
 
 	@Before
-	public void init() throws Exception {
+	public void init() {
 		when(userDetailsService.loadUserByUsername(USERNAME)).thenReturn(new UserEntity().setId(USER_ID).setUsername(USERNAME));
 		mockMvc = MockMvcBuilders
 			.standaloneSetup(new PostRestController(postService, postReactionService))
@@ -87,6 +88,10 @@ public class PostRestControllerTest {
 		Authentication authentication = new UsernamePasswordAuthenticationToken(
 			new UserEntity().setId(USER_ID).setUsername(USERNAME), "1234");
 		SecurityContextHolder.getContext().setAuthentication(authentication);
+		PostServiceTest.DUMMY_POST.setCreatedDate(new Date());
+		PostServiceTest.DUMMY_POST.setLastModifiedDate(new Date());
+		PostServiceTest.DUMMY_POST2.setCreatedDate(new Date());
+		PostServiceTest.DUMMY_POST2.setLastModifiedDate(new Date());
 	}
 
 	@Test
