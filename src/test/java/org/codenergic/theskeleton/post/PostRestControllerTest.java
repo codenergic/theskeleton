@@ -108,6 +108,19 @@ public class PostRestControllerTest {
 	}
 
 	@Test
+	public void testDeleteReaction() throws Exception {
+		MockHttpServletResponse response = mockMvc.perform(delete("/api/posts/1234/reactions")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andDo(document("post-reactions-delete"))
+			.andReturn()
+			.getResponse();
+		assertThat(response.getStatus()).isEqualTo(200);
+		verify(postReactionService).deletePostReaction(USER_ID, "1234");
+
+	}
+
+	@Test
 	public void testFindPostByFollower() throws Exception {
 		final Page<PostEntity> post = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST));
 		when(postService.findPostByFollowerId(eq(USER_ID), any())).thenReturn(post);

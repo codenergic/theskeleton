@@ -54,10 +54,9 @@ public class PostReactionServiceTest {
 	public void testDeletePostReaction() throws Exception {
 		final PostReactionEntity postReaction = new PostReactionEntity();
 		postReaction.setId("123456");
-		when(postReactionRepository.findByUserIdAndPostIdAndReactionType(USER_ID, POST_ID, LIKE))
-			.thenReturn(postReaction);
-		postReactionService.deletePostReaction(USER_ID, POST_ID, LIKE);
-		verify(postReactionRepository).findByUserIdAndPostIdAndReactionType(USER_ID, POST_ID, LIKE);
+		when(postReactionRepository.findByUserIdAndPostId(USER_ID, POST_ID)).thenReturn(postReaction);
+		postReactionService.deletePostReaction(USER_ID, POST_ID);
+		verify(postReactionRepository).findByUserIdAndPostId(USER_ID, POST_ID);
 		verify(postReactionRepository).delete(postReaction);
 	}
 

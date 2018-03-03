@@ -22,7 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface PostReactionService {
 	@PreAuthorize("principal.id == #userId")
-	void deletePostReaction(String userId, String postId, PostReactionType reactionType);
+	void deletePostReaction(String userId, String postId);
 
 	Page<UserEntity> findUserByPostReaction(String postId, PostReactionType reactionType, Pageable pageable);
 

@@ -36,6 +36,11 @@ public class PostRestController {
 		this.postReactionService = postReactionService;
 	}
 
+	@DeleteMapping("/{id}/reactions")
+	public void deleteReaction(@PathVariable("id") String postId, @AuthenticationPrincipal UserEntity user) {
+		postReactionService.deletePostReaction(user.getId(), postId);
+	}
+
 	@DeleteMapping("/{id}")
 	public void deleteRole(@PathVariable("id") final String id) {
 		postService.deletePost(id);

@@ -33,8 +33,8 @@ public class PostReactionServiceImpl implements PostReactionService {
 
 	@Override
 	@Transactional
-	public void deletePostReaction(String userId, String postId, PostReactionType reactionType) {
-		PostReactionEntity postReaction = postReactionRepository.findByUserIdAndPostIdAndReactionType(userId, postId, reactionType);
+	public void deletePostReaction(String userId, String postId) {
+		PostReactionEntity postReaction = postReactionRepository.findByUserIdAndPostId(userId, postId);
 		if (postReaction == null)
 			throw new IllegalArgumentException("Cannot find reaction");
 		postReactionRepository.delete(postReaction);

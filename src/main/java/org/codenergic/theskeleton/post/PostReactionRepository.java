@@ -26,5 +26,5 @@ public interface PostReactionRepository extends AuditingEntityRepository<PostRea
 
 	Page<PostReactionEntity> findByPostIdAndReactionType(String postId, PostReactionType reactionType, Pageable pageable);
 
-	PostReactionEntity findByUserIdAndPostIdAndReactionType(String userId, String postId, PostReactionType reactionType);
+	PostReactionEntity findByUserIdAndPostId(String userId, String postId);
 }
