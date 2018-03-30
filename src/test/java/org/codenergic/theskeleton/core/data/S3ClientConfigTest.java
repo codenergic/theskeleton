@@ -16,6 +16,7 @@
 package org.codenergic.theskeleton.core.data;
 
 import io.minio.MinioClient;
+import io.minio.policy.PolicyType;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -25,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -43,8 +45,17 @@ public class S3ClientConfigTest {
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		s3ClientProperties.getBuckets().add("test1");
-		s3ClientProperties.getBuckets().add("test2");
+		s3ClientProperties.setAccessKey("");
+		s3ClientProperties.setSecretKey("");
+		s3ClientProperties.setEndpoint("");
+		Stream.of("test1", "test2").forEach(bucketName -> {
+			S3ClientConfig.S3BucketProperties bucketProperties = new S3ClientConfig.S3BucketProperties();
+			bucketProperties.setName(bucketName);
+			bucketProperties.getPolicies().add(new S3ClientConfig.S3BucketPolicyProperties()
+				.setPolicy(PolicyType.NONE)
+				.setPrefix("*"));
+			s3ClientProperties.getBuckets().add(bucketProperties);
+		});
 	}
 
 	@SuppressWarnings("unchecked")
