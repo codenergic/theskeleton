@@ -22,8 +22,14 @@ s3:
     access-key: supersecret
     secret-key: supersecret123
     buckets:
-      - profile-pictures
-      - galleries
+      - name: profile-pictures
+        policies:
+          - prefix: '*'
+            policy: READ_ONLY
+      - name: galleries
+        policies:
+          - prefix: '*'
+            policy: READ_ONLY
 security:
   oauth2:
     resource:
