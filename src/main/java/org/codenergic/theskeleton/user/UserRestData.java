@@ -35,6 +35,16 @@ public abstract class UserRestData implements RestData {
 		return new AutoValue_UserRestData.Builder();
 	}
 
+	public static Builder builder(UserEntity user) {
+		return builder()
+			.id(user.getId())
+			.username(user.getUsername())
+			.email(user.getEmail())
+			.phoneNumber(user.getPhoneNumber())
+			.isNonLocked(user.isAccountNonLocked())
+			.pictureUrl(user.getPictureUrl());
+	}
+
 	@Nullable
 	abstract Set<String> getAuthorities();
 
@@ -73,22 +83,12 @@ public abstract class UserRestData implements RestData {
 	}
 
 	@AutoValue.Builder
-	@JsonPOJOBuilder(withPrefix = "")
-	public interface Builder {
+	public interface Builder extends RestData.Builder {
 		Builder authorities(Set<String> authorities);
 
 		UserRestData build();
 
 		Builder email(String email);
-
-		default Builder fromUserEntity(UserEntity user) {
-			return id(user.getId())
-				.username(user.getUsername())
-				.email(user.getEmail())
-				.phoneNumber(user.getPhoneNumber())
-				.isNonLocked(user.isAccountNonLocked())
-				.pictureUrl(user.getPictureUrl());
-		}
 
 		Builder id(String id);
 

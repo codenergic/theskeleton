@@ -27,19 +27,19 @@ abstract class GalleryRestData implements RestData {
 		return new AutoValue_GalleryRestData.Builder();
 	}
 
+	static Builder builder(GalleryEntity gallery) {
+		return builder()
+			.imageUrl(gallery.getImageUrl())
+			.userId(gallery.getCreatedBy().getUserId());
+	}
+
 	abstract String getImageUrl();
 
 	abstract String getUserId();
 
 	@AutoValue.Builder
-	@JsonPOJOBuilder(withPrefix = "")
-	interface Builder {
+	interface Builder extends RestData.Builder {
 		GalleryRestData build();
-
-		default Builder fromGalleryEntity(GalleryEntity gallery) {
-			return imageUrl(gallery.getImageUrl())
-				.userId(gallery.getCreatedBy().getUserId());
-		}
 
 		Builder imageUrl(String imageUrl);
 

@@ -16,7 +16,6 @@
 package org.codenergic.theskeleton.user.profile;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.auto.value.AutoValue;
 import org.codenergic.theskeleton.core.data.RestData;
 
@@ -37,8 +36,7 @@ abstract class ProfileSocialRestData implements RestData {
 	abstract String getProvider();
 
 	@AutoValue.Builder
-	@JsonPOJOBuilder(withPrefix = "")
-	interface Builder {
+	interface Builder extends RestData.Builder {
 		ProfileSocialRestData build();
 
 		Builder imageUrl(String imageUrl);

@@ -77,7 +77,7 @@ public class PostRestController {
 	}
 
 	private PostRestData mapPostEntityToData(PostEntity post) {
-		return PostRestData.builder().fromPostEntity(post).build();
+		return PostRestData.builder(post).build();
 	}
 
 	@PutMapping("/{id}/publish")

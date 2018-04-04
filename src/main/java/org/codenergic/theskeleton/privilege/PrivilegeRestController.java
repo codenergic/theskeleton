@@ -31,13 +31,13 @@ public class PrivilegeRestController {
 	@GetMapping("/{idOrName}")
 	public PrivilegeRestData findPrivilegeByIdOrName(@PathVariable("idOrName") final String idOrName) {
 		PrivilegeEntity privilege = privilegeService.findPrivilegeByIdOrName(idOrName);
-		return privilege == null ? null : PrivilegeRestData.builder().fromPrivilegeEntity(privilege).build();
+		return privilege == null ? null : PrivilegeRestData.builder(privilege).build();
 	}
 
 	@GetMapping
 	public Page<PrivilegeRestData> findPrivileges(@RequestParam(name = "q", defaultValue = "") final String keywords,
 			final Pageable pageable) {
 		return privilegeService.findPrivileges(keywords, pageable)
-				.map(s -> PrivilegeRestData.builder().fromPrivilegeEntity(s).build());
+				.map(s -> PrivilegeRestData.builder(s).build());
 	}
 }

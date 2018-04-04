@@ -12,24 +12,32 @@ import javax.annotation.Nullable;
 @AutoValue
 @JsonDeserialize(builder = AutoValue_ProfileRestData.Builder.class)
 abstract class ProfileRestData implements RestData {
-	@Nullable
-	abstract String getUsername();
+	static Builder builder() {
+		return new AutoValue_ProfileRestData.Builder();
+	}
+
+	static Builder builder(UserEntity user) {
+		return builder()
+			.username(user.getUsername())
+			.email(user.getEmail())
+			.phoneNumber(user.getPhoneNumber())
+			.pictureUrl(user.getPictureUrl());
+	}
 
 	@Nullable
 	abstract String getEmail();
 
 	@Nullable
-	abstract String getPhoneNumber();
+	abstract String getPassword();
 
 	@Nullable
-	abstract String getPassword();
+	abstract String getPhoneNumber();
 
 	@Nullable
 	abstract String getPictureUrl();
 
-	static Builder builder() {
-		return new AutoValue_ProfileRestData.Builder();
-	}
+	@Nullable
+	abstract String getUsername();
 
 	UserEntity toUserEntity() {
 		return new UserEntity()
@@ -40,25 +48,17 @@ abstract class ProfileRestData implements RestData {
 	}
 
 	@AutoValue.Builder
-	@JsonPOJOBuilder(withPrefix = "")
-	interface Builder {
-		Builder username(String username);
+	interface Builder extends RestData.Builder {
+		ProfileRestData build();
 
 		Builder email(String email);
 
-		Builder phoneNumber(String phoneNumber);
-
 		Builder password(String password);
+
+		Builder phoneNumber(String phoneNumber);
 
 		Builder pictureUrl(String url);
 
-		ProfileRestData build();
-
-		default Builder fromUserEntity(UserEntity user) {
-			return username(user.getUsername())
-				.email(user.getEmail())
-				.phoneNumber(user.getPhoneNumber())
-				.pictureUrl(user.getPictureUrl());
-		}
+		Builder username(String username);
 	}
 }

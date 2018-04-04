@@ -36,12 +36,12 @@ public class UserPostRestController {
 	@GetMapping
 	public Page<PostRestData> findUserPublishedPost(@User UserEntity user, Pageable pageable) {
 		return postService.findPublishedPostByPoster(user.getId(), pageable)
-			.map(post -> PostRestData.builder().fromPostEntity(post).build());
+			.map(post -> PostRestData.builder(post).build());
 	}
 
 	@GetMapping(params = {"status"})
 	public Page<PostRestData> findUserPostByStatus(@User UserEntity user, @RequestParam("status") String postStatus, Pageable pageable) {
 		return postService.findPostByPosterAndStatus(user.getId(), PostStatus.valueOf(postStatus.toUpperCase()), pageable)
-			.map(post -> PostRestData.builder().fromPostEntity(post).build());
+			.map(post -> PostRestData.builder(post).build());
 	}
 }

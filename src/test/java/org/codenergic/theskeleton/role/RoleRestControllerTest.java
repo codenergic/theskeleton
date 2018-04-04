@@ -97,7 +97,7 @@ public class RoleRestControllerTest {
 				.getResponse();
 		verify(roleService).findRoleByIdOrCode("123");
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(dbResult).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder(dbResult).build()));
 	}
 
 	@Test
@@ -118,8 +118,7 @@ public class RoleRestControllerTest {
 				.setCode("12345")
 				.setDescription("Description 12345");
 		Page<RoleEntity> pageResponseBody = new PageImpl<>(Arrays.asList(dbResult));
-		Page<RoleRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(RoleRestData.builder()
-				.fromRoleEntity(dbResult).build()));
+		Page<RoleRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(RoleRestData.builder(dbResult).build()));
 		when(roleService.findRoles(anyString(), any())).thenReturn(pageResponseBody);
 		ResultActions resultActions = mockMvc.perform(get("/api/roles")
 					.contentType(MediaType.APPLICATION_JSON))
@@ -142,7 +141,7 @@ public class RoleRestControllerTest {
 				.setId(UUID.randomUUID().toString())
 				.setCode("12345")
 				.setDescription("Description 12345");
-		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(input).build());
+		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder(input).build());
 		when(roleService.saveRole(any())).thenReturn(dbResult);
 		ResultActions resultActions = mockMvc.perform(post("/api/roles")
 					.contentType(MediaType.APPLICATION_JSON)
@@ -154,7 +153,7 @@ public class RoleRestControllerTest {
 				.getResponse();
 		verify(roleService).saveRole(any());
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(dbResult).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder(dbResult).build()));
 	}
 
 	@Test
@@ -167,7 +166,7 @@ public class RoleRestControllerTest {
 				.setId(UUID.randomUUID().toString())
 				.setCode("12345")
 				.setDescription("Description 12345");
-		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(input).build());
+		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder(input).build());
 		when(roleService.updateRole(eq("123"), any())).thenReturn(dbResult);
 		ResultActions resultActions = mockMvc.perform(put("/api/roles/123")
 					.contentType(MediaType.APPLICATION_JSON)
@@ -179,7 +178,7 @@ public class RoleRestControllerTest {
 				.getResponse();
 		verify(roleService).updateRole(eq("123"), any());
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(dbResult).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder(dbResult).build()));
 	}
 
 	@Test
@@ -212,7 +211,7 @@ public class RoleRestControllerTest {
 				.getResponse();
 		verify(roleService).addPrivilegeToRole("role123", "privilege123");
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(role).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder(role).build()));
 	}
 
 	@Test
@@ -222,7 +221,7 @@ public class RoleRestControllerTest {
 				.setName("user_list_read");
 		final Set<PrivilegeEntity> privileges = new HashSet<>(Arrays.asList(privilege));
 		final Set<PrivilegeRestData> expected = privileges.stream()
-				.map(p -> PrivilegeRestData.builder().fromPrivilegeEntity(p).build())
+				.map(p -> PrivilegeRestData.builder(p).build())
 				.collect(Collectors.toSet());
 		when(roleService.findPrivilegesByRoleCode("role123")).thenReturn(privileges);
 		ResultActions resultActions = mockMvc.perform(get("/api/roles/role123/privileges")
@@ -252,6 +251,6 @@ public class RoleRestControllerTest {
 				.getResponse();
 		verify(roleService).removePrivilegeFromRole("role123", "privilege123");
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder().fromRoleEntity(role).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder(role).build()));
 	}
 }

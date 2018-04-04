@@ -41,7 +41,7 @@ public class GalleryRestController {
 	@GetMapping
 	public Page<GalleryRestData> findImageByUser(@AuthenticationPrincipal UserEntity userEntity, Pageable pageable) {
 		return galleryService.findImageByUser(userEntity.getId(), pageable)
-			.map(g -> GalleryRestData.builder().fromGalleryEntity(g).build());
+			.map(g -> GalleryRestData.builder(g).build());
 	}
 
 	@PostMapping(consumes = {"image/*"})
@@ -49,7 +49,7 @@ public class GalleryRestController {
 		try (InputStream inputStream = request.getInputStream()) {
 			GalleryEntity galleryEntity = galleryService.saveImage(userEntity.getId(), new GalleryEntity()
 				.setImage(inputStream).setFormat(request.getContentType()));
-			return GalleryRestData.builder().fromGalleryEntity(galleryEntity).build();
+			return GalleryRestData.builder(galleryEntity).build();
 		}
 	}
 

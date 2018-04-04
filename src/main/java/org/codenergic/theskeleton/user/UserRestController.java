@@ -71,7 +71,7 @@ public class UserRestController {
 	@GetMapping("/{username}/roles")
 	public Set<RoleRestData> findRolesByUserUsername(@PathVariable("username") String username) {
 		return userAdminService.findRolesByUserUsername(username).stream()
-				.map(r -> RoleRestData.builder().fromRoleEntity(r).build())
+				.map(r -> RoleRestData.builder(r).build())
 				.collect(Collectors.toSet());
 	}
 
@@ -118,6 +118,6 @@ public class UserRestController {
 	}
 
 	private UserRestData convertEntityToRestData(UserEntity user) {
-		return UserRestData.builder().fromUserEntity(user).build();
+		return UserRestData.builder(user).build();
 	}
 }

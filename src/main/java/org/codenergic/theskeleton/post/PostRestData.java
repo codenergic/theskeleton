@@ -31,6 +31,18 @@ abstract class PostRestData implements RestData {
 		return new AutoValue_PostRestData.Builder();
 	}
 
+	static Builder builder(PostEntity post) {
+		return builder()
+			.id(post.getId())
+			.content(post.getContent())
+			.responseTo(post.getResponseTo() == null ? null : post.getResponseTo().getId())
+			.response(post.getResponseTo() == null)
+			.status(post.getPostStatus().name())
+			.title(post.getTitle())
+			.createdDate(post.getCreatedDate())
+			.lastUpdatedDate(post.getLastModifiedDate());
+	}
+
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	abstract String getContent();
@@ -71,17 +83,6 @@ abstract class PostRestData implements RestData {
 		Builder content(String content);
 
 		Builder createdDate(Date createdDate);
-
-		default Builder fromPostEntity(PostEntity post) {
-			return id(post.getId())
-				.content(post.getContent())
-				.responseTo(post.getResponseTo() == null ? null : post.getResponseTo().getId())
-				.response(post.getResponseTo() == null)
-				.status(post.getPostStatus().name())
-				.title(post.getTitle())
-				.createdDate(post.getCreatedDate())
-				.lastUpdatedDate(post.getLastModifiedDate());
-		}
 
 		Builder id(String id);
 

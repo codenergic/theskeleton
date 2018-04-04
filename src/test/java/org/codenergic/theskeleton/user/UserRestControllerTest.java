@@ -77,7 +77,7 @@ public class UserRestControllerTest {
 				.andReturn()
 				.getResponse();
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userAdminService).addRoleToUser("user123", "role123");
 	}
 
@@ -103,7 +103,7 @@ public class UserRestControllerTest {
 				.andReturn()
 				.getResponse();
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userAdminService).enableOrDisableUser("user123", true);
 	}
 
@@ -121,7 +121,7 @@ public class UserRestControllerTest {
 				.andReturn()
 				.getResponse();
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userAdminService).extendsUserExpiration("user123", 60);
 	}
 
@@ -132,7 +132,7 @@ public class UserRestControllerTest {
 				.setCode("role123");
 		final Set<RoleEntity> roles = new HashSet<>(Arrays.asList(role));
 		final Set<RoleRestData> expected = roles.stream()
-				.map(r -> RoleRestData.builder().fromRoleEntity(r).build())
+				.map(r -> RoleRestData.builder(r).build())
 				.collect(Collectors.toSet());
 		when(userAdminService.findRolesByUserUsername("user123")).thenReturn(roles);
 		ResultActions resultActions = mockMvc.perform(get("/api/users/user123/roles")
@@ -160,7 +160,7 @@ public class UserRestControllerTest {
 				.andReturn()
 				.getResponse();
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userService).findUserByEmail("user@server");
 	}
 
@@ -178,7 +178,7 @@ public class UserRestControllerTest {
 				.andReturn()
 				.getResponse();
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userService).findUserByUsername("user123");
 	}
 
@@ -198,7 +198,7 @@ public class UserRestControllerTest {
 				.getResponse();
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(
-					users.map(u -> UserRestData.builder().fromUserEntity(u).build())));
+					users.map(u -> UserRestData.builder(u).build())));
 		verify(userAdminService).findUsersByUsernameStartingWith(eq("user123"), any());
 	}
 
@@ -216,7 +216,7 @@ public class UserRestControllerTest {
 				.andReturn()
 				.getResponse();
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userAdminService).lockOrUnlockUser("user123", true);
 	}
 
@@ -234,7 +234,7 @@ public class UserRestControllerTest {
 				.andReturn()
 				.getResponse();
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userAdminService).removeRoleFromUser("user123", "role123");
 	}
 
@@ -252,7 +252,7 @@ public class UserRestControllerTest {
 				.andReturn()
 				.getResponse();
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userAdminService).saveUser(any());
 	}
 
@@ -281,7 +281,7 @@ public class UserRestControllerTest {
 				.andReturn()
 				.getResponse();
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userAdminService).updateUser(eq("user123"), any());
 	}
 
@@ -299,7 +299,7 @@ public class UserRestControllerTest {
 				.andReturn()
 				.getResponse();
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder().fromUserEntity(user).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userAdminService).updateUserPassword(eq("user123"), any());
 	}
 

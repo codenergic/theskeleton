@@ -15,21 +15,28 @@
  */
 package org.codenergic.theskeleton.role;
 
-import javax.annotation.Nullable;
-
-import org.codenergic.theskeleton.core.data.RestData;
-import org.hibernate.validator.constraints.NotBlank;
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.auto.value.AutoValue;
+import org.codenergic.theskeleton.core.data.RestData;
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.annotation.Nullable;
 
 @SuppressWarnings("serial")
 @AutoValue
 @JsonDeserialize(builder = AutoValue_RoleRestData.Builder.class)
 public abstract class RoleRestData implements RestData {
-	@Nullable
-	abstract String getId();
+	public static Builder builder() {
+		return new AutoValue_RoleRestData.Builder();
+	}
+
+	public static Builder builder(RoleEntity role) {
+		return builder()
+			.id(role.getId())
+			.code(role.getCode())
+			.description(role.getDescription());
+	}
 
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
@@ -38,9 +45,8 @@ public abstract class RoleRestData implements RestData {
 	@Nullable
 	abstract String getDescription();
 
-	public static Builder builder() {
-		return new AutoValue_RoleRestData.Builder();
-	}
+	@Nullable
+	abstract String getId();
 
 	RoleEntity toRoleEntity() {
 		return new RoleEntity()
@@ -50,22 +56,19 @@ public abstract class RoleRestData implements RestData {
 	}
 
 	@AutoValue.Builder
-	@JsonPOJOBuilder(withPrefix = "")
-	public interface Builder {
-		Builder id(String id);
-		Builder code(String code);
-		Builder description(String description);
-
+	public interface Builder extends RestData.Builder {
 		RoleRestData build();
 
-		default Builder fromRoleEntity(RoleEntity role) {
-			return id(role.getId())
-				.code(role.getCode())
-				.description(role.getDescription());
-		}
-	}
-	
-	public interface New {}
+		Builder code(String code);
 
-	public interface Existing {}
+		Builder description(String description);
+
+		Builder id(String id);
+	}
+
+	public interface New {
+	}
+
+	public interface Existing {
+	}
 }

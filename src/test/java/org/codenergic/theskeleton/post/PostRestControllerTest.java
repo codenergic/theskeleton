@@ -131,7 +131,7 @@ public class PostRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
+			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder(a).build())));
 		verify(postService).findPostByFollowerId(eq(USER_ID), any());
 	}
 
@@ -146,8 +146,7 @@ public class PostRestControllerTest {
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(PostRestData.builder()
-				.fromPostEntity(PostServiceTest.DUMMY_POST2).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(PostRestData.builder(PostServiceTest.DUMMY_POST2).build()));
 		verify(postService).findPostById("123");
 	}
 
@@ -162,7 +161,7 @@ public class PostRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
+			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder(a).build())));
 		verify(postService).findPostByTitleContaining(eq("disastah"), any());
 	}
 
@@ -197,7 +196,7 @@ public class PostRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder().fromPostEntity(a).build())));
+			.isEqualTo(objectMapper.writeValueAsBytes(post.map(a -> PostRestData.builder(a).build())));
 		verify(postService).findPostReplies(eq("123"), any());
 	}
 
@@ -210,8 +209,7 @@ public class PostRestControllerTest {
 			.andDo(document("post-publish"))
 			.andReturn()
 			.getResponse();
-		PostRestData expectedResponse = PostRestData.builder()
-			.fromPostEntity(PostServiceTest.DUMMY_POST)
+		PostRestData expectedResponse = PostRestData.builder(PostServiceTest.DUMMY_POST)
 			.status(PostStatus.PUBLISHED.name())
 			.build();
 		assertThat(response.getStatus()).isEqualTo(200);
@@ -225,8 +223,7 @@ public class PostRestControllerTest {
 			.andDo(document("post-unpublish"))
 			.andReturn()
 			.getResponse();
-		expectedResponse = PostRestData.builder()
-			.fromPostEntity(PostServiceTest.DUMMY_POST)
+		expectedResponse = PostRestData.builder(PostServiceTest.DUMMY_POST)
 			.status(PostStatus.DRAFT.name())
 			.build();
 		assertThat(response.getStatus()).isEqualTo(200);
@@ -252,15 +249,13 @@ public class PostRestControllerTest {
 		when(postService.replyPost(eq("123"), any()))
 			.thenReturn(PostServiceTest.DUMMY_POST2.setResponse(true).setResponseTo(PostServiceTest.DUMMY_POST));
 		MockHttpServletResponse response = mockMvc.perform(post("/api/posts/123/responses")
-			.content(objectMapper.writeValueAsBytes(PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST2).build()))
+			.content(objectMapper.writeValueAsBytes(PostRestData.builder(PostServiceTest.DUMMY_POST2).build()))
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andDo(document("post-reply"))
 			.andReturn()
 			.getResponse();
-		PostRestData expectedResponse = PostRestData.builder()
-			.fromPostEntity(PostServiceTest.DUMMY_POST2)
-			.build();
+		PostRestData expectedResponse = PostRestData.builder(PostServiceTest.DUMMY_POST2).build();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(expectedResponse));
@@ -280,7 +275,7 @@ public class PostRestControllerTest {
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(
-				PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST).build()));
+				PostRestData.builder(PostServiceTest.DUMMY_POST).build()));
 		verify(postService).savePost(any(), any());
 	}
 
@@ -299,7 +294,7 @@ public class PostRestControllerTest {
 	@Test
 	public void testUpdatePost() throws Exception {
 		byte[] jsonInput = objectMapper.writeValueAsBytes(
-			PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST).build());
+			PostRestData.builder(PostServiceTest.DUMMY_POST).build());
 		when(postService.updatePost(eq("123"), any())).thenReturn(PostServiceTest.DUMMY_POST2);
 		MockHttpServletResponse response = mockMvc.perform(put("/api/posts/123")
 			.contentType(MediaType.APPLICATION_JSON)
@@ -311,6 +306,6 @@ public class PostRestControllerTest {
 		verify(postService).updatePost(eq("123"), any());
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(
-				PostRestData.builder().fromPostEntity(PostServiceTest.DUMMY_POST2).build()));
+				PostRestData.builder(PostServiceTest.DUMMY_POST2).build()));
 	}
 }

@@ -95,8 +95,7 @@ public class OAuth2ClientRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder()
-				.fromOAuth2ClientEntity(client).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder(client).build()));
 		verify(oAuth2ClientService).findClientById("client123");
 	}
 
@@ -122,7 +121,7 @@ public class OAuth2ClientRestControllerTest {
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(
-				clients.map(c -> OAuth2ClientRestData.builder().fromOAuth2ClientEntity(c).build())));
+				clients.map(c -> OAuth2ClientRestData.builder(c).build())));
 		verify(oAuth2ClientService).findClients(anyString(), any());
 	}
 
@@ -140,8 +139,7 @@ public class OAuth2ClientRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder()
-				.fromOAuth2ClientEntity(client).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder(client).build()));
 		verify(oAuth2ClientService).generateSecret(eq("client123"));
 	}
 
@@ -167,8 +165,7 @@ public class OAuth2ClientRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder()
-				.fromOAuth2ClientEntity(client).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder(client).build()));
 		verify(oAuth2ClientService).saveClient(any());
 	}
 
@@ -205,8 +202,7 @@ public class OAuth2ClientRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder()
-				.fromOAuth2ClientEntity(client).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder(client).build()));
 		verify(oAuth2ClientService).updateClient(eq("client123"), any());
 	}
 }

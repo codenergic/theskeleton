@@ -15,49 +15,44 @@
  */
 package org.codenergic.theskeleton.privilege;
 
-import javax.annotation.Nullable;
-
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.auto.value.AutoValue;
 import org.codenergic.theskeleton.core.data.RestData;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.google.auto.value.AutoValue;
+import javax.annotation.Nullable;
 
 @SuppressWarnings("serial")
 @AutoValue
 @JsonDeserialize(builder = AutoValue_PrivilegeRestData.Builder.class)
 public abstract class PrivilegeRestData implements RestData {
-	@Nullable
-	abstract String getId();
-	@Nullable
-	abstract String getName();
-	@Nullable
-	abstract String getDescription();
-
 	public static Builder builder() {
 		return new AutoValue_PrivilegeRestData.Builder();
 	}
 
-	PrivilegeEntity toPrivilegeEntity() {
-		return new PrivilegeEntity()
-			.setId(getId())
-			.setName(getName())
-			.setDescription(getDescription());
+	public static Builder builder(PrivilegeEntity privilege) {
+		return builder()
+			.id(privilege.getId())
+			.name(privilege.getName())
+			.description(privilege.getDescription());
 	}
 
-	@AutoValue.Builder
-	@JsonPOJOBuilder(withPrefix = "")
-	public interface Builder {
-		Builder id(String id);
-		Builder name(String id);
-		Builder description(String description);
+	@Nullable
+	abstract String getDescription();
 
+	@Nullable
+	abstract String getId();
+
+	@Nullable
+	abstract String getName();
+
+	@AutoValue.Builder
+	public interface Builder extends RestData.Builder {
 		PrivilegeRestData build();
 
-		default Builder fromPrivilegeEntity(PrivilegeEntity privilege) {
-			return id(privilege.getId())
-				.name(privilege.getName())
-				.description(privilege.getDescription());
-		}
+		Builder description(String description);
+
+		Builder id(String id);
+
+		Builder name(String id);
 	}
 }

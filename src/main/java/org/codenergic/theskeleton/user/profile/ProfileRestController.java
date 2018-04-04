@@ -25,7 +25,7 @@ public class ProfileRestController {
 	}
 
 	private ProfileRestData convertToRestData(UserEntity user) {
-		return ProfileRestData.builder().fromUserEntity(user).build();
+		return ProfileRestData.builder(user).build();
 	}
 
 	@GetMapping("/sessions")
@@ -51,8 +51,7 @@ public class ProfileRestController {
 			.collect(Collectors.groupingBy(e -> e.getClient().getId()))
 			.values().stream()
 			.map(clients -> {
-				UserOAuth2ClientApprovalRestData.Builder builder = UserOAuth2ClientApprovalRestData.builder()
-					.fromUserOAuth2ClientApprovalEntity(clients.get(0));
+				UserOAuth2ClientApprovalRestData.Builder builder = UserOAuth2ClientApprovalRestData.builder(clients.get(0));
 				clients.forEach(c -> builder.addScopeAndStatus(c.getScope(), c.getApprovalStatus()));
 				return builder.build();
 			})

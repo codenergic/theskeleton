@@ -16,14 +16,13 @@
 package org.codenergic.theskeleton.follower;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.auto.value.AutoValue;
 import org.codenergic.theskeleton.core.data.RestData;
 
 import javax.annotation.Nullable;
 
 @AutoValue
-@JsonDeserialize(builder = AutoValue_UserFollowerRestData.class)
+@JsonDeserialize(builder = AutoValue_UserFollowerRestData.Builder.class)
 public abstract class UserFollowerRestData implements RestData {
 	public static Builder builder() {
 		return new AutoValue_UserFollowerRestData.Builder();
@@ -42,8 +41,7 @@ public abstract class UserFollowerRestData implements RestData {
 	abstract String getFollowingUsername();
 
 	@AutoValue.Builder
-	@JsonPOJOBuilder(withPrefix = "")
-	interface Builder {
+	interface Builder extends RestData.Builder {
 		UserFollowerRestData build();
 
 		Builder setFollowerPictureUrl(String newFollowerPictureUrl);

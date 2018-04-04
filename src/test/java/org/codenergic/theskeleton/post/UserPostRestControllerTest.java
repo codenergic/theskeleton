@@ -102,7 +102,7 @@ public class UserPostRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
-		Page<PostRestData> expectedResult = result.map(post -> PostRestData.builder().fromPostEntity(post).build());
+		Page<PostRestData> expectedResult = result.map(post -> PostRestData.builder(post).build());
 		assertThat(response.getContentAsString()).isEqualTo(objectMapper.writeValueAsString(expectedResult));
 		verify(postService).findPostByPosterAndStatus(eq(USER_ID), eq(DRAFT), any());
 	}
@@ -120,7 +120,7 @@ public class UserPostRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
-		Page<PostRestData> expectedResult = result.map(post -> PostRestData.builder().fromPostEntity(post).build());
+		Page<PostRestData> expectedResult = result.map(post -> PostRestData.builder(post).build());
 		assertThat(response.getContentAsString()).isEqualTo(objectMapper.writeValueAsString(expectedResult));
 		verify(postService).findPublishedPostByPoster(eq(USER_ID), any());
 	}

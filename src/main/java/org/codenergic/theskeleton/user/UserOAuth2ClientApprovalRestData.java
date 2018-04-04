@@ -16,7 +16,6 @@
 package org.codenergic.theskeleton.user;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableMap;
 import org.codenergic.theskeleton.core.data.RestData;
@@ -31,6 +30,13 @@ public abstract class UserOAuth2ClientApprovalRestData implements RestData {
 		return new AutoValue_UserOAuth2ClientApprovalRestData.Builder();
 	}
 
+	public static Builder builder(UserOAuth2ClientApprovalEntity entity) {
+		return builder()
+			.clientId(entity.getClient().getClientId())
+			.clientName(entity.getClient().getName())
+			.username(entity.getUser().getUsername());
+	}
+
 	public abstract String getClientId();
 
 	public abstract String getClientName();
@@ -40,8 +46,7 @@ public abstract class UserOAuth2ClientApprovalRestData implements RestData {
 	public abstract String getUsername();
 
 	@AutoValue.Builder
-	@JsonPOJOBuilder(withPrefix = "")
-	public interface Builder {
+	public interface Builder extends RestData.Builder {
 		default Builder addScopeAndStatus(String scope, Approval.ApprovalStatus approvalStatus) {
 			scopeAndStatusBuilder().put(scope, approvalStatus);
 			return this;
@@ -52,12 +57,6 @@ public abstract class UserOAuth2ClientApprovalRestData implements RestData {
 		Builder clientId(String clientId);
 
 		Builder clientName(String clientName);
-
-		default Builder fromUserOAuth2ClientApprovalEntity(UserOAuth2ClientApprovalEntity entity) {
-			return clientId(entity.getClient().getClientId())
-				.clientName(entity.getClient().getName())
-				.username(entity.getUser().getUsername());
-		}
 
 		Builder scopeAndStatus(Map<String, Approval.ApprovalStatus> scopeAndStatus);
 

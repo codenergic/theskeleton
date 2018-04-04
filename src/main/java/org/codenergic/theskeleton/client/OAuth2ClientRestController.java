@@ -38,7 +38,7 @@ public class OAuth2ClientRestController {
 	}
 
 	private OAuth2ClientRestData convertEntityToRestData(OAuth2ClientEntity client) {
-		return client == null ? null : OAuth2ClientRestData.builder().fromOAuth2ClientEntity(client).build();
+		return client == null ? null : OAuth2ClientRestData.builder(client).build();
 	}
 
 	@DeleteMapping("/{id}")
@@ -53,7 +53,7 @@ public class OAuth2ClientRestController {
 	}
 
 	@GetMapping
-	public Page<OAuth2ClientRestData> findClients(@RequestParam(name = "q", defaultValue = "") final String keywords, 
+	public Page<OAuth2ClientRestData> findClients(@RequestParam(name = "q", defaultValue = "") final String keywords,
 			final Pageable pageable) {
 		return oAuth2ClientService.findClients(keywords, pageable)
 				.map(this::convertEntityToRestData);
@@ -70,7 +70,7 @@ public class OAuth2ClientRestController {
 	}
 
 	@PutMapping("/{id}")
-	public OAuth2ClientRestData updateClient(@PathVariable("id") String id, 
+	public OAuth2ClientRestData updateClient(@PathVariable("id") String id,
 			@RequestBody @Validated(OAuth2ClientRestData.Existing.class) final OAuth2ClientRestData client) {
 		return convertEntityToRestData(oAuth2ClientService.updateClient(id, client.toOAuth2ClientEntity()));
 	}

@@ -85,7 +85,7 @@ public class PrivilegeRestControllerTest {
 				.getResponse();
 		verify(privilegeService).findPrivilegeByIdOrName("123");
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(PrivilegeRestData.builder().fromPrivilegeEntity(dbResult).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(PrivilegeRestData.builder(dbResult).build()));
 	}
 
 	@Test
@@ -106,8 +106,7 @@ public class PrivilegeRestControllerTest {
 				.setName("12345")
 				.setDescription("Description 12345");
 		Page<PrivilegeEntity> pageResponseBody = new PageImpl<>(Arrays.asList(dbResult));
-		Page<PrivilegeRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(PrivilegeRestData.builder()
-				.fromPrivilegeEntity(dbResult).build()));
+		Page<PrivilegeRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(PrivilegeRestData.builder(dbResult).build()));
 		when(privilegeService.findPrivileges(anyString(), any())).thenReturn(pageResponseBody);
 		ResultActions resultActions = mockMvc.perform(get("/api/privileges").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())

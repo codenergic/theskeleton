@@ -157,7 +157,7 @@ public class UserEntity extends AbstractAuditingEntity implements UserDetails {
 	@Override
 	@Transient
 	public boolean isAccountNonExpired() {
-		return expiredAt == null ? true : expiredAt.after(getCreatedDate());
+		return expiredAt == null || expiredAt.after(getCreatedDate());
 	}
 
 	@Override

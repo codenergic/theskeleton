@@ -128,7 +128,7 @@ public class ProfileRestControllerTest {
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder().fromUserEntity(user).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder(user).build()));
 		verify(profileService).findProfileByUsername("user123");
 	}
 
@@ -191,7 +191,7 @@ public class ProfileRestControllerTest {
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder().fromUserEntity(user).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder(user).build()));
 		verify(profileService).updateProfile(eq("user123"), any());
 	}
 
@@ -212,7 +212,7 @@ public class ProfileRestControllerTest {
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder().fromUserEntity(user).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder(user).build()));
 		verify(profileService).updateProfilePassword(eq("user123"), any());
 	}
 
@@ -234,7 +234,7 @@ public class ProfileRestControllerTest {
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder().fromUserEntity(user).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder(user).build()));
 		verify(profileService).updateProfilePicture(eq("user123"), any(), eq("image/png"));
 		image.close();
 	}
