@@ -57,6 +57,7 @@ public class PrivilegeServiceTest {
 	public void testFindPrivilegeByName() {
 		PrivilegeEntity result = new PrivilegeEntity();
 		result.setName("user");
+		result.getAuthority();
 		when(privilegeRepository.findByName(eq("user"))).thenReturn(result);
 		assertThat(privilegeService.findPrivilegeByName("user")).isEqualTo(result);
 		verify(privilegeRepository).findByName(eq("user"));
@@ -97,6 +98,7 @@ public class PrivilegeServiceTest {
 			.setName("privilege");
 		RolePrivilegeEntity result = new RolePrivilegeEntity(role, privilege);
 		result.setId(UUID.randomUUID().toString());
+		result.getAuthority();
 		when(roleRepository.findByCode("role")).thenReturn(role);
 		when(privilegeRepository.findByName("privilege")).thenReturn(privilege);
 		when(rolePrivilegeRepository.save(any(RolePrivilegeEntity.class))).thenReturn(result);
@@ -114,7 +116,9 @@ public class PrivilegeServiceTest {
 	@Test
 	public void testFindPrivilegesByRoleCode() {
 		Set<RolePrivilegeEntity> dbResult =
-			new HashSet<>(Arrays.asList(new RolePrivilegeEntity().setPrivilege(new PrivilegeEntity().setName("privilege"))));
+			new HashSet<>(Arrays.asList(new RolePrivilegeEntity()
+				.setPrivilege(new PrivilegeEntity().setName("privilege"))
+				.setRole(new RoleEntity())));
 		when(rolePrivilegeRepository.findByRoleCode("role")).thenReturn(dbResult);
 		Set<PrivilegeEntity> result = privilegeService.findPrivilegesByRoleCode("role");
 		assertThat(result.size()).isEqualTo(1);

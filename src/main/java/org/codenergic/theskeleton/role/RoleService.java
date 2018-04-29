@@ -42,9 +42,6 @@ public interface RoleService {
 	RoleEntity findRoleByIdOrCode(@NotNull String idOrCode);
 
 	@PreAuthorize("hasAuthority('role_read_all')")
-	Page<RoleEntity> findRoles(Pageable pageable);
-
-	@PreAuthorize("hasAuthority('role_read_all')")
 	Page<RoleEntity> findRoles(String keyword, Pageable pageable);
 
 	@PreAuthorize("hasAuthority('user_assign_role')")

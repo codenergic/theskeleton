@@ -58,7 +58,9 @@ public class RoleServiceTest {
 	public void testAddRoleToUser() {
 		RoleEntity role = new RoleEntity()
 			.setId(UUID.randomUUID().toString())
-			.setCode("role");
+			.setCode("role")
+			.setPrivileges(new HashSet<>());
+		role.getPrivileges();
 		UserEntity user = new UserEntity()
 			.setId(UUID.randomUUID().toString())
 			.setUsername("user");
@@ -112,15 +114,17 @@ public class RoleServiceTest {
 	public void testFindRoles() {
 		RoleEntity result = new RoleEntity() {{ setId("123"); }}.setCode("user");
 		Page<RoleEntity> page = new PageImpl<>(Collections.singletonList(result));
-		when(roleRepository.findAll(any(Pageable.class))).thenReturn(page);
-		assertThat(roleService.findRoles(new PageRequest(1, 10))).isEqualTo(page);
-		verify(roleRepository).findAll(any(Pageable.class));
+		when(roleRepository.findByCodeOrDescriptionStartsWith(anyString(), any(Pageable.class))).thenReturn(page);
+		assertThat(roleService.findRoles("", new PageRequest(1, 10))).isEqualTo(page);
+		verify(roleRepository).findByCodeOrDescriptionStartsWith(anyString(), any(Pageable.class));
 	}
 
 	@Test
 	public void testFindRolesByUserUsername() {
 		Set<UserRoleEntity> dbResult =
-			new HashSet<>(Collections.singletonList(new UserRoleEntity().setRole(new RoleEntity().setCode("role"))));
+			new HashSet<>(Collections.singletonList(new UserRoleEntity()
+				.setRole(new RoleEntity().setCode("role"))
+				.setUser(new UserEntity())));
 		when(userRoleRepository.findByUserUsername("user")).thenReturn(dbResult);
 		Set<RoleEntity> result = roleService.findRolesByUserUsername("user");
 		assertThat(result.size()).isEqualTo(1);

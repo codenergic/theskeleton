@@ -81,11 +81,6 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Page<RoleEntity> findRoles(Pageable pageable) {
-		return roleRepository.findAll(pageable);
-	}
-
-	@Override
 	public Page<RoleEntity> findRoles(String keywords, Pageable pageable) {
 		return roleRepository.findByCodeOrDescriptionStartsWith(keywords, pageable);
 	}
