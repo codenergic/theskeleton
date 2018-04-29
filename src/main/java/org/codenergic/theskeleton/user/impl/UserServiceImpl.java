@@ -16,8 +16,8 @@
 package org.codenergic.theskeleton.user.impl;
 
 import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RolePrivilegeEntity;
-import org.codenergic.theskeleton.role.RolePrivilegeRepository;
+import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
+import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
 import org.codenergic.theskeleton.role.RoleRepository;
 import org.codenergic.theskeleton.user.*;
 import org.springframework.data.domain.Page;

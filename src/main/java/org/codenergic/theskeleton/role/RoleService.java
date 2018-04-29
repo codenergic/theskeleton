@@ -15,24 +15,14 @@
  */
 package org.codenergic.theskeleton.role;
 
-import java.util.Set;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.codenergic.theskeleton.privilege.PrivilegeEntity;
-import org.codenergic.theskeleton.privilege.PrivilegeRepository;
-import org.codenergic.theskeleton.role.impl.RoleServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface RoleService {
-	static RoleService newInstance(RoleRepository roleRepository, PrivilegeRepository privilegeRepository,
-			RolePrivilegeRepository rolePrivilegeRepository) {
-		return new RoleServiceImpl(roleRepository, privilegeRepository, rolePrivilegeRepository);
-	}
-
 	@PreAuthorize("hasAuthority('role_delete')")
 	void deleteRole(@NotNull String idOrCode);
 
@@ -56,16 +46,4 @@ public interface RoleService {
 
 	@PreAuthorize("hasAuthority('role_update')")
 	RoleEntity updateRole(@NotNull String id, @NotNull @Valid RoleEntity role);
-
-	@PreAuthorize("hasAuthority('role_assign_privilege')")
-	RoleEntity addPrivilegeToRole(@NotNull String code, @NotNull String privilegeName);
-
-	@PreAuthorize("hasAuthority('role_assign_privilege')")
-	RoleEntity removePrivilegeFromRole(@NotNull String code, @NotNull String privilegeName);
-
-	@PreAuthorize("hasAuthority('role_assign_privilege')")
-	Set<PrivilegeEntity> findPrivilegesByRoleCode(@NotNull String code);
-
-	@PreAuthorize("hasAuthority('role_assign_privilege')")
-	Set<RoleEntity> findRolesByPrivilegeName(@NotNull String name);
 }

@@ -17,7 +17,7 @@ package org.codenergic.theskeleton.user;
 
 import javax.validation.constraints.NotNull;
 
-import org.codenergic.theskeleton.role.RolePrivilegeRepository;
+import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
 import org.codenergic.theskeleton.role.RoleRepository;
 import org.codenergic.theskeleton.user.impl.UserServiceImpl;
 import org.springframework.security.access.prepost.PreAuthorize;

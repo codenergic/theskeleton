@@ -15,7 +15,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RolePrivilegeRepository;
+import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
 import org.codenergic.theskeleton.role.RoleRepository;
 import org.junit.Before;
 import org.junit.Test;

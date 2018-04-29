@@ -15,20 +15,16 @@
  */
 package org.codenergic.theskeleton.privilege;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
 import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
+import org.codenergic.theskeleton.role.RoleEntity;
+import org.codenergic.theskeleton.role.RoleRestData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +41,17 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
 @WebMvcTest(controllers = { PrivilegeRestController.class }, secure = false)
@@ -57,18 +64,6 @@ public class PrivilegeRestControllerTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private PrivilegeService privilegeService;
-
-	@Test
-	public void testSerializeDeserializePrivilege() throws IOException {
-		PrivilegeRestData privilege = PrivilegeRestData.builder()
-				.id("123")
-				.name("12345")
-				.description("Description 12345")
-				.build();
-		String json = objectMapper.writeValueAsString(privilege);
-		PrivilegeRestData privilege2 = objectMapper.readValue(json, PrivilegeRestData.class);
-		assertThat(privilege).isEqualTo(privilege2);
-	}
 
 	@Test
 	public void testFindPrivilegeByName() throws Exception {
@@ -116,5 +111,17 @@ public class PrivilegeRestControllerTest {
 				.getResponse();
 		verify(privilegeService).findPrivileges(anyString(), any());
 		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expectedResponseBody));
+	}
+
+	@Test
+	public void testSerializeDeserializePrivilege() throws IOException {
+		PrivilegeRestData privilege = PrivilegeRestData.builder()
+				.id("123")
+				.name("12345")
+				.description("Description 12345")
+				.build();
+		String json = objectMapper.writeValueAsString(privilege);
+		PrivilegeRestData privilege2 = objectMapper.readValue(json, PrivilegeRestData.class);
+		assertThat(privilege).isEqualTo(privilege2);
 	}
 }

@@ -16,7 +16,7 @@
 package org.codenergic.theskeleton.user;
 
 import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
-import org.codenergic.theskeleton.role.RolePrivilegeEntity;
+import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;

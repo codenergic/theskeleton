@@ -15,15 +15,18 @@
  */
 package org.codenergic.theskeleton.role;
 
-import org.codenergic.theskeleton.privilege.PrivilegeRestData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/roles")
@@ -62,23 +65,6 @@ public class RoleRestController {
 	public RoleRestData updateRole(@PathVariable("code") String code, @RequestBody @Validated(RoleRestData.Existing.class) final RoleRestData role) {
 		return RoleRestData.builder(roleService.updateRole(code, role.toRoleEntity()))
 				.build();
-	}
-
-	@PutMapping("/{code}/privileges")
-	public RoleRestData addPrivilegeToRole(@PathVariable("code") String code, @RequestBody Map<String, String> body) {
-		return convertEntityToRestData(roleService.addPrivilegeToRole(code, body.get("privilege")));
-	}
-
-	@GetMapping("/{code}/privileges")
-	public Set<PrivilegeRestData> findPrivilegesByRoleCode(@PathVariable("code") String code) {
-		return roleService.findPrivilegesByRoleCode(code).stream()
-				.map(p -> PrivilegeRestData.builder(p).build())
-				.collect(Collectors.toSet());
-	}
-
-	@DeleteMapping("/{code}/privileges")
-	public RoleRestData removePrivilegeFromRole(@PathVariable("code") String code, @RequestBody Map<String, String> body) {
-		return convertEntityToRestData(roleService.removePrivilegeFromRole(code, body.get("privilege")));
 	}
 
 	private RoleRestData convertEntityToRestData(RoleEntity role) {
