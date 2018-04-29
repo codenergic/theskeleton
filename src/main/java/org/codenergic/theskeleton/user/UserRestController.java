@@ -16,10 +16,7 @@
 package org.codenergic.theskeleton.user;
 
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.codenergic.theskeleton.role.RoleRestData;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,9 +44,8 @@ public class UserRestController {
 		this.tokenStoreService = tokenStoreService;
 	}
 
-	@PutMapping("/{username}/roles")
-	public UserRestData addRoleToUser(@PathVariable("username") String username, @RequestBody Map<String, String> body) {
-		return convertEntityToRestData(userAdminService.addRoleToUser(username, body.get("role")));
+	private UserRestData convertEntityToRestData(UserEntity user) {
+		return UserRestData.builder(user).build();
 	}
 
 	@DeleteMapping("/{username}")
@@ -66,13 +62,6 @@ public class UserRestController {
 	@PutMapping("/{username}/exp")
 	public UserRestData extendsUserExpiration(@PathVariable("username") String username, @RequestBody Map<String, Integer> body) {
 		return convertEntityToRestData(userAdminService.extendsUserExpiration(username, body.getOrDefault("amount", 180)));
-	}
-
-	@GetMapping("/{username}/roles")
-	public Set<RoleRestData> findRolesByUserUsername(@PathVariable("username") String username) {
-		return userAdminService.findRolesByUserUsername(username).stream()
-				.map(r -> RoleRestData.builder(r).build())
-				.collect(Collectors.toSet());
 	}
 
 	@GetMapping(path = "/{email}", params = { "email" })
@@ -97,11 +86,6 @@ public class UserRestController {
 		return convertEntityToRestData(userAdminService.lockOrUnlockUser(username, body.getOrDefault("unlocked", true)));
 	}
 
-	@DeleteMapping("/{username}/roles")
-	public UserRestData removeRoleFromUser(@PathVariable("username") String username, @RequestBody Map<String, String> body) {
-		return convertEntityToRestData(userAdminService.removeRoleFromUser(username, body.get("role")));
-	}
-
 	@PostMapping
 	public UserRestData saveUser(@RequestBody @Validated(UserRestData.New.class) UserRestData userData) {
 		return convertEntityToRestData(userAdminService.saveUser(userData.toUserEntity()));
@@ -115,9 +99,5 @@ public class UserRestController {
 	@PutMapping("/{username}/password")
 	public UserRestData updateUserPassword(@PathVariable("username") String username, @RequestBody Map<String, String> body) {
 		return convertEntityToRestData(userAdminService.updateUserPassword(username, body.get("password")));
-	}
-
-	private UserRestData convertEntityToRestData(UserEntity user) {
-		return UserRestData.builder(user).build();
 	}
 }

@@ -1,11 +1,5 @@
 package org.codenergic.theskeleton.user;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,9 +8,12 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
+import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RoleRepository;
+import org.codenergic.theskeleton.role.UserRoleEntity;
+import org.codenergic.theskeleton.role.UserRoleRepository;
+import org.codenergic.theskeleton.user.impl.UserServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -25,6 +22,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserServiceTest {
 	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -42,28 +45,8 @@ public class UserServiceTest {
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.userAdminService = UserAdminService.newInstance(passwordEncoder, roleRepository, userRepository, userRoleRepository, rolePrivilegeRepository);
-		this.userService = UserService.newInstance(passwordEncoder, roleRepository, userRepository, userRoleRepository, rolePrivilegeRepository);
-	}
-
-	@Test
-	public void testAddRoleToUser() {
-		RoleEntity role = new RoleEntity()
-				.setId(UUID.randomUUID().toString())
-				.setCode("role");
-		UserEntity user = new UserEntity()
-				.setId(UUID.randomUUID().toString())
-				.setUsername("user")
-				.setPassword(passwordEncoder.encode("user"));
-		UserRoleEntity result = new UserRoleEntity(user, role);
-		result.setId(UUID.randomUUID().toString());
-		when(roleRepository.findByCode("role")).thenReturn(role);
-		when(userRepository.findByUsername("user")).thenReturn(user);
-		when(userRoleRepository.save(any(UserRoleEntity.class))).thenReturn(result);
-		assertThat(userAdminService.addRoleToUser("user", "role")).isEqualTo(user);
-		verify(roleRepository).findByCode("role");
-		verify(userRepository).findByUsername("user");
-		verify(userRoleRepository).save(any(UserRoleEntity.class));
+		this.userAdminService = new UserServiceImpl(passwordEncoder, userRepository, rolePrivilegeRepository);
+		this.userService = new UserServiceImpl(passwordEncoder, userRepository, rolePrivilegeRepository);
 	}
 
 	@Test
@@ -107,17 +90,6 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void testFindRolesByUserUsername() {
-		Set<UserRoleEntity> dbResult =
-				new HashSet<>(Arrays.asList(new UserRoleEntity().setRole(new RoleEntity().setCode("role"))));
-		when(userRoleRepository.findByUserUsername("user")).thenReturn(dbResult);
-		Set<RoleEntity> result = userAdminService.findRolesByUserUsername("user");
-		assertThat(result.size()).isEqualTo(1);
-		assertThat(result.iterator().next()).isEqualTo(dbResult.iterator().next().getRole());
-		verify(userRoleRepository).findByUserUsername("user");
-	}
-
-	@Test
 	public void testFindUserByEmail() {
 		UserEntity dbResult = new UserEntity().setUsername("user");
 		when(userRepository.findByEmail("user@localhost")).thenReturn(dbResult);
@@ -144,11 +116,6 @@ public class UserServiceTest {
 		UserEntity result = userAdminService.lockOrUnlockUser("user", true);
 		assertThat(result.isAccountNonLocked()).isEqualTo(true);
 		verify(userRepository).findByUsername("user");
-	}
-
-	@Test
-	public void testRemoveRoleFromUser() {
-		userAdminService.removeRoleFromUser("", "");
 	}
 
 	@Test

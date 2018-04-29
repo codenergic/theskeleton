@@ -15,11 +15,20 @@
  */
 package org.codenergic.theskeleton.user.impl;
 
-import org.codenergic.theskeleton.role.RoleEntity;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.UUID;
+
 import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
 import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
-import org.codenergic.theskeleton.role.RoleRepository;
-import org.codenergic.theskeleton.user.*;
+import org.codenergic.theskeleton.user.UserAdminService;
+import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.user.UserRepository;
+import org.codenergic.theskeleton.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,33 +37,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 @Service
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService, UserAdminService {
 	private PasswordEncoder passwordEncoder;
-	private RoleRepository roleRepository;
 	private UserRepository userRepository;
-	private UserRoleRepository userRoleRepository;
 	private RolePrivilegeRepository rolePrivilegeRepository;
 
-	public UserServiceImpl(PasswordEncoder passwordEncoder, RoleRepository roleRepository, UserRepository userRepository,
-			UserRoleRepository userRoleRepository, RolePrivilegeRepository rolePrivilegeRepository) {
+	public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, RolePrivilegeRepository rolePrivilegeRepository) {
 		this.passwordEncoder = passwordEncoder;
-		this.roleRepository = roleRepository;
 		this.userRepository = userRepository;
-		this.userRoleRepository = userRoleRepository;
 		this.rolePrivilegeRepository = rolePrivilegeRepository;
-	}
-
-	@Override
-	@Transactional
-	public UserEntity addRoleToUser(String username, String roleCode) {
-		UserEntity user = findUserByUsername(username);
-		RoleEntity role = roleRepository.findByCode(roleCode);
-		return userRoleRepository.save(new UserRoleEntity(user, role)).getUser();
 	}
 
 	@Override
@@ -82,13 +75,6 @@ public class UserServiceImpl implements UserService, UserAdminService {
 	}
 
 	@Override
-	public Set<RoleEntity> findRolesByUserUsername(String username) {
-		return userRoleRepository.findByUserUsername(username).stream()
-				.map(UserRoleEntity::getRole)
-				.collect(Collectors.toSet());
-	}
-
-	@Override
 	public UserEntity findUserByEmail(String email) {
 		return userRepository.findByEmail(email);
 	}
@@ -104,19 +90,25 @@ public class UserServiceImpl implements UserService, UserAdminService {
 	}
 
 	@Override
+	public UserDetails loadUserByUsername(String username) {
+		UserEntity user = findUserByUsername(username);
+		if (user == null)
+			user = findUserByEmail(username);
+		if (user == null)
+			user = userRepository.findOne(username);
+		if (user == null)
+			throw new UsernameNotFoundException("Cannot find user with username or email of " + username);
+		Set<RolePrivilegeEntity> rolePrivileges = new HashSet<>();
+		user.getRoles().forEach(role -> rolePrivileges.addAll(rolePrivilegeRepository.findByRoleCode(role.getRole().getCode())));
+		return user.setAuthorities(rolePrivileges);
+	}
+
+	@Override
 	@Transactional
 	public UserEntity lockOrUnlockUser(String username, boolean unlocked) {
 		UserEntity user = findUserByUsername(username);
 		user.setAccountNonLocked(unlocked);
 		return user;
-	}
-
-	@Override
-	@Transactional
-	public UserEntity removeRoleFromUser(String username, String roleCode) {
-		UserRoleEntity userRole = userRoleRepository.findByUserUsernameAndRoleCode(username, roleCode);
-		userRoleRepository.delete(userRole);
-		return findUserByUsername(username);
 	}
 
 	@Override
@@ -155,19 +147,5 @@ public class UserServiceImpl implements UserService, UserAdminService {
 		UserEntity user = findUserByUsername(username);
 		user.setPassword(passwordEncoder.encode(rawPassword));
 		return user;
-	}
-
-	@Override
-	public UserDetails loadUserByUsername(String username) {
-		UserEntity user = findUserByUsername(username);
-		if (user == null)
-			user = findUserByEmail(username);
-		if (user == null)
-			user = userRepository.findOne(username);
-		if (user == null)
-			throw new UsernameNotFoundException("Cannot find user with username or email of " + username);
-		Set<RolePrivilegeEntity> rolePrivileges = new HashSet<>();
-		user.getRoles().forEach(role -> rolePrivileges.addAll(rolePrivilegeRepository.findByRoleCode(role.getRole().getCode())));
-		return user.setAuthorities(rolePrivileges);
 	}
 }

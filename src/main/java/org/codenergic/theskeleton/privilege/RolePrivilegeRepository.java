@@ -25,6 +25,4 @@ public interface RolePrivilegeRepository extends AuditingEntityRepository<RolePr
 	Set<RolePrivilegeEntity> findByRoleCode(String code);
 
 	RolePrivilegeEntity findByRoleCodeAndPrivilegeName(String code, String privilegeName);
-
-	Set<RolePrivilegeEntity> findByPrivilegeName(String name);
 }

@@ -15,14 +15,20 @@
  */
 package org.codenergic.theskeleton.role;
 
+import java.util.Set;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface RoleService {
+	@PreAuthorize("hasAuthority('user_assign_role')")
+	UserEntity addRoleToUser(@NotNull String username, @NotNull String roleCode);
+
 	@PreAuthorize("hasAuthority('role_delete')")
 	void deleteRole(@NotNull String idOrCode);
 
@@ -40,6 +46,12 @@ public interface RoleService {
 
 	@PreAuthorize("hasAuthority('role_read_all')")
 	Page<RoleEntity> findRoles(String keyword, Pageable pageable);
+
+	@PreAuthorize("hasAuthority('user_assign_role')")
+	Set<RoleEntity> findRolesByUserUsername(@NotNull String username);
+
+	@PreAuthorize("hasAuthority('user_assign_role')")
+	UserEntity removeRoleFromUser(@NotNull String username, @NotNull String roleCode);
 
 	@PreAuthorize("hasAuthority('role_write')")
 	RoleEntity saveRole(@NotNull @Valid RoleEntity role);

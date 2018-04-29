@@ -1,9 +1,10 @@
 package org.codenergic.theskeleton.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
-import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RoleRestData;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,12 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,7 +28,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -59,26 +58,6 @@ public class UserRestControllerTest {
 		String json = objectMapper.writeValueAsString(user);
 		UserRestData user2 = objectMapper.readValue(json, UserRestData.class);
 		assertThat(user).isEqualTo(user2);
-	}
-
-	@Test
-	public void testAddRoleToUser() throws Exception {
-		final UserEntity user = new UserEntity()
-				.setId("123")
-				.setUsername("user123")
-				.setPassword("123456");
-		when(userAdminService.addRoleToUser("user123", "role123")).thenReturn(user);
-		ResultActions resultActions = mockMvc.perform(put("/api/users/user123/roles")
-					.content("{\"role\": \"role123\"}")
-					.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andDo(document("user-role-create"));
-		MockHttpServletResponse response = resultActions
-				.andReturn()
-				.getResponse();
-		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
-		verify(userAdminService).addRoleToUser("user123", "role123");
 	}
 
 	@Test
@@ -123,27 +102,6 @@ public class UserRestControllerTest {
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userAdminService).extendsUserExpiration("user123", 60);
-	}
-
-	@Test
-	public void testFindRolesByUserUsername() throws Exception {
-		final RoleEntity role = new RoleEntity()
-				.setId("role123")
-				.setCode("role123");
-		final Set<RoleEntity> roles = new HashSet<>(Arrays.asList(role));
-		final Set<RoleRestData> expected = roles.stream()
-				.map(r -> RoleRestData.builder(r).build())
-				.collect(Collectors.toSet());
-		when(userAdminService.findRolesByUserUsername("user123")).thenReturn(roles);
-		ResultActions resultActions = mockMvc.perform(get("/api/users/user123/roles")
-					.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andDo(document("user-role-read"));
-		MockHttpServletResponse response = resultActions
-				.andReturn()
-				.getResponse();
-		assertThat(response.getContentAsByteArray()).isEqualTo(objectMapper.writeValueAsBytes(expected));
-		verify(userAdminService).findRolesByUserUsername("user123");
 	}
 
 	@Test
@@ -218,24 +176,6 @@ public class UserRestControllerTest {
 		assertThat(response.getContentAsByteArray())
 				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
 		verify(userAdminService).lockOrUnlockUser("user123", true);
-	}
-
-	@Test
-	public void testRemoveRoleFromUser() throws Exception {
-		final UserEntity user = new UserEntity()
-				.setId("user123");
-		when(userAdminService.removeRoleFromUser("user123", "role123")).thenReturn(user);
-		ResultActions resultActions = mockMvc.perform(delete("/api/users/user123/roles")
-					.content("{\"role\": \"role123\"}")
-					.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andDo(document("user-role-delete"));
-		MockHttpServletResponse response = resultActions
-				.andReturn()
-				.getResponse();
-		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
-		verify(userAdminService).removeRoleFromUser("user123", "role123");
 	}
 
 	@Test
