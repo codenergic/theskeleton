@@ -28,6 +28,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
+import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
 
 @Entity
 @Table(name = "ts_role")

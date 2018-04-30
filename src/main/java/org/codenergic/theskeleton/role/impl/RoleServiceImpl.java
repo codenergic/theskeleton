@@ -19,13 +19,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.codenergic.theskeleton.privilege.PrivilegeEntity;
-import org.codenergic.theskeleton.privilege.PrivilegeRepository;
 import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RolePrivilegeEntity;
-import org.codenergic.theskeleton.role.RolePrivilegeRepository;
 import org.codenergic.theskeleton.role.RoleRepository;
 import org.codenergic.theskeleton.role.RoleService;
+import org.codenergic.theskeleton.role.UserRoleEntity;
+import org.codenergic.theskeleton.role.UserRoleRepository;
+import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.user.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,15 +34,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class RoleServiceImpl implements RoleService {
-	private RoleRepository roleRepository;
-	private PrivilegeRepository privilegeRepository;
-	private RolePrivilegeRepository rolePrivilegeRepository;
+	private final RoleRepository roleRepository;
+	private final UserRepository userRepository;
+	private final UserRoleRepository userRoleRepository;
 
-	public RoleServiceImpl(RoleRepository roleRepository, PrivilegeRepository privilegeRepository,
-			RolePrivilegeRepository rolePrivilegeRepository) {
+	public RoleServiceImpl(RoleRepository roleRepository, UserRepository userRepository, UserRoleRepository userRoleRepository) {
 		this.roleRepository = roleRepository;
-		this.privilegeRepository = privilegeRepository;
-		this.rolePrivilegeRepository = rolePrivilegeRepository;
+		this.userRepository = userRepository;
+		this.userRoleRepository = userRoleRepository;
+	}
+
+	@Override
+	@Transactional
+	public UserEntity addRoleToUser(String username, String roleCode) {
+		UserEntity user = userRepository.findByUsername(username);
+		RoleEntity role = roleRepository.findByCode(roleCode);
+		return userRoleRepository.save(new UserRoleEntity(user, role)).getUser();
 	}
 
 	private void assertRoleNotNull(RoleEntity role) {
@@ -74,13 +81,23 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public Page<RoleEntity> findRoles(Pageable pageable) {
-		return roleRepository.findAll(pageable);
+	public Page<RoleEntity> findRoles(String keywords, Pageable pageable) {
+		return roleRepository.findByCodeOrDescriptionStartsWith(keywords, pageable);
 	}
 
 	@Override
-	public Page<RoleEntity> findRoles(String keywords, Pageable pageable) {
-		return roleRepository.findByCodeOrDescriptionStartsWith(keywords, pageable);
+	public Set<RoleEntity> findRolesByUserUsername(String username) {
+		return userRoleRepository.findByUserUsername(username).stream()
+			.map(UserRoleEntity::getRole)
+			.collect(Collectors.toSet());
+	}
+
+	@Override
+	@Transactional
+	public UserEntity removeRoleFromUser(String username, String roleCode) {
+		UserRoleEntity userRole = userRoleRepository.findByUserUsernameAndRoleCode(username, roleCode);
+		userRoleRepository.delete(userRole);
+		return userRepository.findByUsername(username);
 	}
 
 	@Override
@@ -98,35 +115,5 @@ public class RoleServiceImpl implements RoleService {
 		e.setCode(role.getCode());
 		e.setDescription(role.getDescription());
 		return e;
-	}
-
-	@Override
-	@Transactional
-	public RoleEntity addPrivilegeToRole(String code, String privilegeName) {
-		RoleEntity role = findRoleByCode(code);
-		PrivilegeEntity privilege = privilegeRepository.findByName(privilegeName);
-		return rolePrivilegeRepository.save(new RolePrivilegeEntity(role, privilege)).getRole();
-	}
-
-	@Override
-	@Transactional
-	public RoleEntity removePrivilegeFromRole(String code, String privilegeName) {
-		RolePrivilegeEntity userRole = rolePrivilegeRepository.findByRoleCodeAndPrivilegeName(code, privilegeName);
-		rolePrivilegeRepository.delete(userRole);
-		return findRoleByCode(code);
-	}
-
-	@Override
-	public Set<PrivilegeEntity> findPrivilegesByRoleCode(String code) {
-		return rolePrivilegeRepository.findByRoleCode(code).stream()
-				.map(RolePrivilegeEntity::getPrivilege)
-				.collect(Collectors.toSet());
-	}
-
-	@Override
-	public Set<RoleEntity> findRolesByPrivilegeName(String name) {
-		return rolePrivilegeRepository.findByPrivilegeName(name).stream()
-				.map(RolePrivilegeEntity::getRole)
-				.collect(Collectors.toSet());
 	}
 }

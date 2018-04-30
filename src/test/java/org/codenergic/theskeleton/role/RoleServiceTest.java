@@ -15,8 +15,14 @@
  */
 package org.codenergic.theskeleton.role;
 
-import org.codenergic.theskeleton.privilege.PrivilegeEntity;
-import org.codenergic.theskeleton.privilege.PrivilegeRepository;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+import org.codenergic.theskeleton.role.impl.RoleServiceImpl;
+import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.user.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,13 +32,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,14 +44,45 @@ public class RoleServiceTest {
 	@Mock
 	private RoleRepository roleRepository;
 	@Mock
-	private PrivilegeRepository privilegeRepository;
+	private UserRepository userRepository;
 	@Mock
-	private RolePrivilegeRepository rolePrivilegeRepository;
+	private UserRoleRepository userRoleRepository;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.roleService = RoleService.newInstance(roleRepository, privilegeRepository, rolePrivilegeRepository);
+		this.roleService = new RoleServiceImpl(roleRepository, userRepository, userRoleRepository);
+	}
+
+	@Test
+	public void testAddRoleToUser() {
+		RoleEntity role = new RoleEntity()
+			.setId(UUID.randomUUID().toString())
+			.setCode("role")
+			.setPrivileges(new HashSet<>());
+		role.getPrivileges();
+		UserEntity user = new UserEntity()
+			.setId(UUID.randomUUID().toString())
+			.setUsername("user");
+		UserRoleEntity result = new UserRoleEntity(user, role);
+		result.setId(UUID.randomUUID().toString());
+		when(roleRepository.findByCode("role")).thenReturn(role);
+		when(userRepository.findByUsername("user")).thenReturn(user);
+		when(userRoleRepository.save(any(UserRoleEntity.class))).thenReturn(result);
+		assertThat(roleService.addRoleToUser("user", "role")).isEqualTo(user);
+		verify(roleRepository).findByCode("role");
+		verify(userRepository).findByUsername("user");
+		verify(userRoleRepository).save(any(UserRoleEntity.class));
+	}
+
+	@Test
+	@SuppressWarnings("serial")
+	public void testDeleteRole() {
+		RoleEntity input = new RoleEntity() {{ setId("123"); }}.setCode("user");
+		when(roleRepository.findByCode("123")).thenReturn(input);
+		roleService.deleteRole("123");
+		verify(roleRepository).findByCode("123");
+		verify(roleRepository).delete(input);
 	}
 
 	@Test
@@ -79,10 +113,28 @@ public class RoleServiceTest {
 	@SuppressWarnings("serial")
 	public void testFindRoles() {
 		RoleEntity result = new RoleEntity() {{ setId("123"); }}.setCode("user");
-		Page<RoleEntity> page = new PageImpl<>(Arrays.asList(result));
-		when(roleRepository.findAll(any(Pageable.class))).thenReturn(page);
-		assertThat(roleService.findRoles(new PageRequest(1, 10))).isEqualTo(page);
-		verify(roleRepository).findAll(any(Pageable.class));
+		Page<RoleEntity> page = new PageImpl<>(Collections.singletonList(result));
+		when(roleRepository.findByCodeOrDescriptionStartsWith(anyString(), any(Pageable.class))).thenReturn(page);
+		assertThat(roleService.findRoles("", new PageRequest(1, 10))).isEqualTo(page);
+		verify(roleRepository).findByCodeOrDescriptionStartsWith(anyString(), any(Pageable.class));
+	}
+
+	@Test
+	public void testFindRolesByUserUsername() {
+		Set<UserRoleEntity> dbResult =
+			new HashSet<>(Collections.singletonList(new UserRoleEntity()
+				.setRole(new RoleEntity().setCode("role"))
+				.setUser(new UserEntity())));
+		when(userRoleRepository.findByUserUsername("user")).thenReturn(dbResult);
+		Set<RoleEntity> result = roleService.findRolesByUserUsername("user");
+		assertThat(result.size()).isEqualTo(1);
+		assertThat(result.iterator().next()).isEqualTo(dbResult.iterator().next().getRole());
+		verify(userRoleRepository).findByUserUsername("user");
+	}
+
+	@Test
+	public void testRemoveRoleFromUser() {
+		roleService.removeRoleFromUser("", "");
 	}
 
 	@Test
@@ -108,61 +160,5 @@ public class RoleServiceTest {
 		assertThat(result.getId()).isEqualTo(input.getId());
 		assertThat(result.getCode()).isEqualTo(input.getCode());
 		verify(roleRepository).findByCode(eq("123"));
-	}
-
-	@Test
-	@SuppressWarnings("serial")
-	public void testDeleteRole() {
-		RoleEntity input = new RoleEntity() {{ setId("123"); }}.setCode("user");
-		when(roleRepository.findByCode("123")).thenReturn(input);
-		roleService.deleteRole("123");
-		verify(roleRepository).findByCode("123");
-		verify(roleRepository).delete(input);
-	}
-
-	@Test
-	public void testAddPrivilegeToRole() {
-		RoleEntity role = new RoleEntity()
-				.setId(UUID.randomUUID().toString())
-				.setCode("role");
-		PrivilegeEntity privilege = new PrivilegeEntity()
-				.setId(UUID.randomUUID().toString())
-				.setName("privilege");
-		RolePrivilegeEntity result = new RolePrivilegeEntity(role, privilege);
-		result.setId(UUID.randomUUID().toString());
-		when(roleRepository.findByCode("role")).thenReturn(role);
-		when(privilegeRepository.findByName("privilege")).thenReturn(privilege);
-		when(rolePrivilegeRepository.save(any(RolePrivilegeEntity.class))).thenReturn(result);
-		assertThat(roleService.addPrivilegeToRole("role", "privilege")).isEqualTo(role);
-		verify(roleRepository).findByCode("role");
-		verify(privilegeRepository).findByName("privilege");
-		verify(rolePrivilegeRepository).save(any(RolePrivilegeEntity.class));
-	}
-
-	@Test
-	public void testRemovePrivilegeFromRole() {
-		roleService.removePrivilegeFromRole("", "");
-	}
-
-	@Test
-	public void testFindPrivilegesByRoleCode() {
-		Set<RolePrivilegeEntity> dbResult =
-				new HashSet<>(Arrays.asList(new RolePrivilegeEntity().setPrivilege(new PrivilegeEntity().setName("privilege"))));
-		when(rolePrivilegeRepository.findByRoleCode("role")).thenReturn(dbResult);
-		Set<PrivilegeEntity> result = roleService.findPrivilegesByRoleCode("role");
-		assertThat(result.size()).isEqualTo(1);
-		assertThat(result.iterator().next()).isEqualTo(dbResult.iterator().next().getPrivilege());
-		verify(rolePrivilegeRepository).findByRoleCode("role");
-	}
-
-	@Test
-	public void testFindRolesByPrivilegeName() {
-		Set<RolePrivilegeEntity> dbResult =
-				new HashSet<>(Arrays.asList(new RolePrivilegeEntity().setRole(new RoleEntity().setCode("role"))));
-		when(rolePrivilegeRepository.findByPrivilegeName("privilege")).thenReturn(dbResult);
-		Set<RoleEntity> result = roleService.findRolesByPrivilegeName("privilege");
-		assertThat(result.size()).isEqualTo(1);
-		assertThat(result.iterator().next()).isEqualTo(dbResult.iterator().next().getRole());
-		verify(rolePrivilegeRepository).findByPrivilegeName("privilege");
 	}
 }

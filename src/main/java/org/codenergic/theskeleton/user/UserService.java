@@ -17,19 +17,10 @@ package org.codenergic.theskeleton.user;
 
 import javax.validation.constraints.NotNull;
 
-import org.codenergic.theskeleton.role.RolePrivilegeRepository;
-import org.codenergic.theskeleton.role.RoleRepository;
-import org.codenergic.theskeleton.user.impl.UserServiceImpl;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 public interface UserService extends UserDetailsService {
-	static UserService newInstance(PasswordEncoder passwordEncoder, RoleRepository roleRepository, UserRepository userRepository,
-			UserRoleRepository userRoleRepository, RolePrivilegeRepository rolePrivilegeRepository) {
-		return new UserServiceImpl(passwordEncoder, roleRepository, userRepository, userRoleRepository, rolePrivilegeRepository);
-	}
-
 	@PreAuthorize("hasAuthority('user_read')")
 	UserEntity findUserByEmail(@NotNull String email);
 
