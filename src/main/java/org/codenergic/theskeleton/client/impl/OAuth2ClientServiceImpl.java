@@ -90,13 +90,13 @@ public class OAuth2ClientServiceImpl implements OAuth2ClientService {
 	@Transactional
 	public OAuth2ClientEntity updateClient(String clientId, OAuth2ClientEntity newClient) {
 		return findClientById(clientId)
-				.setName(newClient.getName())
-				.setDescription(newClient.getDescription())
-				.setAuthorizedGrantTypes(newClient.getAuthorizedGrantTypes()
-						.stream()
-						.map(OAuth2GrantType::valueOf)
-						.collect(Collectors.toSet()))
-				.setAutoApprove(newClient.isAutoApprove())
-				.setRegisteredRedirectUris(newClient.getRegisteredRedirectUri());
+			.setName(newClient.getName())
+			.setDescription(newClient.getDescription())
+			.setAuthorizedGrantTypes(newClient.getAuthorizedGrantTypes()
+				.stream()
+				.map(OAuth2GrantType::valueOf)
+				.collect(Collectors.toSet()))
+			.setAutoApprove(newClient.isAutoApprove())
+			.setRegisteredRedirectUris(newClient.getRegisteredRedirectUri());
 	}
 }
