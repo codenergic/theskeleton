@@ -18,6 +18,7 @@ package org.codenergic.theskeleton.client.impl;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.Validate;
 import org.codenergic.theskeleton.client.OAuth2ClientEntity;
 import org.codenergic.theskeleton.client.OAuth2ClientRepository;
 import org.codenergic.theskeleton.client.OAuth2ClientService;
@@ -53,11 +54,6 @@ public class OAuth2ClientServiceImpl implements OAuth2ClientService {
 	}
 
 	@Override
-	public ClientDetails loadClientByClientId(String clientId) {
-		return findClientById(clientId);
-	}
-
-	@Override
 	public OAuth2ClientEntity findClientById(String id) {
 		return clientRepository.findOne(id);
 	}
@@ -76,14 +72,25 @@ public class OAuth2ClientServiceImpl implements OAuth2ClientService {
 	@Transactional
 	public OAuth2ClientEntity generateSecret(String clientId) {
 		OAuth2ClientEntity client = findClientById(clientId);
-		client.setClientSecret(passwordEncoder.encode(clientId));
-		return client;
+		return generateSecret(client);
+	}
+
+	private OAuth2ClientEntity generateSecret(OAuth2ClientEntity client) {
+		Validate.notNull(client);
+		Validate.notBlank(client.getId());
+		return client.setClientSecret(passwordEncoder.encode(client.getClientId()));
+	}
+
+	@Override
+	public ClientDetails loadClientByClientId(String clientId) {
+		return findClientById(clientId);
 	}
 
 	@Override
 	@Transactional
 	public OAuth2ClientEntity saveClient(OAuth2ClientEntity client) {
-		return clientRepository.save(client.setId(null));
+		OAuth2ClientEntity savedClient = clientRepository.save(client.setId(null));
+		return generateSecret(savedClient);
 	}
 
 	@Override

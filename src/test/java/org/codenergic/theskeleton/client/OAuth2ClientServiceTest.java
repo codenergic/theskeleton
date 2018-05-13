@@ -16,6 +16,7 @@
 package org.codenergic.theskeleton.client;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,7 +53,12 @@ public class OAuth2ClientServiceTest {
 
 	@Test
 	public void testSaveClient() {
+		when(clientRepository.save(any(OAuth2ClientEntity.class))).then(invocation -> {
+			OAuth2ClientEntity client = invocation.getArgument(0);
+			return client.setId("123");
+		});
 		clientService.saveClient(new OAuth2ClientEntity());
+		verify(clientRepository).save(any(OAuth2ClientEntity.class));
 	}
 
 	@Test

@@ -23,12 +23,10 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,10 +35,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 @Entity
-@SuppressWarnings("serial")
 @Table(name = "ts_oauth2_client")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "authorized_grant_types")
 public class OAuth2ClientEntity extends AbstractAuditingEntity implements ClientDetails, Client {
 	private static final char SEPARATOR = ',';
 	private static final int ACCESS_TOKEN_VALIDITY_IN_SECONDS = 21_600; // 6 hours
@@ -51,7 +46,7 @@ public class OAuth2ClientEntity extends AbstractAuditingEntity implements Client
 	@Column(length = 500)
 	private String description;
 	@Column(name = "resource_ids")
-	private String resourceIds;
+	private String resourceIdentities;
 	@Column(name = "secret_required")
 	private boolean secretRequired = true;
 	@Lob
@@ -62,65 +57,47 @@ public class OAuth2ClientEntity extends AbstractAuditingEntity implements Client
 	private boolean scoped = true;
 	@Lob
 	@Column(name = "scopes")
-	private String scope = "read" + SEPARATOR + "write";
+	private String scopes = "read" + SEPARATOR + "write";
 	@Column(name = "authorized_grant_types")
-	private String authorizedGrantTypes = "AUTHORIZATION_CODE" + SEPARATOR + "IMPLICIT";
+	private String grantTypes = "AUTHORIZATION_CODE" + SEPARATOR + "IMPLICIT";
 	@Lob
 	@Column(name = "registered_redirect_uris")
-	private String registeredRedirectUris;
+	private String redirectUris;
 	@Column(name = "auto_approve")
 	private boolean autoApprove = false;
 
 	@Override
-	public OAuth2ClientEntity setId(String id) {
-		super.setId(id);
-		return this;
+	@Transient
+	public Integer getAccessTokenValiditySeconds() {
+		return ACCESS_TOKEN_VALIDITY_IN_SECONDS;
 	}
 
 	@Override
-	public String getName() {
-		return name;
-	}
-
-	public OAuth2ClientEntity setName(String name) {
-		this.name = name;
-		return this;
+	@Transient
+	public Map<String, Object> getAdditionalInformation() {
+		return Collections.emptyMap();
 	}
 
 	@Override
-	public String getDescription() {
-		return description;
+	@Transient
+	public Collection<GrantedAuthority> getAuthorities() {
+		return Collections.emptyList();
 	}
 
-	public OAuth2ClientEntity setDescription(String description) {
-		this.description = description;
-		return this;
+	@Override
+	@Transient
+	public Set<String> getAuthorizedGrantTypes() {
+		String[] authorizedGrantTypes = StringUtils.split(this.getGrantTypes(), SEPARATOR);
+		return authorizedGrantTypes == null ? new HashSet<>() : new HashSet<>(Arrays.asList(authorizedGrantTypes));
+	}
+
+	public OAuth2ClientEntity setAuthorizedGrantTypes(Set<OAuth2GrantType> authorizedGrantTypes) {
+		return setGrantTypes(StringUtils.join(authorizedGrantTypes, SEPARATOR));
 	}
 
 	@Override
 	public String getClientId() {
 		return getId();
-	}
-
-	@Override
-	public Set<String> getResourceIds() {
-		String[] resourcesIds = StringUtils.split(resourceIds, SEPARATOR);
-		return resourcesIds == null ? new HashSet<>() : new HashSet<>(Arrays.asList(resourcesIds));
-	}
-
-	public OAuth2ClientEntity setResourceIds(Set<String> resourceIds) {
-		this.resourceIds = StringUtils.join(resourceIds, SEPARATOR);
-		return this;
-	}
-
-	@Override
-	public boolean isSecretRequired() {
-		return secretRequired;
-	}
-
-	public OAuth2ClientEntity setSecretRequired(boolean secretRequired) {
-		this.secretRequired = secretRequired;
-		return this;
 	}
 
 	@Override
@@ -134,61 +111,89 @@ public class OAuth2ClientEntity extends AbstractAuditingEntity implements Client
 	}
 
 	@Override
-	public boolean isScoped() {
-		return scoped;
+	public String getDescription() {
+		return description;
 	}
 
-	public OAuth2ClientEntity setScoped(boolean scoped) {
-		this.scoped = scoped;
+	public OAuth2ClientEntity setDescription(String description) {
+		this.description = description;
+		return this;
+	}
+
+	public String getGrantTypes() {
+		return grantTypes;
+	}
+
+	public OAuth2ClientEntity setGrantTypes(String grantTypes) {
+		this.grantTypes = grantTypes;
 		return this;
 	}
 
 	@Override
-	public Set<String> getScope() {
-		String[] scopes = StringUtils.split(scope, SEPARATOR);
-		return scopes == null ? new HashSet<>() : new HashSet<>(Arrays.asList(scopes));
+	public String getName() {
+		return name;
 	}
 
-	public OAuth2ClientEntity setScope(Set<String> scope) {
-		this.scope = StringUtils.join(scope, SEPARATOR);
+	public OAuth2ClientEntity setName(String name) {
+		this.name = name;
+		return this;
+	}
+
+	public String getRedirectUris() {
+		return redirectUris;
+	}
+
+	public OAuth2ClientEntity setRedirectUris(String redirectUris) {
+		this.redirectUris = redirectUris;
 		return this;
 	}
 
 	@Override
-	public Set<String> getAuthorizedGrantTypes() {
-		String[] grantTypes = StringUtils.split(authorizedGrantTypes, SEPARATOR);
-		return grantTypes == null ? new HashSet<>() : new HashSet<>(Arrays.asList(grantTypes));
-	}
-
-	public OAuth2ClientEntity setAuthorizedGrantTypes(Set<OAuth2GrantType> authorizedGrantTypes) {
-		this.authorizedGrantTypes = StringUtils.join(authorizedGrantTypes, SEPARATOR);
-		return this;
+	@Transient
+	public Integer getRefreshTokenValiditySeconds() {
+		return REFRESH_TOKEN_VALIDITY_IN_SECONDS;
 	}
 
 	@Override
 	public Set<String> getRegisteredRedirectUri() {
-		String[] redirectUris = StringUtils.split(registeredRedirectUris, SEPARATOR);
-		return redirectUris == null ? new HashSet<>() : new HashSet<>(Arrays.asList(redirectUris));
+		String[] registeredRedirectUris = StringUtils.split(this.getRedirectUris(), SEPARATOR);
+		return registeredRedirectUris == null ? new HashSet<>() : new HashSet<>(Arrays.asList(registeredRedirectUris));
 	}
 
-	public OAuth2ClientEntity setRegisteredRedirectUris(Set<String> registeredRedirectUris) {
-		this.registeredRedirectUris = StringUtils.join(registeredRedirectUris, SEPARATOR);
+	public String getResourceIdentities() {
+		return resourceIdentities;
+	}
+
+	public OAuth2ClientEntity setResourceIdentities(String resourceIdentities) {
+		this.resourceIdentities = resourceIdentities;
 		return this;
 	}
 
 	@Override
-	public Collection<GrantedAuthority> getAuthorities() {
-		return Collections.emptyList();
+	@Transient
+	public Set<String> getResourceIds() {
+		String[] resourcesIds = StringUtils.split(getResourceIdentities(), SEPARATOR);
+		return resourcesIds == null ? new HashSet<>() : new HashSet<>(Arrays.asList(resourcesIds));
+	}
+
+	public OAuth2ClientEntity setResourceIds(Set<String> resourceIds) {
+		return setResourceIdentities(StringUtils.join(resourceIds, SEPARATOR));
 	}
 
 	@Override
-	public Integer getAccessTokenValiditySeconds() {
-		return ACCESS_TOKEN_VALIDITY_IN_SECONDS;
+	@Transient
+	public Set<String> getScope() {
+		String[] scope = StringUtils.split(this.getScopes(), SEPARATOR);
+		return scope == null ? new HashSet<>() : new HashSet<>(Arrays.asList(scope));
 	}
 
-	@Override
-	public Integer getRefreshTokenValiditySeconds() {
-		return REFRESH_TOKEN_VALIDITY_IN_SECONDS;
+	public String getScopes() {
+		return scopes;
+	}
+
+	public OAuth2ClientEntity setScopes(String scopes) {
+		this.scopes = scopes;
+		return this;
 	}
 
 	@Override
@@ -206,7 +211,36 @@ public class OAuth2ClientEntity extends AbstractAuditingEntity implements Client
 	}
 
 	@Override
-	public Map<String, Object> getAdditionalInformation() {
-		return Collections.emptyMap();
+	public boolean isScoped() {
+		return scoped;
+	}
+
+	public OAuth2ClientEntity setScoped(boolean scoped) {
+		this.scoped = scoped;
+		return this;
+	}
+
+	@Override
+	public boolean isSecretRequired() {
+		return secretRequired;
+	}
+
+	public OAuth2ClientEntity setSecretRequired(boolean secretRequired) {
+		this.secretRequired = secretRequired;
+		return this;
+	}
+
+	@Override
+	public OAuth2ClientEntity setId(String id) {
+		super.setId(id);
+		return this;
+	}
+
+	public OAuth2ClientEntity setRegisteredRedirectUris(Set<String> registeredRedirectUris) {
+		return setRedirectUris(StringUtils.join(registeredRedirectUris, SEPARATOR));
+	}
+
+	public OAuth2ClientEntity setScopes(Set<String> scopes) {
+		return setScopes(scopes == null || scopes.isEmpty() ? getScopes() : StringUtils.join(scopes, SEPARATOR));
 	}
 }

@@ -81,7 +81,7 @@ abstract class OAuth2ClientRestData implements RestData {
 			.setSecretRequired(Optional.ofNullable(getIsSecretRequired()).orElse(false))
 			.setClientSecret(getClientSecret())
 			.setScoped(Optional.ofNullable(getIsScoped()).orElse(false))
-			.setScope(getScope())
+			.setScopes(getScope())
 			.setAuthorizedGrantTypes(Optional.ofNullable(getAuthorizedGrantTypes()).orElse(Collections.emptySet())
 				.stream()
 				.map(OAuth2GrantType::valueOf)

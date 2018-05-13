@@ -40,13 +40,13 @@ public interface OAuth2ClientService extends ClientDetailsService {
 	Page<OAuth2ClientEntity> findClients(String keyword, Pageable pageable);
 
 	@PreAuthorize("isAuthenticated()")
-	@PostAuthorize("#returnObject.createdBy.userId == principal.id or hasAuthority('client_generate_secret')")
+	@PostAuthorize("returnObject.createdBy.userId == principal.id or hasAuthority('client_generate_secret')")
 	OAuth2ClientEntity generateSecret(String clientId);
 
-	@PreAuthorize("hasAuthority('client_write')")
+	@PreAuthorize("isAuthenticated()")
 	OAuth2ClientEntity saveClient(OAuth2ClientEntity client);
 
 	@PreAuthorize("isAuthenticated()")
-	@PostAuthorize("#returnObject.createdBy.userId == principal.id or hasAuthority('client_update')")
+	@PostAuthorize("returnObject.createdBy.userId == principal.id or hasAuthority('client_update')")
 	OAuth2ClientEntity updateClient(String clientId, OAuth2ClientEntity entity);
 }
