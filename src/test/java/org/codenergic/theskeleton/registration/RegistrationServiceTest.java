@@ -1,5 +1,6 @@
 package org.codenergic.theskeleton.registration;
 
+import org.codenergic.theskeleton.core.test.NoOpPasswordEncoder;
 import org.codenergic.theskeleton.registration.impl.RegistrationServiceImpl;
 import org.codenergic.theskeleton.tokenstore.TokenStoreEntity;
 import org.codenergic.theskeleton.tokenstore.TokenStoreRepository;
@@ -11,14 +12,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class RegistrationServiceTest {
 	@Mock
@@ -26,7 +28,7 @@ public class RegistrationServiceTest {
 	@Mock
 	private TokenStoreRepository tokenStoreRepository;
 	private RegistrationService registrationService;
-	private PasswordEncoder passwordEncoder = NoOpPasswordEncoder.getInstance();
+	private PasswordEncoder passwordEncoder = new NoOpPasswordEncoder();
 
 	@Before
 	public void init() {

@@ -16,6 +16,7 @@
 package org.codenergic.theskeleton.core.data;
 
 import io.minio.MinioClient;
+import io.minio.errors.InvalidBucketNameException;
 import io.minio.policy.PolicyType;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +74,7 @@ public class S3ClientConfigTest {
 		verify(minioClient, times(2)).bucketExists(anyString());
 		verify(minioClient).makeBucket(eq("test2"));
 		verify(executorService).schedule(argumentCaptor.capture(), anyLong(), any());
-		when(minioClient.bucketExists(anyString())).thenThrow(Exception.class);
+		when(minioClient.bucketExists(anyString())).thenThrow(InvalidBucketNameException.class);
 		s3ClientConfig.createBuckets(minioClient, executorService, s3ClientProperties);
 	}
 }
