@@ -31,6 +31,8 @@ s3:
           - prefix: '*'
             policy: READ_ONLY
 security:
+  jwt:
+    signing-key: VNcRqdXpj9nHZQqtmf5l
   oauth2:
     resource:
       filter-order: 3

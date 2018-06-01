@@ -15,16 +15,16 @@
  */
 package org.codenergic.theskeleton.core.security;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-public class UserAccessTokenAuthenticationConverter extends DefaultUserAuthenticationConverter {
+class UserAccessTokenAuthenticationConverter extends DefaultUserAuthenticationConverter {
 	private static final String EMAIL = "email";
 	private static final String USER_ID = "user_id";
 
