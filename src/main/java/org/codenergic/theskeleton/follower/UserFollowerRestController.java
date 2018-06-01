@@ -21,7 +21,11 @@ import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users/{username}")
@@ -64,6 +68,11 @@ public class UserFollowerRestController {
 	@GetMapping(path = "/followers", params = {"totals"})
 	public long getNumberOfFollowers(@User UserEntity user) {
 		return userFollowerService.getNumberOfFollowers(user.getId());
+	}
+
+	@GetMapping(path = "/followings", params = {"totals"})
+	public long getNumberOfFollowings(@User UserEntity user) {
+		return userFollowerService.getNumberOfFollowings(user.getId());
 	}
 
 	@DeleteMapping("/followers")

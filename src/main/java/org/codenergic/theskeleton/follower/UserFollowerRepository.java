@@ -22,6 +22,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserFollowerRepository extends AuditingEntityRepository<UserFollowerEntity> {
+	long countByFollowerId(String userId);
+
 	long countByUserId(String userId);
 
 	Page<UserFollowerEntity> findByFollowerId(String followerId, Pageable pageable);

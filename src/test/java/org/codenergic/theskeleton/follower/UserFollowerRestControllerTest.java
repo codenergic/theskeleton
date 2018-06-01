@@ -154,6 +154,20 @@ public class UserFollowerRestControllerTest {
 	}
 
 	@Test
+	public void testGetNumberOfFollowings() throws Exception {
+		when(userFollowerService.getNumberOfFollowings(USER_ID)).thenReturn(10L);
+		MockHttpServletResponse response = mockMvc.perform(get("/api/users/" + USERNAME + "/followings")
+			.param("totals", "true")
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andReturn()
+			.getResponse();
+		assertThat(response.getStatus()).isEqualTo(200);
+		assertThat(response.getContentAsString()).isEqualTo("10");
+		verify(userFollowerService).getNumberOfFollowings(USER_ID);
+	}
+
+	@Test
 	public void testUnfollowUser() throws Exception {
 		MockHttpServletResponse response = mockMvc.perform(delete("/api/users/" + USERNAME + "/followers")
 			.contentType(MediaType.APPLICATION_JSON))

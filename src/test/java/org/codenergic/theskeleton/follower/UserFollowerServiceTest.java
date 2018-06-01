@@ -1,5 +1,8 @@
 package org.codenergic.theskeleton.follower;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.codenergic.theskeleton.follower.impl.UserFollowerServiceImpl;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Before;
@@ -9,9 +12,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -71,6 +71,13 @@ public class UserFollowerServiceTest {
 		when(userFollowerRepository.countByUserId("123456")).thenReturn(10L);
 		assertThat(userFollowerService.getNumberOfFollowers("123456")).isEqualTo(10L);
 		verify(userFollowerRepository).countByUserId("123456");
+	}
+
+	@Test
+	public void testGetNumberOfFollowings() {
+		when(userFollowerRepository.countByFollowerId("123456")).thenReturn(10L);
+		assertThat(userFollowerService.getNumberOfFollowings("123456")).isEqualTo(10L);
+		verify(userFollowerRepository).countByFollowerId("123456");
 	}
 
 	@Test

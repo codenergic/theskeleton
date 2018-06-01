@@ -13,5 +13,7 @@ public interface UserFollowerService {
 
 	long getNumberOfFollowers(String userId);
 
+	long getNumberOfFollowings(String userId);
+
 	void unfollowUser(String currentUserId, String followedUserId);
 }
