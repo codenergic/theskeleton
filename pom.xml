@@ -406,18 +406,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<version>${docker-maven-plugin.version}</version>
-				<configuration>
-					<repository>codenergic/theskeleton</repository>
-					<tag>latest</tag>
-					<buildArgs>
-						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs>
-				</configuration>
-			</plugin>
 		</plugins>
 		<resources>
 			<resource>
@@ -436,12 +424,4 @@
 			</resource>
 		</resources>
 	</build>
-
-	<distributionManagement>
-		<repository>
-			<id>bintray-codenergic-theskeleton</id>
-			<name>codenergic-theskeleton</name>
-			<url>https://api.bintray.com/maven/codenergic/theskeleton/theskeleton-server/;publish=1</url>
-		</repository>
-	</distributionManagement>
 </project>
