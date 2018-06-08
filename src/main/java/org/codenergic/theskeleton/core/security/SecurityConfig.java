@@ -27,7 +27,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.token.AccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
@@ -41,7 +40,7 @@ public class SecurityConfig {
 	 * @return
 	 */
 	@Bean
-	public AccessTokenConverter accessTokenConverter(@Value("${security.jwt.signing-key:}") String signingKey, ResourceLoader resourceLoader) throws IOException {
+	public JwtAccessTokenConverter accessTokenConverter(@Value("${security.jwt.signing-key:}") String signingKey, ResourceLoader resourceLoader) throws IOException {
 		DefaultAccessTokenConverter accessTokenConverter = new DefaultAccessTokenConverter();
 		accessTokenConverter.setUserTokenConverter(new UserAccessTokenAuthenticationConverter());
 		JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
