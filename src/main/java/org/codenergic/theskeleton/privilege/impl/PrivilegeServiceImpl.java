@@ -24,6 +24,7 @@ import org.codenergic.theskeleton.privilege.PrivilegeService;
 import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
 import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
 import org.codenergic.theskeleton.role.RoleEntity;
+import org.codenergic.theskeleton.role.RoleNotFoundException;
 import org.codenergic.theskeleton.role.RoleRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +47,8 @@ public class PrivilegeServiceImpl implements PrivilegeService {
 	@Override
 	@Transactional
 	public RoleEntity addPrivilegeToRole(String code, String privilegeName) {
-		RoleEntity role = roleRepository.findByCode(code);
+		RoleEntity role = roleRepository.findByCode(code)
+			.orElseThrow(() -> new RoleNotFoundException(code));
 		PrivilegeEntity privilege = privilegeRepository.findByName(privilegeName);
 		return rolePrivilegeRepository.save(new RolePrivilegeEntity(role, privilege)).getRole();
 	}
@@ -89,6 +91,7 @@ public class PrivilegeServiceImpl implements PrivilegeService {
 	public RoleEntity removePrivilegeFromRole(String code, String privilegeName) {
 		RolePrivilegeEntity userRole = rolePrivilegeRepository.findByRoleCodeAndPrivilegeName(code, privilegeName);
 		rolePrivilegeRepository.delete(userRole);
-		return roleRepository.findByCode(code);
+		return roleRepository.findByCode(code)
+			.orElseThrow(() -> new RoleNotFoundException(code));
 	}
 }

@@ -17,6 +17,7 @@ package org.codenergic.theskeleton.privilege;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,6 +35,7 @@ import org.springframework.data.domain.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -99,7 +101,7 @@ public class PrivilegeServiceTest {
 		RolePrivilegeEntity result = new RolePrivilegeEntity(role, privilege);
 		result.setId(UUID.randomUUID().toString());
 		result.getAuthority();
-		when(roleRepository.findByCode("role")).thenReturn(role);
+		when(roleRepository.findByCode("role")).thenReturn(Optional.of(role));
 		when(privilegeRepository.findByName("privilege")).thenReturn(privilege);
 		when(rolePrivilegeRepository.save(any(RolePrivilegeEntity.class))).thenReturn(result);
 		assertThat(privilegeService.addPrivilegeToRole("role", "privilege")).isEqualTo(role);
@@ -110,7 +112,9 @@ public class PrivilegeServiceTest {
 
 	@Test
 	public void testRemovePrivilegeFromRole() {
+		when(roleRepository.findByCode(anyString())).thenReturn(Optional.of(new RoleEntity()));
 		privilegeService.removePrivilegeFromRole("", "");
+		verify(roleRepository).findByCode(anyString());
 	}
 
 	@Test

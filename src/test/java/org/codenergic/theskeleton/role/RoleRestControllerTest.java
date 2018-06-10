@@ -17,6 +17,7 @@ package org.codenergic.theskeleton.role;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
@@ -82,7 +83,7 @@ public class RoleRestControllerTest {
 				.setId("123")
 				.setCode("12345")
 				.setDescription("Description 12345");
-		when(roleService.findRoleByIdOrCode("123")).thenReturn(dbResult);
+		when(roleService.findRoleByIdOrCode("123")).thenReturn(Optional.of(dbResult));
 		ResultActions resultActions = mockMvc.perform(get("/api/roles/123")
 					.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -97,12 +98,12 @@ public class RoleRestControllerTest {
 
 	@Test
 	public void testFindRoleByCodeNotFound() throws Exception {
-		when(roleService.findRoleByIdOrCode("123")).thenReturn(null);
+		when(roleService.findRoleByIdOrCode("123")).thenReturn(Optional.empty());
 		MockHttpServletResponse response = mockMvc.perform(get("/api/roles/123"))
 				.andReturn()
 				.getResponse();
 		verify(roleService).findRoleByIdOrCode("123");
-		assertThat(response.getStatus()).isEqualTo(200);
+		assertThat(response.getStatus()).isEqualTo(404);
 		assertThat(response.getContentAsByteArray()).isEqualTo(new byte[0]);
 	}
 
@@ -182,7 +183,7 @@ public class RoleRestControllerTest {
 				.setId("123")
 				.setCode("12345")
 				.setDescription("Description 12345");
-		when(roleService.findRoleByIdOrCode(input.getId())).thenReturn(input);
+		when(roleService.findRoleByIdOrCode(input.getId())).thenReturn(Optional.of(input));
 		doNothing().when(roleService).deleteRole(input.getId());
 		mockMvc.perform(delete("/api/roles/{id}", input.getId())
 					.contentType(MediaType.APPLICATION_JSON))
