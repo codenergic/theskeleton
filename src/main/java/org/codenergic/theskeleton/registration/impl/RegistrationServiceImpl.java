@@ -1,5 +1,7 @@
 package org.codenergic.theskeleton.registration.impl;
 
+import java.util.Optional;
+
 import org.codenergic.theskeleton.core.data.Activeable;
 import org.codenergic.theskeleton.registration.RegistrationException;
 import org.codenergic.theskeleton.registration.RegistrationForm;
@@ -54,7 +56,7 @@ public class RegistrationServiceImpl implements RegistrationService, ConnectionS
 	}
 
 	@Override
-	public UserEntity findUserByEmail(String email) {
+	public Optional<UserEntity> findUserByEmail(String email) {
 		return userRepository.findByEmail(email);
 	}
 

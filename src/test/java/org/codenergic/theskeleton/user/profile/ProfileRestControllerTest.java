@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -119,7 +120,7 @@ public class ProfileRestControllerTest {
 		final UserEntity user = new UserEntity()
 			.setId("user123")
 			.setEmail("user@server");
-		when(profileService.findProfileByUsername("user123")).thenReturn(user);
+		when(profileService.findProfileByUsername("user123")).thenReturn(Optional.of(user));
 		MockHttpServletRequestBuilder request = get("/api/profile")
 			.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)

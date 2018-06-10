@@ -43,15 +43,17 @@ public class ChangePasswordController {
 		if (bindingResult.hasErrors())
 			return changepassView(changePasswordForm);
 
-		UserEntity user = registrationService.findUserByEmail(changePasswordForm.getEmail());
-		if (user == null) {
-			bindingResult.rejectValue("email", "error.changePasswordForm", "Can't find that email, sorry.");
-			return changepassView(changePasswordForm);
-		} else {
-			tokenStoreService.sendTokenNotification(TokenStoreType.CHANGE_PASSWORD, user);
-		}
-		model.addAttribute(MESSAGE, CHANGEPASS);
-		return CHANGEPASS_CONFIRMATION;
+		return registrationService.findUserByEmail(changePasswordForm.getEmail())
+			.map(user -> {
+				tokenStoreService.sendTokenNotification(TokenStoreType.CHANGE_PASSWORD, user);
+				model.addAttribute(MESSAGE, CHANGEPASS);
+				return CHANGEPASS_CONFIRMATION;
+			})
+			.orElseGet(() -> {
+				bindingResult.rejectValue("email", "error.changePasswordForm", "Can't find that email, sorry.");
+				model.addAttribute(MESSAGE, CHANGEPASS);
+				return changepassView(changePasswordForm);
+			});
 	}
 
 	@GetMapping(path = "/update")

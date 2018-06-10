@@ -2,6 +2,7 @@ package org.codenergic.theskeleton.user.profile;
 
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalRestData;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
@@ -59,9 +60,11 @@ public class ProfileRestController {
 	}
 
 	@GetMapping
-	public ProfileRestData getCurrentProfile(Authentication authentication) {
-		UserEntity user = profileService.findProfileByUsername(authentication.getName());
-		return convertToRestData(user);
+	public ResponseEntity<ProfileRestData> getCurrentProfile(Authentication authentication) {
+		return profileService.findProfileByUsername(authentication.getName())
+			.map(this::convertToRestData)
+			.map(ResponseEntity::ok)
+			.orElse(ResponseEntity.notFound().build());
 	}
 
 	@DeleteMapping("/connected-apps")

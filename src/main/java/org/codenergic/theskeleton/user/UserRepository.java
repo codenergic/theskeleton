@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.user;
 
+import java.util.Optional;
+
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,9 +28,9 @@ public interface UserRepository extends AuditingEntityRepository<UserEntity> {
 
 	boolean existsByUsername(String username);
 
-	UserEntity findByEmail(String email);
+	Optional<UserEntity> findByEmail(String email);
 
-	UserEntity findByUsername(String username);
+	Optional<UserEntity> findByUsername(String username);
 
 	Page<UserEntity> findByUsernameStartingWith(String username, Pageable pageable);
 }

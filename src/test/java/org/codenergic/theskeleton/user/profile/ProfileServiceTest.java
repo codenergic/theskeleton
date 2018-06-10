@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.provider.approval.Approval;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -65,7 +66,7 @@ public class ProfileServiceTest {
 
 	@Test
 	public void testUpdateProfile() {
-		when(userRepository.findByUsername(anyString())).thenReturn(new UserEntity());
+		when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(new UserEntity()));
 		profileService.updateProfile("username", new UserEntity());
 		verify(userRepository).findByUsername("username");
 	}
@@ -73,7 +74,7 @@ public class ProfileServiceTest {
 	@Test
 	public void testUpdateProfilePassword() {
 		final String rawPassword = "p@$$w0rd!";
-		when(userRepository.findByUsername("user")).thenReturn(new UserEntity());
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(new UserEntity()));
 		final UserEntity result = profileService.updateProfilePassword("user", rawPassword);
 		assertThat(passwordEncoder.matches(rawPassword, result.getPassword())).isTrue();
 		verify(userRepository).findByUsername("user");
@@ -82,7 +83,7 @@ public class ProfileServiceTest {
 	@Test
 	public void testUpdateProfilePicture() throws Exception {
 		final InputStream inputStream = ClassLoader.getSystemResourceAsStream("static/logo.png");
-		when(userRepository.findByUsername("user")).thenReturn(new UserEntity());
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(new UserEntity()));
 		profileService.updateProfilePicture("user", inputStream, "image/png");
 		verify(userRepository).findByUsername("user");
 		verify(minioClient).putObject(anyString(), anyString(), any(InputStream.class), eq("image/png"));
@@ -95,7 +96,7 @@ public class ProfileServiceTest {
 		final UserEntity input = new UserEntity()
 				.setUsername("user")
 				.setEnabled(false);
-		when(userRepository.findByUsername("user")).thenReturn(input);
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(input));
 		UserEntity updatedUser = profileService.updateProfile("user", new UserEntity().setUsername("updated"));
 		assertThat(updatedUser.getUsername()).isEqualTo(input.getUsername());
 		verify(userRepository).findByUsername("user");

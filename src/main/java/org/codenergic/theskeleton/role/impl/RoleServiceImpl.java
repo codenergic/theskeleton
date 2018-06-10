@@ -28,6 +28,7 @@ import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,7 +48,8 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	@Transactional
 	public UserEntity addRoleToUser(String username, String roleCode) {
-		UserEntity user = userRepository.findByUsername(username);
+		UserEntity user = userRepository.findByUsername(username)
+			.orElseThrow(() -> new UsernameNotFoundException(username));
 		RoleEntity role = roleRepository.findByCode(roleCode);
 		return userRoleRepository.save(new UserRoleEntity(user, role)).getUser();
 	}
@@ -97,7 +99,8 @@ public class RoleServiceImpl implements RoleService {
 	public UserEntity removeRoleFromUser(String username, String roleCode) {
 		UserRoleEntity userRole = userRoleRepository.findByUserUsernameAndRoleCode(username, roleCode);
 		userRoleRepository.delete(userRole);
-		return userRepository.findByUsername(username);
+		return userRepository.findByUsername(username)
+			.orElseThrow(() -> new UsernameNotFoundException(username));
 	}
 
 	@Override

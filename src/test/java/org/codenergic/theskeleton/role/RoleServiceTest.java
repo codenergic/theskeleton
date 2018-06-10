@@ -17,6 +17,7 @@ package org.codenergic.theskeleton.role;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -67,7 +68,7 @@ public class RoleServiceTest {
 		UserRoleEntity result = new UserRoleEntity(user, role);
 		result.setId(UUID.randomUUID().toString());
 		when(roleRepository.findByCode("role")).thenReturn(role);
-		when(userRepository.findByUsername("user")).thenReturn(user);
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
 		when(userRoleRepository.save(any(UserRoleEntity.class))).thenReturn(result);
 		assertThat(roleService.addRoleToUser("user", "role")).isEqualTo(user);
 		verify(roleRepository).findByCode("role");
@@ -134,7 +135,13 @@ public class RoleServiceTest {
 
 	@Test
 	public void testRemoveRoleFromUser() {
+		when(userRoleRepository.findByUserUsernameAndRoleCode(anyString(), anyString()))
+			.thenReturn(new UserRoleEntity());
+		when(userRepository.findByUsername(anyString()))
+			.thenReturn(Optional.of(new UserEntity()));
 		roleService.removeRoleFromUser("", "");
+		verify(userRoleRepository).delete(any(UserRoleEntity.class));
+		verify(userRepository).findByUsername(anyString());
 	}
 
 	@Test

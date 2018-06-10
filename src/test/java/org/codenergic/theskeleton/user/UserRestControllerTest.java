@@ -3,6 +3,7 @@ package org.codenergic.theskeleton.user;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
@@ -109,7 +110,7 @@ public class UserRestControllerTest {
 		final UserEntity user = new UserEntity()
 				.setId("user123")
 				.setEmail("user@server");
-		when(userService.findUserByEmail("user@server")).thenReturn(user);
+		when(userService.findUserByEmail("user@server")).thenReturn(Optional.of(user));
 		ResultActions resultActions = mockMvc.perform(get("/api/users/user@server?email=true")
 					.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -127,7 +128,7 @@ public class UserRestControllerTest {
 		final UserEntity user = new UserEntity()
 				.setId("user123")
 				.setEmail("user@server");
-		when(userService.findUserByUsername("user123")).thenReturn(user);
+		when(userService.findUserByUsername("user123")).thenReturn(Optional.of(user));
 		ResultActions resultActions = mockMvc.perform(get("/api/users/user123")
 					.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())

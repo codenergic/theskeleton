@@ -20,9 +20,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.client.OAuth2ClientEntity;
+import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalRepository;
 import org.codenergic.theskeleton.user.UserRepository;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.provider.approval.Approval;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.stereotype.Service;
@@ -52,8 +54,10 @@ public class UserOAuth2ClientApprovalStore implements ApprovalStore {
 				newApproval.setCreatedBy(approval.getCreatedBy());
 				newApproval.setCreatedDate(approval.getCreatedDate());
 			}
+			UserEntity user = userRepository.findByUsername(a.getUserId())
+				.orElseThrow(() -> new UsernameNotFoundException(a.getUserId()));
 			newApproval
-					.setUser(userRepository.findByUsername(a.getUserId()))
+					.setUser(user)
 					.setClient(new OAuth2ClientEntity().setId(a.getClientId()))
 					.setScope(a.getScope())
 					.setApprovalStatus(a.getStatus());

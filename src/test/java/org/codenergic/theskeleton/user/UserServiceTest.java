@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -55,7 +56,7 @@ public class UserServiceTest {
 				.setId(UUID.randomUUID().toString())
 				.setUsername("user")
 				.setPassword(passwordEncoder.encode("user"));
-		when(userRepository.findByUsername("user")).thenReturn(user);
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
 		userAdminService.deleteUser("user");
 		verify(userRepository).findByUsername("user");
 		verify(userRepository).delete(user);
@@ -67,7 +68,7 @@ public class UserServiceTest {
 		UserEntity input = new UserEntity() {{ setId(UUID.randomUUID().toString()); }}
 				.setUsername("user")
 				.setEnabled(false);
-		when(userRepository.findByUsername("user")).thenReturn(input);
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(input));
 		UserEntity result = userAdminService.enableOrDisableUser("user", true);
 		assertThat(result.getId()).isEqualTo(input.getId());
 		assertThat(result.isEnabled()).isTrue();
@@ -81,7 +82,7 @@ public class UserServiceTest {
 				.setId(UUID.randomUUID().toString())
 				.setUsername("user")
 				.setExpiredAt(expiredAt);
-		when(userRepository.findByUsername("user")).thenReturn(input);
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(input));
 		UserEntity result = userAdminService.extendsUserExpiration("user", 60);
 		assertThat(result.getId()).isEqualTo(input.getId());
 		assertThat(result.getExpiredAt()).isAfter(expiredAt);
@@ -92,8 +93,8 @@ public class UserServiceTest {
 	@Test
 	public void testFindUserByEmail() {
 		UserEntity dbResult = new UserEntity().setUsername("user");
-		when(userRepository.findByEmail("user@localhost")).thenReturn(dbResult);
-		UserEntity result = userService.findUserByEmail("user@localhost");
+		when(userRepository.findByEmail("user@localhost")).thenReturn(Optional.of(dbResult));
+		UserEntity result = userService.findUserByEmail("user@localhost").orElseThrow(RuntimeException::new);
 		assertThat(result).isEqualTo(dbResult);
 		verify(userRepository).findByEmail("user@localhost");
 	}
@@ -114,9 +115,9 @@ public class UserServiceTest {
 		assertThatThrownBy(() -> userService.loadUserByUsername("123"))
 			.isInstanceOf(UsernameNotFoundException.class);
 		verify(userRepository).findByEmail("123");
-		verify(userRepository).findOne("123");
+		verify(userRepository).findById("123");
 
-		when(userRepository.findByUsername("1234")).thenReturn(new UserEntity().setRoles(new HashSet<>()));
+		when(userRepository.findByUsername("1234")).thenReturn(Optional.of(new UserEntity().setRoles(new HashSet<>())));
 		UserDetails user = userService.loadUserByUsername("1234");
 		assertThat(user).isInstanceOf(UserEntity.class);
 		verify(userRepository).findByUsername("1234");
@@ -125,7 +126,7 @@ public class UserServiceTest {
 	@Test
 	public void testLockOrUnlockUser() {
 		UserEntity dbResult = new UserEntity().setAccountNonLocked(false);
-		when(userRepository.findByUsername("user")).thenReturn(dbResult);
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(dbResult));
 		UserEntity result = userAdminService.lockOrUnlockUser("user", true);
 		assertThat(result.isAccountNonLocked()).isEqualTo(true);
 		verify(userRepository).findByUsername("user");
@@ -141,7 +142,7 @@ public class UserServiceTest {
 		UserEntity input = new UserEntity()
 				.setUsername("user")
 				.setEnabled(false);
-		when(userRepository.findByUsername("user")).thenReturn(input);
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(input));
 		UserEntity updatedUser = userAdminService.updateUser("user", new UserEntity().setUsername("updated"));
 		assertThat(updatedUser.getUsername()).isEqualTo(input.getUsername());
 		verify(userRepository).findByUsername("user");
@@ -150,7 +151,7 @@ public class UserServiceTest {
 	@Test
 	public void testUpdateUserPassword() {
 		String rawPassword = "p@$$w0rd!";
-		when(userRepository.findByUsername("user")).thenReturn(new UserEntity());
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(new UserEntity()));
 		UserEntity result = userAdminService.updateUserPassword("user", rawPassword);
 		assertThat(passwordEncoder.matches(rawPassword, result.getPassword())).isTrue();
 		verify(userRepository).findByUsername("user");

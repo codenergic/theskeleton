@@ -17,11 +17,13 @@ package org.codenergic.theskeleton.user.impl;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
 import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
@@ -40,9 +42,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService, UserAdminService {
-	private PasswordEncoder passwordEncoder;
-	private UserRepository userRepository;
-	private RolePrivilegeRepository rolePrivilegeRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final UserRepository userRepository;
+	private final RolePrivilegeRepository rolePrivilegeRepository;
 
 	public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, RolePrivilegeRepository rolePrivilegeRepository) {
 		this.passwordEncoder = passwordEncoder;
@@ -53,15 +55,16 @@ public class UserServiceImpl implements UserService, UserAdminService {
 	@Override
 	@Transactional
 	public void deleteUser(String username) {
-		UserEntity user = findUserByUsername(username);
-		Objects.requireNonNull(user, "User not found");
+		UserEntity user = findUserByUsername(username)
+			.orElseThrow(throwUsernameNotFound(username));
 		userRepository.delete(user);
 	}
 
 	@Override
 	@Transactional
 	public UserEntity enableOrDisableUser(String username, boolean enabled) {
-		UserEntity user = findUserByUsername(username);
+		UserEntity user = findUserByUsername(username)
+			.orElseThrow(throwUsernameNotFound(username));
 		user.setEnabled(enabled);
 		return user;
 	}
@@ -75,12 +78,12 @@ public class UserServiceImpl implements UserService, UserAdminService {
 	}
 
 	@Override
-	public UserEntity findUserByEmail(String email) {
+	public Optional<UserEntity> findUserByEmail(String email) {
 		return userRepository.findByEmail(email);
 	}
 
 	@Override
-	public UserEntity findUserByUsername(String username) {
+	public Optional<UserEntity> findUserByUsername(String username) {
 		return userRepository.findByUsername(username);
 	}
 
@@ -91,22 +94,24 @@ public class UserServiceImpl implements UserService, UserAdminService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) {
-		UserEntity user = findUserByUsername(username);
-		if (user == null)
-			user = findUserByEmail(username);
-		if (user == null)
-			user = userRepository.findOne(username);
-		if (user == null)
-			throw new UsernameNotFoundException("Cannot find user with username or email of " + username);
-		Set<RolePrivilegeEntity> rolePrivileges = new HashSet<>();
-		user.getRoles().forEach(role -> rolePrivileges.addAll(rolePrivilegeRepository.findByRoleCode(role.getRole().getCode())));
-		return user.setAuthorities(rolePrivileges);
+		return Stream.of(findUserByUsername(username), findUserByEmail(username), userRepository.findById(username))
+			.filter(Optional::isPresent)
+			.map(Optional::get)
+			.findFirst()
+			.map(u -> {
+				Set<RolePrivilegeEntity> rolePrivileges = u.getRoles().stream()
+					.flatMap(role -> rolePrivilegeRepository.findByRoleCode(role.getRole().getCode()).stream())
+					.collect(Collectors.toSet());
+				return u.setAuthorities(rolePrivileges);
+			})
+			.orElseThrow(throwUsernameNotFound(username));
 	}
 
 	@Override
 	@Transactional
 	public UserEntity lockOrUnlockUser(String username, boolean unlocked) {
-		UserEntity user = findUserByUsername(username);
+		UserEntity user = findUserByUsername(username)
+			.orElseThrow(throwUsernameNotFound(username));
 		user.setAccountNonLocked(unlocked);
 		return user;
 	}
@@ -123,10 +128,15 @@ public class UserServiceImpl implements UserService, UserAdminService {
 		return userRepository.save(userEntity);
 	}
 
+	private Supplier<UsernameNotFoundException> throwUsernameNotFound(String username) {
+		return () -> new UsernameNotFoundException(username);
+	}
+
 	@Override
 	@Transactional
 	public UserEntity updateUser(String username, UserEntity newUser) {
-		UserEntity user = findUserByUsername(username);
+		UserEntity user = findUserByUsername(username)
+			.orElseThrow(throwUsernameNotFound(username));
 		user.setUsername(newUser.getUsername());
 		user.setEmail(newUser.getEmail());
 		user.setPhoneNumber(newUser.getPhoneNumber());
@@ -136,7 +146,8 @@ public class UserServiceImpl implements UserService, UserAdminService {
 	@Override
 	@Transactional
 	public UserEntity updateUserExpirationDate(String username, Date date) {
-		UserEntity user = findUserByUsername(username);
+		UserEntity user = findUserByUsername(username)
+			.orElseThrow(throwUsernameNotFound(username));
 		user.setExpiredAt(date);
 		return user;
 	}
@@ -144,7 +155,8 @@ public class UserServiceImpl implements UserService, UserAdminService {
 	@Override
 	@Transactional
 	public UserEntity updateUserPassword(String username, String rawPassword) {
-		UserEntity user = findUserByUsername(username);
+		UserEntity user = findUserByUsername(username)
+			.orElseThrow(throwUsernameNotFound(username));
 		user.setPassword(passwordEncoder.encode(rawPassword));
 		return user;
 	}

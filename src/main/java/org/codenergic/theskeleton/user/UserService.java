@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.user;
 
+import java.util.Optional;
+
 import javax.validation.constraints.NotNull;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,8 +24,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
 	@PreAuthorize("hasAuthority('user_read')")
-	UserEntity findUserByEmail(@NotNull String email);
+	Optional<UserEntity> findUserByEmail(@NotNull String email);
 
 	@PreAuthorize("hasAuthority('user_read')")
-	UserEntity findUserByUsername(@NotNull String username);
+	Optional<UserEntity> findUserByUsername(@NotNull String username);
 }
