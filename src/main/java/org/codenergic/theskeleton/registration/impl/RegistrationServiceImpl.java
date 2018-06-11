@@ -63,9 +63,8 @@ public class RegistrationServiceImpl implements RegistrationService, ConnectionS
 	@Override
 	@Transactional
 	public boolean activateUser(String activationToken) {
-		TokenStoreEntity tokenStoreEntity = tokenStoreRepository.findByTokenAndType(activationToken, TokenStoreType.USER_ACTIVATION);
-		if (tokenStoreEntity == null)
-			throw new RegistrationException("Invalid Activation Key");
+		TokenStoreEntity tokenStoreEntity = tokenStoreRepository.findByTokenAndType(activationToken, TokenStoreType.USER_ACTIVATION)
+			.orElseThrow(() -> new RegistrationException("Invalid Activation Key"));
 		if (tokenStoreEntity.isTokenExpired())
 			throw new RegistrationException("Activation Key is Expired");
 		if (Activeable.Status.INACTIVE.getStatus() == tokenStoreEntity.getStatus())
@@ -79,9 +78,8 @@ public class RegistrationServiceImpl implements RegistrationService, ConnectionS
 	@Override
 	@Transactional
 	public boolean changePassword(String activationToken, String password) {
-		TokenStoreEntity tokenStoreEntity = tokenStoreRepository.findByTokenAndType(activationToken, TokenStoreType.CHANGE_PASSWORD);
-		if (tokenStoreEntity == null)
-			throw new RegistrationException("Invalid Activation Key");
+		TokenStoreEntity tokenStoreEntity = tokenStoreRepository.findByTokenAndType(activationToken, TokenStoreType.CHANGE_PASSWORD)
+			.orElseThrow(() -> new RegistrationException("Invalid Activation Key"));
 		if (tokenStoreEntity.isTokenExpired())
 			throw new RegistrationException("Activation Key is Expired");
 		UserEntity user = tokenStoreEntity.getUser();

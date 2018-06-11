@@ -15,7 +15,6 @@
  */
 package org.codenergic.theskeleton.role.impl;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -56,10 +55,6 @@ public class RoleServiceImpl implements RoleService {
 		RoleEntity role = roleRepository.findByCode(roleCode)
 			.orElseThrow(() -> new RoleNotFoundException(roleCode));
 		return userRoleRepository.save(new UserRoleEntity(user, role)).getUser();
-	}
-
-	private void assertRoleNotNull(RoleEntity role) {
-		Objects.requireNonNull(role, "Role not found");
 	}
 
 	@Override

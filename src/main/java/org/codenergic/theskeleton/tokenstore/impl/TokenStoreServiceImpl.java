@@ -17,6 +17,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class TokenStoreServiceImpl implements TokenStoreService {
@@ -45,7 +46,7 @@ public class TokenStoreServiceImpl implements TokenStoreService {
 	}
 
 	@Override
-	public TokenStoreEntity findByTokenAndType(String token, TokenStoreType type) {
+	public Optional<TokenStoreEntity> findByTokenAndType(String token, TokenStoreType type) {
 		return tokenStoreRepository.findByTokenAndType(token, type);
 	}
 

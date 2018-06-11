@@ -1,6 +1,7 @@
 package org.codenergic.theskeleton.tokenstore;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.mail.internet.MimeMessage;
@@ -75,8 +76,9 @@ public class TokenStoreServiceTest {
 	@Test
 	public void testFindTokenAndType() {
 		when(tokenStoreRepository.findByTokenAndType("token", TokenStoreType.USER_ACTIVATION))
-			.thenReturn(new TokenStoreEntity().setToken("123").setExpiryDate(new Date()));
-		TokenStoreEntity token = tokenStoreService.findByTokenAndType("token", TokenStoreType.USER_ACTIVATION);
+			.thenReturn(Optional.of(new TokenStoreEntity().setToken("123").setExpiryDate(new Date())));
+		TokenStoreEntity token = tokenStoreService.findByTokenAndType("token", TokenStoreType.USER_ACTIVATION)
+			.orElse(new TokenStoreEntity());
 		assertThat(token.getToken()).isEqualTo("123");
 		assertThat(token.getExpiryDate().getTime()).isLessThanOrEqualTo(new Date().getTime());
 		verify(tokenStoreRepository).findByTokenAndType("token", TokenStoreType.USER_ACTIVATION);

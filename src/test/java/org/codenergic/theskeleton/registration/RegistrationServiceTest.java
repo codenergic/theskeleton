@@ -1,5 +1,7 @@
 package org.codenergic.theskeleton.registration;
 
+import java.util.Optional;
+
 import org.codenergic.theskeleton.core.test.NoOpPasswordEncoder;
 import org.codenergic.theskeleton.registration.impl.RegistrationServiceImpl;
 import org.codenergic.theskeleton.tokenstore.TokenStoreEntity;
@@ -88,7 +90,7 @@ public class RegistrationServiceTest {
 			.setToken("TOKEN1234")
 			.setType(TokenStoreType.USER_ACTIVATION);
 		when(tokenStoreRepository.findByTokenAndType("TOKEN1234", TokenStoreType.USER_ACTIVATION))
-			.thenReturn(tokenStoreEntity);
+			.thenReturn(Optional.of(tokenStoreEntity));
 
 		registrationService.activateUser("TOKEN1234");
 		//good token
@@ -114,7 +116,7 @@ public class RegistrationServiceTest {
 			.setExpiryDate(DateTime.now().plusDays(15).toDate())
 			.setType(TokenStoreType.CHANGE_PASSWORD);
 		when(tokenStoreRepository.findByTokenAndType("TOKEN1234", TokenStoreType.CHANGE_PASSWORD))
-			.thenReturn(tokenStoreEntity);
+			.thenReturn(Optional.of(tokenStoreEntity));
 
 		registrationService.changePassword("TOKEN1234", "notsecurepassword");
 		assertThat(tokenStoreEntity.getUser().getPassword()).isEqualTo("notsecurepassword");
