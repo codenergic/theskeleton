@@ -15,13 +15,10 @@
  */
 package org.codenergic.theskeleton.client;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.HashSet;
+import java.util.Optional;
 
+import org.codenergic.theskeleton.client.impl.OAuth2ClientServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -29,6 +26,11 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class OAuth2ClientServiceTest {
 	private OAuth2ClientService clientService;
@@ -40,15 +42,15 @@ public class OAuth2ClientServiceTest {
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.clientService = OAuth2ClientService.newInstance(clientRepository, passwordEncoder);
+		this.clientService = new OAuth2ClientServiceImpl(clientRepository, passwordEncoder);
 	}
 
 	@Test
 	public void testGenerateSecret() {
-		when(clientRepository.findOne("client")).thenReturn(new OAuth2ClientEntity().setId("client"));
+		when(clientRepository.findById("client")).thenReturn(Optional.of(new OAuth2ClientEntity().setId("client")));
 		OAuth2ClientEntity result = clientService.generateSecret("client");
 		assertThat(passwordEncoder.matches(result.getClientId(), result.getClientSecret())).isTrue();
-		verify(clientRepository).findOne("client");
+		verify(clientRepository).findById("client");
 	}
 
 	@Test
@@ -63,9 +65,9 @@ public class OAuth2ClientServiceTest {
 
 	@Test
 	public void testUpdateClient() {
-		when(clientRepository.findOne("client")).thenReturn(new OAuth2ClientEntity().setId("client"));
+		when(clientRepository.findById("client")).thenReturn(Optional.of(new OAuth2ClientEntity().setId("client")));
 		clientService.updateClient("client", new OAuth2ClientEntity().setAuthorizedGrantTypes(new HashSet<>()));
-		verify(clientRepository).findOne("client");
+		verify(clientRepository).findById("client");
 	}
 
 }

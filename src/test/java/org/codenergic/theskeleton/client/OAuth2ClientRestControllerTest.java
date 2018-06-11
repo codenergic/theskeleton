@@ -15,24 +15,11 @@
  */
 package org.codenergic.theskeleton.client;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.codenergic.theskeleton.client.OAuth2GrantType.AUTHORIZATION_CODE;
-import static org.codenergic.theskeleton.client.OAuth2GrantType.IMPLICIT;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
 import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
@@ -52,6 +39,21 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.codenergic.theskeleton.client.OAuth2GrantType.AUTHORIZATION_CODE;
+import static org.codenergic.theskeleton.client.OAuth2GrantType.IMPLICIT;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
@@ -86,7 +88,7 @@ public class OAuth2ClientRestControllerTest {
 			.setSecretRequired(true)
 			.setAutoApprove(false)
 			.setAuthorizedGrantTypes(new HashSet<>(Arrays.asList(AUTHORIZATION_CODE, IMPLICIT)));
-		when(oAuth2ClientService.findClientById("client123")).thenReturn(client);
+		when(oAuth2ClientService.findClientById("client123")).thenReturn(Optional.of(client));
 		MockHttpServletRequestBuilder request = get("/api/clients/client123")
 			.contentType(MediaType.APPLICATION_JSON);
 		MockHttpServletResponse response = mockMvc.perform(request)
@@ -110,7 +112,7 @@ public class OAuth2ClientRestControllerTest {
 			.setSecretRequired(true)
 			.setAutoApprove(false)
 			.setAuthorizedGrantTypes(new HashSet<>(Arrays.asList(AUTHORIZATION_CODE, IMPLICIT)));
-		Page<OAuth2ClientEntity> clients = new PageImpl<>(Arrays.asList(client));
+		Page<OAuth2ClientEntity> clients = new PageImpl<>(Collections.singletonList(client));
 		when(oAuth2ClientService.findClients(anyString(), any())).thenReturn(clients);
 		MockHttpServletRequestBuilder request = get("/api/clients")
 			.contentType(MediaType.APPLICATION_JSON);
