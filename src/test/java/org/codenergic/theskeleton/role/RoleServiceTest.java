@@ -137,7 +137,7 @@ public class RoleServiceTest {
 	@Test
 	public void testRemoveRoleFromUser() {
 		when(userRoleRepository.findByUserUsernameAndRoleCode(anyString(), anyString()))
-			.thenReturn(new UserRoleEntity());
+			.thenReturn(Optional.of(new UserRoleEntity()));
 		when(userRepository.findByUsername(anyString()))
 			.thenReturn(Optional.of(new UserEntity()));
 		roleService.removeRoleFromUser("", "");

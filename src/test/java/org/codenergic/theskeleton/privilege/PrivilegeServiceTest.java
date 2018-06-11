@@ -57,14 +57,14 @@ public class PrivilegeServiceTest {
 
 	@Test
 	public void testFindPrivilegeByName() {
-		PrivilegeEntity result = new PrivilegeEntity();
-		result.setName("user");
+		PrivilegeEntity result = new PrivilegeEntity()
+			.setName("user");
 		result.getAuthority();
-		when(privilegeRepository.findByName(eq("user"))).thenReturn(result);
-		assertThat(privilegeService.findPrivilegeByName("user")).isEqualTo(result);
+		when(privilegeRepository.findByName(eq("user"))).thenReturn(Optional.of(result));
+		assertThat(privilegeService.findPrivilegeByName("user").orElse(new PrivilegeEntity())).isEqualTo(result);
 		verify(privilegeRepository).findByName(eq("user"));
-		when(privilegeRepository.findByName(eq("admin"))).thenReturn(null);
-		assertThat(privilegeService.findPrivilegeByName("admin")).isNull();
+		when(privilegeRepository.findByName(eq("admin"))).thenReturn(Optional.empty());
+		assertThat(privilegeService.findPrivilegeByName("admin").isPresent()).isFalse();
 		verify(privilegeRepository).findByName(eq("admin"));
 	}
 
@@ -72,12 +72,12 @@ public class PrivilegeServiceTest {
 	@SuppressWarnings("serial")
 	public void testFindPrivilegeById() {
 		PrivilegeEntity result = new PrivilegeEntity() {{ setId("123"); }}.setName("user_list_read");
-		when(privilegeRepository.findOne(eq("123"))).thenReturn(result);
-		assertThat(privilegeService.findPrivilegeById("123")).isEqualTo(result);
-		verify(privilegeRepository).findOne(eq("123"));
-		when(privilegeRepository.findOne(eq("124"))).thenReturn(null);
-		assertThat(privilegeService.findPrivilegeById("124")).isNull();
-		verify(privilegeRepository).findOne(eq("124"));
+		when(privilegeRepository.findById(eq("123"))).thenReturn(Optional.of(result));
+		assertThat(privilegeService.findPrivilegeById("123").orElse(new PrivilegeEntity())).isEqualTo(result);
+		verify(privilegeRepository).findById(eq("123"));
+		when(privilegeRepository.findById(eq("124"))).thenReturn(Optional.empty());
+		assertThat(privilegeService.findPrivilegeById("124").isPresent()).isFalse();
+		verify(privilegeRepository).findById(eq("124"));
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class PrivilegeServiceTest {
 		result.setId(UUID.randomUUID().toString());
 		result.getAuthority();
 		when(roleRepository.findByCode("role")).thenReturn(Optional.of(role));
-		when(privilegeRepository.findByName("privilege")).thenReturn(privilege);
+		when(privilegeRepository.findByName("privilege")).thenReturn(Optional.of(privilege));
 		when(rolePrivilegeRepository.save(any(RolePrivilegeEntity.class))).thenReturn(result);
 		assertThat(privilegeService.addPrivilegeToRole("role", "privilege")).isEqualTo(role);
 		verify(roleRepository).findByCode("role");

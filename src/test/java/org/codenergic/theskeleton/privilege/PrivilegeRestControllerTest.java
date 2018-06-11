@@ -17,14 +17,10 @@ package org.codenergic.theskeleton.privilege;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
 import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
-import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RoleRestData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +43,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -71,7 +65,7 @@ public class PrivilegeRestControllerTest {
 				.setId("123")
 				.setName("12345")
 				.setDescription("Description 12345");
-		when(privilegeService.findPrivilegeByIdOrName("123")).thenReturn(dbResult);
+		when(privilegeService.findPrivilegeByIdOrName("123")).thenReturn(Optional.of(dbResult));
 		ResultActions resultActions = mockMvc.perform(get("/api/privileges/123").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
 				.andDo(document("privilege-read"));
@@ -85,12 +79,12 @@ public class PrivilegeRestControllerTest {
 
 	@Test
 	public void testFindPrivilegeByNameNotFound() throws Exception {
-		when(privilegeService.findPrivilegeByIdOrName("123")).thenReturn(null);
+		when(privilegeService.findPrivilegeByIdOrName("123")).thenReturn(Optional.empty());
 		MockHttpServletResponse response = mockMvc.perform(get("/api/privileges/123"))
 				.andReturn()
 				.getResponse();
 		verify(privilegeService).findPrivilegeByIdOrName("123");
-		assertThat(response.getStatus()).isEqualTo(200);
+		assertThat(response.getStatus()).isEqualTo(404);
 		assertThat(response.getContentAsByteArray()).isEqualTo(new byte[0]);
 	}
 

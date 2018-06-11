@@ -15,6 +15,7 @@
  */
 package org.codenergic.theskeleton.privilege;
 
+import java.util.Optional;
 import java.util.Set;
 
 import javax.validation.constraints.NotNull;
@@ -29,13 +30,13 @@ public interface PrivilegeService {
 	RoleEntity addPrivilegeToRole(@NotNull String code, @NotNull String privilegeName);
 
 	@PreAuthorize("isAuthenticated()")
-	PrivilegeEntity findPrivilegeById(@NotNull String id);
+	Optional<PrivilegeEntity> findPrivilegeById(@NotNull String id);
 
 	@PreAuthorize("isAuthenticated()")
-	PrivilegeEntity findPrivilegeByIdOrName(@NotNull String idOrName);
+	Optional<PrivilegeEntity> findPrivilegeByIdOrName(@NotNull String idOrName);
 
 	@PreAuthorize("isAuthenticated()")
-	PrivilegeEntity findPrivilegeByName(@NotNull String name);
+	Optional<PrivilegeEntity> findPrivilegeByName(@NotNull String name);
 
 	@PreAuthorize("isAuthenticated()")
 	Page<PrivilegeEntity> findPrivileges(String keyword, Pageable pageable);

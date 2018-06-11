@@ -103,8 +103,8 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	@Transactional
 	public UserEntity removeRoleFromUser(String username, String roleCode) {
-		UserRoleEntity userRole = userRoleRepository.findByUserUsernameAndRoleCode(username, roleCode);
-		userRoleRepository.delete(userRole);
+		userRoleRepository.findByUserUsernameAndRoleCode(username, roleCode)
+			.ifPresent(userRoleRepository::delete);
 		return userRepository.findByUsername(username)
 			.orElseThrow(() -> new UsernameNotFoundException(username));
 	}

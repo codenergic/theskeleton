@@ -15,10 +15,13 @@
  */
 package org.codenergic.theskeleton.privilege.impl;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.codenergic.theskeleton.privilege.PrivilegeEntity;
+import org.codenergic.theskeleton.privilege.PrivilegeNotFoundException;
 import org.codenergic.theskeleton.privilege.PrivilegeRepository;
 import org.codenergic.theskeleton.privilege.PrivilegeService;
 import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
@@ -49,23 +52,26 @@ public class PrivilegeServiceImpl implements PrivilegeService {
 	public RoleEntity addPrivilegeToRole(String code, String privilegeName) {
 		RoleEntity role = roleRepository.findByCode(code)
 			.orElseThrow(() -> new RoleNotFoundException(code));
-		PrivilegeEntity privilege = privilegeRepository.findByName(privilegeName);
+		PrivilegeEntity privilege = privilegeRepository.findByName(privilegeName)
+			.orElseThrow(() -> new PrivilegeNotFoundException(privilegeName));
 		return rolePrivilegeRepository.save(new RolePrivilegeEntity(role, privilege)).getRole();
 	}
 
 	@Override
-	public PrivilegeEntity findPrivilegeById(String id) {
-		return privilegeRepository.findOne(id);
+	public Optional<PrivilegeEntity> findPrivilegeById(String id) {
+		return privilegeRepository.findById(id);
 	}
 
 	@Override
-	public PrivilegeEntity findPrivilegeByIdOrName(String idOrName) {
-		PrivilegeEntity privilege = findPrivilegeById(idOrName);
-		return privilege != null ? privilege : findPrivilegeByName(idOrName);
+	public Optional<PrivilegeEntity> findPrivilegeByIdOrName(String idOrName) {
+		return Stream.of(findPrivilegeById(idOrName), findPrivilegeByName(idOrName))
+			.filter(Optional::isPresent)
+			.map(Optional::get)
+			.findFirst();
 	}
 
 	@Override
-	public PrivilegeEntity findPrivilegeByName(String name) {
+	public Optional<PrivilegeEntity> findPrivilegeByName(String name) {
 		return privilegeRepository.findByName(name);
 	}
 
@@ -89,8 +95,8 @@ public class PrivilegeServiceImpl implements PrivilegeService {
 	@Override
 	@Transactional
 	public RoleEntity removePrivilegeFromRole(String code, String privilegeName) {
-		RolePrivilegeEntity userRole = rolePrivilegeRepository.findByRoleCodeAndPrivilegeName(code, privilegeName);
-		rolePrivilegeRepository.delete(userRole);
+		rolePrivilegeRepository.findByRoleCodeAndPrivilegeName(code, privilegeName)
+			.ifPresent(rolePrivilegeRepository::delete);
 		return roleRepository.findByCode(code)
 			.orElseThrow(() -> new RoleNotFoundException(code));
 	}
