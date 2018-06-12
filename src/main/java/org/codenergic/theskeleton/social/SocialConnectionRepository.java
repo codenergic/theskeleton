@@ -15,12 +15,13 @@
  */
 package org.codenergic.theskeleton.social;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.util.Collection;
-import java.util.List;
 
 @Repository
 public interface SocialConnectionRepository extends AuditingEntityRepository<SocialConnectionEntity> {
@@ -30,7 +31,7 @@ public interface SocialConnectionRepository extends AuditingEntityRepository<Soc
 
 	List<SocialConnectionEntity> findByUserIdAndProvider(String userId, String provider);
 
-	SocialConnectionEntity findByUserIdAndProviderAndProviderUserId(String userId, String provider, String providerUserId);
+	Optional<SocialConnectionEntity> findByUserIdAndProviderAndProviderUserId(String userId, String provider, String providerUserId);
 
 	List<SocialConnectionEntity> findByUserIdAndProviderAndRank(String userId, String provider, int rank);
 

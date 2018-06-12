@@ -16,6 +16,7 @@
 package org.codenergic.theskeleton.social;
 
 import org.codenergic.theskeleton.user.UserRepository;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.social.security.SocialUserDetails;
 import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,8 @@ public class SocialUserService implements SocialUserDetailsService {
 
 	@Override
 	public SocialUserDetails loadUserByUserId(String userId) {
-		return new SocialUserEntity(userRepository.findOne(userId));
+		return userRepository.findById(userId)
+			.map(SocialUserEntity::new)
+			.orElseThrow(() -> new UsernameNotFoundException(userId));
 	}
 }

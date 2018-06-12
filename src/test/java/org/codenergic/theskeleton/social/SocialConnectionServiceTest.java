@@ -26,6 +26,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -136,7 +137,7 @@ public class SocialConnectionServiceTest {
 	@Test
 	public void testGetConnection() {
 		when(socialConnectionRepository.findByUserIdAndProviderAndProviderUserId(USER_ID, PROVIDER_ID, USER_ID))
-			.thenReturn(dummySocialConnection);
+			.thenReturn(Optional.of(dummySocialConnection));
 		Connection<?> conn = socialConnectionService.getConnection(new ConnectionKey(PROVIDER_ID, USER_ID));
 		assertThat(conn.getKey().getProviderId()).isEqualTo(PROVIDER_ID);
 		assertThat(conn.getKey().getProviderUserId()).isEqualTo(USER_ID);
@@ -152,7 +153,7 @@ public class SocialConnectionServiceTest {
 	@Test
 	public void testRemoveConnections() {
 		when(socialConnectionRepository.findByUserIdAndProviderAndProviderUserId(USER_ID, PROVIDER_ID, USER_ID))
-			.thenReturn(dummySocialConnection);
+			.thenReturn(Optional.of(dummySocialConnection));
 		when(socialConnectionRepository.findByUserIdAndProvider(USER_ID, PROVIDER_ID))
 			.thenReturn(Collections.singletonList(dummySocialConnection));
 		socialConnectionService.removeConnection(new ConnectionKey(PROVIDER_ID, USER_ID));
@@ -171,7 +172,7 @@ public class SocialConnectionServiceTest {
 	@Test
 	public void testUpdateConnection() {
 		when(socialConnectionRepository.findByUserIdAndProviderAndProviderUserId(USER_ID, PROVIDER_ID, USER_ID))
-			.thenReturn(dummySocialConnection);
+			.thenReturn(Optional.of(dummySocialConnection));
 		socialConnectionService.updateConnection(new DummyConnection(dummyConnectionData));
 		verify(socialConnectionRepository).findByUserIdAndProviderAndProviderUserId(USER_ID, PROVIDER_ID, USER_ID);
 		verify(socialConnectionRepository).save(any(SocialConnectionEntity.class));

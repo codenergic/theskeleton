@@ -15,17 +15,23 @@
  */
 package org.codenergic.theskeleton.social;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
-import org.springframework.social.connect.*;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.ConnectionFactory;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.ConnectionKey;
+import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.NoSuchConnectionException;
+import org.springframework.social.connect.NotConnectedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-
-import javax.persistence.NoResultException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class SocialConnectionService implements ConnectionRepository {
 	private ServiceProviderConnectionMapper connectionMapper = new ServiceProviderConnectionMapper();
@@ -115,13 +121,10 @@ public class SocialConnectionService implements ConnectionRepository {
 
 	@Override
 	public Connection<?> getConnection(ConnectionKey connectionKey) {
-		SocialConnectionEntity connection = connectionRepository
-			.findByUserIdAndProviderAndProviderUserId(userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
-		try {
-			return connectionMapper.mapRow(connection);
-		} catch (NoResultException e) {
-			throw new NoSuchConnectionException(connectionKey);
-		}
+		return connectionRepository
+			.findByUserIdAndProviderAndProviderUserId(userId, connectionKey.getProviderId(), connectionKey.getProviderUserId())
+			.map(connectionMapper::mapRow)
+			.orElseThrow(() -> new NoSuchConnectionException(connectionKey));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -148,8 +151,9 @@ public class SocialConnectionService implements ConnectionRepository {
 
 	@Override
 	public void removeConnection(ConnectionKey connectionKey) {
-		SocialConnectionEntity connection = connectionRepository.findByUserIdAndProviderAndProviderUserId(
-				userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
+		SocialConnectionEntity connection = connectionRepository
+			.findByUserIdAndProviderAndProviderUserId(userId, connectionKey.getProviderId(), connectionKey.getProviderUserId())
+			.orElseThrow(() -> new NoSuchConnectionException(connectionKey));
 		connectionRepository.delete(connection);
 	}
 
@@ -166,6 +170,7 @@ public class SocialConnectionService implements ConnectionRepository {
 		ConnectionData data = connection.createData();
 		SocialConnectionEntity userConnection = connectionRepository
 			.findByUserIdAndProviderAndProviderUserId(userId, data.getProviderId(), data.getProviderUserId())
+			.orElseThrow(() -> new NoSuchConnectionException(connection.getKey()))
 			.setDisplayName(data.getDisplayName())
 			.setProfileUrl(data.getProfileUrl())
 			.setImageUrl(data.getImageUrl())
