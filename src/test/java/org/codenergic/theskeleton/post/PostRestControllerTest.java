@@ -45,6 +45,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -137,7 +138,7 @@ public class PostRestControllerTest {
 
 	@Test
 	public void testFindPostById() throws Exception {
-		when(postService.findPostById("123")).thenReturn(PostServiceTest.DUMMY_POST2);
+		when(postService.findPostById("123")).thenReturn(Optional.of(PostServiceTest.DUMMY_POST2));
 		MockHttpServletResponse response = mockMvc.perform(get("/api/posts/123")
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())

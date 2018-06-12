@@ -27,6 +27,7 @@ import org.springframework.data.domain.PageImpl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.codenergic.theskeleton.post.PostReactionType.DISLIKE;
@@ -54,7 +55,7 @@ public class PostReactionServiceTest {
 	public void testDeletePostReaction() throws Exception {
 		final PostReactionEntity postReaction = new PostReactionEntity();
 		postReaction.setId("123456");
-		when(postReactionRepository.findByUserIdAndPostId(USER_ID, POST_ID)).thenReturn(postReaction);
+		when(postReactionRepository.findByUserIdAndPostId(USER_ID, POST_ID)).thenReturn(Optional.of(postReaction));
 		postReactionService.deletePostReaction(USER_ID, POST_ID);
 		verify(postReactionRepository).findByUserIdAndPostId(USER_ID, POST_ID);
 		verify(postReactionRepository).delete(postReaction);

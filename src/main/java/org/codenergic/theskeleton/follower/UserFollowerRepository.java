@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.follower;
 
+import java.util.Optional;
+
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,5 +32,5 @@ public interface UserFollowerRepository extends AuditingEntityRepository<UserFol
 
 	Page<UserFollowerEntity> findByUserId(String userId, Pageable pageable);
 
-	UserFollowerEntity findByUserIdAndFollowerId(String userId, String followerId);
+	Optional<UserFollowerEntity> findByUserIdAndFollowerId(String userId, String followerId);
 }

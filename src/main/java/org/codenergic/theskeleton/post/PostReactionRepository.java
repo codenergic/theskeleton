@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.post;
 
+import java.util.Optional;
+
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,5 +28,5 @@ public interface PostReactionRepository extends AuditingEntityRepository<PostRea
 
 	Page<PostReactionEntity> findByPostIdAndReactionType(String postId, PostReactionType reactionType, Pageable pageable);
 
-	PostReactionEntity findByUserIdAndPostId(String userId, String postId);
+	Optional<PostReactionEntity> findByUserIdAndPostId(String userId, String postId);
 }

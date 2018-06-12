@@ -2,6 +2,7 @@ package org.codenergic.theskeleton.follower;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.codenergic.theskeleton.follower.impl.UserFollowerServiceImpl;
 import org.codenergic.theskeleton.user.UserEntity;
@@ -84,7 +85,7 @@ public class UserFollowerServiceTest {
 	public void testUnfollowUser() {
 		UserFollowerEntity userFollower = userFollowerEntities.get(1);
 		when(userFollowerRepository.findByUserIdAndFollowerId(userFollower.getUser().getId(), userFollower.getFollower().getId()))
-			.thenReturn(userFollower);
+			.thenReturn(Optional.of(userFollower));
 		assertThatThrownBy(() -> userFollowerService.unfollowUser("2", "1"))
 			.isInstanceOf(IllegalArgumentException.class);
 		userFollowerService.unfollowUser(userFollower.getUser().getId(), userFollower.getFollower().getId());
