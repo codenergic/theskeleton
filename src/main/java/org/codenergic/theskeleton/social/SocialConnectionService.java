@@ -16,6 +16,8 @@
 package org.codenergic.theskeleton.social;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.user.UserEntity;
@@ -75,20 +77,17 @@ public class SocialConnectionService implements ConnectionRepository {
 	@Override
 	public MultiValueMap<String, Connection<?>> findAllConnections() {
 		List<SocialConnectionEntity> socialConnections = connectionRepository.findByUserIdOrderByRankAsc(userId);
-		MultiValueMap<String, Connection<?>> connections = new LinkedMultiValueMap<>();
-		socialConnections.forEach(socialConnection -> {
-			Connection<?> connection = connectionMapper.mapRow(socialConnection);
-			String providerId = connection.getKey().getProviderId();
-			connections.add(providerId, connection);
-		});
-		return connections;
+		Map<String, List<Connection<?>>> connections = socialConnections.stream()
+			.map(connectionMapper::mapRow)
+			.collect(Collectors.groupingBy(connection -> connection.getKey().getProviderId()));
+		return new LinkedMultiValueMap<>(connections);
 	}
 
 	@Override
 	public List<Connection<?>> findConnections(String providerId) {
 		return connectionRepository.findByUserIdAndProviderOrderByRankAsc(userId, providerId)
 			.stream()
-			.map(connection -> connectionMapper.mapRow(connection))
+			.map(connectionMapper::mapRow)
 			.collect(Collectors.toList());
 	}
 
@@ -108,15 +107,15 @@ public class SocialConnectionService implements ConnectionRepository {
 	@Override
 	public <A> Connection<A> findPrimaryConnection(Class<A> apiType) {
 		String providerId = getProviderId(apiType);
-		return (Connection<A>) findPrimaryConnection(providerId);
+		return (Connection<A>) findPrimaryConnection(providerId)
+			.orElseThrow(() -> new NotConnectedException(providerId));
 	}
 
-	private Connection<?> findPrimaryConnection(String providerId) {
+	private Optional<? extends Connection<?>> findPrimaryConnection(String providerId) {
 		List<SocialConnectionEntity> socialConnections = connectionRepository.findByUserIdAndProviderAndRank(userId, providerId, 1);
-		List<Connection<?>> connections = socialConnections.stream()
+		return socialConnections.stream()
 			.map(connection -> connectionMapper.mapRow(connection))
-			.collect(Collectors.toList());
-		return connections.isEmpty() ? null : connections.get(0);
+			.findFirst();
 	}
 
 	@Override
@@ -139,10 +138,8 @@ public class SocialConnectionService implements ConnectionRepository {
 	@Override
 	public <A> Connection<A> getPrimaryConnection(Class<A> apiType) {
 		String providerId = getProviderId(apiType);
-		Connection<A> connection = (Connection<A>) findPrimaryConnection(providerId);
-		if (connection == null)
-			throw new NotConnectedException(providerId);
-		return connection;
+		return (Connection<A>) findPrimaryConnection(providerId)
+			.orElseThrow(() -> new NotConnectedException(providerId));
 	}
 
 	private <A> String getProviderId(Class<A> apiType) {

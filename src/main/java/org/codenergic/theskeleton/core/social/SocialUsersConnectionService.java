@@ -29,7 +29,7 @@ public class SocialUsersConnectionService implements UsersConnectionRepository {
 	private ConnectionFactoryLocator connectionFactoryLocator;
 	private SocialConnectionRepository connectionRepository;
 
-	public SocialUsersConnectionService(ConnectionFactoryLocator locator, SocialConnectionRepository repository) {
+	SocialUsersConnectionService(ConnectionFactoryLocator locator, SocialConnectionRepository repository) {
 		this.connectionFactoryLocator = locator;
 		this.connectionRepository = repository;
 	}

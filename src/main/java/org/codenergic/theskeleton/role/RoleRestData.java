@@ -15,13 +15,13 @@
  */
 package org.codenergic.theskeleton.role;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.google.auto.value.AutoValue;
+import javax.annotation.Nullable;
+
 import org.codenergic.theskeleton.core.data.RestData;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.annotation.Nullable;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.auto.value.AutoValue;
 
 @SuppressWarnings("serial")
 @AutoValue

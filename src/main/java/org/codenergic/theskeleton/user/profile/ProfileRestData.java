@@ -1,12 +1,12 @@
 package org.codenergic.theskeleton.user.profile;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.google.auto.value.AutoValue;
+import javax.annotation.Nullable;
+
 import org.codenergic.theskeleton.core.data.RestData;
 import org.codenergic.theskeleton.user.UserEntity;
 
-import javax.annotation.Nullable;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.auto.value.AutoValue;
 
 @SuppressWarnings("serial")
 @AutoValue

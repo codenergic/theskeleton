@@ -15,10 +15,14 @@
  */
 package org.codenergic.theskeleton.core.data;
 
-import io.minio.MinioClient;
-import io.minio.errors.InvalidEndpointException;
-import io.minio.errors.InvalidPortException;
-import io.minio.policy.PolicyType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +30,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import io.minio.MinioClient;
+import io.minio.errors.InvalidEndpointException;
+import io.minio.errors.InvalidPortException;
+import io.minio.policy.PolicyType;
 
 @Configuration
 class S3ClientConfig {
@@ -39,12 +41,10 @@ class S3ClientConfig {
 
 	@Bean
 	public ScheduledFuture<List<String>> createBuckets(MinioClient minioClient, ScheduledExecutorService executorService, S3ClientProperties clientProps) {
-		return executorService.schedule(() -> {
-			try {
-				List<String> bucketNames = new ArrayList<>();
-				for (S3BucketProperties bucket : clientProps.buckets) {
-					bucketNames.add(bucket.name);
-					logger.info("Checking bucket [{}]", bucket.name);
+		return executorService.schedule(() -> clientProps.buckets.stream()
+			.peek(bucket -> logger.info("Checking bucket [{}]", bucket.name))
+			.peek(bucket -> {
+				try {
 					if (!minioClient.bucketExists(bucket.name)) {
 						logger.info("Bucket doesn't exists, creating one");
 						minioClient.makeBucket(bucket.name);
@@ -52,19 +52,24 @@ class S3ClientConfig {
 					} else {
 						logger.info("Bucket already exists");
 					}
-					for (S3BucketPolicyProperties policy : bucket.getPolicies()) {
-						if (policy.policy == null || StringUtils.isBlank(policy.prefix))
-							continue;
-						logger.info("Setting policy [{}] to bucket [{}] with prefix [{}]", policy.policy, bucket.name, policy.prefix);
-						minioClient.setBucketPolicy(bucket.name, policy.prefix, policy.policy);
-					}
+				} catch (Exception e) {
+					logger.error(e.getMessage(), e);
 				}
-				return Collections.unmodifiableList(bucketNames);
-			} catch (Exception e) {
-				logger.error(e.getMessage(), e);
-			}
-			return Collections.emptyList();
-		}, 5, TimeUnit.SECONDS);
+			})
+			.peek(bucket -> bucket.getPolicies().stream()
+				.filter(Objects::nonNull)
+				.filter(policy -> Objects.nonNull(policy.policy))
+				.filter(policy -> StringUtils.isNotBlank(policy.prefix))
+				.peek(policy -> logger.info("Setting policy [{}] to bucket [{}] with prefix [{}]", policy.policy, bucket.name, policy.prefix))
+				.forEach(policy -> {
+					try {
+						minioClient.setBucketPolicy(bucket.name, policy.prefix, policy.policy);
+					} catch (Exception e) {
+						logger.error(e.getMessage(), e);
+					}
+				}))
+			.map(bucket -> bucket.name)
+			.collect(Collectors.toList()), 5, TimeUnit.SECONDS);
 	}
 
 	@Bean

@@ -15,10 +15,10 @@
  */
 package org.codenergic.theskeleton.gallery;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.google.auto.value.AutoValue;
 import org.codenergic.theskeleton.core.data.RestData;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.auto.value.AutoValue;
 
 @AutoValue
 @JsonDeserialize(builder = AutoValue_GalleryRestData.Builder.class)

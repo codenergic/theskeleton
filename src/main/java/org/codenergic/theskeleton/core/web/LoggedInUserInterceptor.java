@@ -23,8 +23,8 @@ import org.springframework.web.context.request.WebRequestInterceptor;
 import org.springframework.web.servlet.HandlerMapping;
 
 class LoggedInUserInterceptor implements WebRequestInterceptor {
-	protected static final String USERNAME_ATTRIBUTE = "username";
-	protected static final String LOGGED_IN_USER_PARAMETER = "me";
+	private static final String USERNAME_ATTRIBUTE = "username";
+	private static final String LOGGED_IN_USER_PARAMETER = "me";
 
 	@Override
 	@SuppressWarnings("unchecked")
