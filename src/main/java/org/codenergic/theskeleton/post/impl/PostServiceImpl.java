@@ -15,15 +15,21 @@
  */
 package org.codenergic.theskeleton.post.impl;
 
-import com.github.slugify.Slugify;
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
-import org.codenergic.theskeleton.post.*;
+import org.codenergic.theskeleton.post.PostEntity;
+import org.codenergic.theskeleton.post.PostFollowingRepository;
+import org.codenergic.theskeleton.post.PostRepository;
+import org.codenergic.theskeleton.post.PostService;
+import org.codenergic.theskeleton.post.PostStatus;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
+
+import com.github.slugify.Slugify;
 
 @Service
 @Transactional(readOnly = true)
@@ -48,8 +54,8 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public PostEntity findPostById(String id) {
-		return postRepository.findOne(id);
+	public Optional<PostEntity> findPostById(String id) {
+		return postRepository.findById(id);
 	}
 
 	@Override
@@ -112,9 +118,8 @@ public class PostServiceImpl implements PostService {
 	}
 
 	private PostEntity findPostByIdOrThrow(String id) {
-		PostEntity post = findPostById(id);
-		Assert.notNull(post, "Post not found");
-		return post;
+		return findPostById(id)
+			.orElseThrow(() -> new IllegalArgumentException("Post not found"));
 	}
 
 	private String slugifyTitle(String title) {

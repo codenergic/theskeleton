@@ -20,6 +20,7 @@ import java.util.Map;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +51,7 @@ public class UserRestController {
 
 	@DeleteMapping("/{username}")
 	public void deleteUser(@PathVariable("username") String username) {
-		tokenStoreService.deleteTokenByUser(userService.findUserByUsername(username));
+		userService.findUserByUsername(username).ifPresent(tokenStoreService::deleteTokenByUser);
 		userAdminService.deleteUser(username);
 	}
 
@@ -65,13 +66,19 @@ public class UserRestController {
 	}
 
 	@GetMapping(path = "/{email}", params = { "email" })
-	public UserRestData findUserByEmail(@PathVariable("email") String email) {
-		return convertEntityToRestData(userService.findUserByEmail(email));
+	public ResponseEntity<UserRestData> findUserByEmail(@PathVariable("email") String email) {
+		return userService.findUserByEmail(email)
+			.map(this::convertEntityToRestData)
+			.map(ResponseEntity::ok)
+			.orElse(ResponseEntity.notFound().build());
 	}
 
 	@GetMapping(path = "/{username}")
-	public UserRestData findUserByUsername(@PathVariable("username") String username) {
-		return convertEntityToRestData(userService.findUserByUsername(username));
+	public ResponseEntity<UserRestData> findUserByUsername(@PathVariable("username") String username) {
+		return userService.findUserByUsername(username)
+			.map(this::convertEntityToRestData)
+			.map(ResponseEntity::ok)
+			.orElse(ResponseEntity.notFound().build());
 	}
 
 	@GetMapping

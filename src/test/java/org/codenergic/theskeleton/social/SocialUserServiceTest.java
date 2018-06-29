@@ -16,6 +16,8 @@
 
 package org.codenergic.theskeleton.social;
 
+import java.util.Optional;
+
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.junit.Before;
@@ -39,8 +41,8 @@ public class SocialUserServiceTest {
 
 	@Test
 	public void testLoadUserByUserId() {
-		when(userRepository.findOne("123")).thenReturn(new UserEntity());
+		when(userRepository.findById("123")).thenReturn(Optional.of(new UserEntity()));
 		socialUserService.loadUserByUserId("123");
-		verify(userRepository).findOne("123");
+		verify(userRepository).findById("123");
 	}
 }

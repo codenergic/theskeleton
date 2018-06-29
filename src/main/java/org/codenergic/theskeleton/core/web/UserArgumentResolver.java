@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.core.web;
 
+import java.util.Map;
+
 import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -27,9 +29,6 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.mvc.method.annotation.PathVariableMapMethodArgumentResolver;
-
-import java.util.Map;
 
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
 	private static final String CURRENT_USER_USERNAME = "me";

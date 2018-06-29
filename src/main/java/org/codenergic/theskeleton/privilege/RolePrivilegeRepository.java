@@ -15,6 +15,7 @@
  */
 package org.codenergic.theskeleton.privilege;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
@@ -24,5 +25,5 @@ import org.springframework.stereotype.Repository;
 public interface RolePrivilegeRepository extends AuditingEntityRepository<RolePrivilegeEntity> {
 	Set<RolePrivilegeEntity> findByRoleCode(String code);
 
-	RolePrivilegeEntity findByRoleCodeAndPrivilegeName(String code, String privilegeName);
+	Optional<RolePrivilegeEntity> findByRoleCodeAndPrivilegeName(String code, String privilegeName);
 }

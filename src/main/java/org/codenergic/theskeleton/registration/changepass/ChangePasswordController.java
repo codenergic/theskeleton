@@ -1,10 +1,11 @@
 package org.codenergic.theskeleton.registration.changepass;
 
-import org.codenergic.theskeleton.registration.*;
-import org.codenergic.theskeleton.tokenstore.TokenStoreEntity;
+import javax.validation.Valid;
+
+import org.codenergic.theskeleton.registration.RegistrationException;
+import org.codenergic.theskeleton.registration.RegistrationService;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.codenergic.theskeleton.tokenstore.TokenStoreType;
-import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,8 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.validation.Valid;
 
 @Controller
 @RequestMapping("changepass")
@@ -43,25 +42,27 @@ public class ChangePasswordController {
 		if (bindingResult.hasErrors())
 			return changepassView(changePasswordForm);
 
-		UserEntity user = registrationService.findUserByEmail(changePasswordForm.getEmail());
-		if (user == null) {
-			bindingResult.rejectValue("email", "error.changePasswordForm", "Can't find that email, sorry.");
-			return changepassView(changePasswordForm);
-		} else {
-			tokenStoreService.sendTokenNotification(TokenStoreType.CHANGE_PASSWORD, user);
-		}
-		model.addAttribute(MESSAGE, CHANGEPASS);
-		return CHANGEPASS_CONFIRMATION;
+		return registrationService.findUserByEmail(changePasswordForm.getEmail())
+			.map(user -> {
+				tokenStoreService.sendTokenNotification(TokenStoreType.CHANGE_PASSWORD, user);
+				model.addAttribute(MESSAGE, CHANGEPASS);
+				return CHANGEPASS_CONFIRMATION;
+			})
+			.orElseGet(() -> {
+				bindingResult.rejectValue("email", "error.changePasswordForm", "Can't find that email, sorry.");
+				model.addAttribute(MESSAGE, CHANGEPASS);
+				return changepassView(changePasswordForm);
+			});
 	}
 
 	@GetMapping(path = "/update")
 	public String updateView(@RequestParam(name = "rt") String resetToken, UpdatePasswordForm updatePasswordForm) {
-		TokenStoreEntity token = tokenStoreService.findByTokenAndType(resetToken, TokenStoreType.CHANGE_PASSWORD);
-		if (token == null) {
-			return "redirect:/changepass";
-		}
-		updatePasswordForm.setToken(token.getToken());
-		return CHANGEPASS_UPDATE;
+		return tokenStoreService.findByTokenAndType(resetToken, TokenStoreType.CHANGE_PASSWORD)
+			.map(t -> {
+				updatePasswordForm.setToken(t.getToken());
+				return CHANGEPASS_UPDATE;
+			})
+			.orElse("redirect:/changepass");
 	}
 
 	@PostMapping(path = "/update")

@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.role;
 
-import java.util.Optional;
-import java.util.Set;
+package org.codenergic.theskeleton.privilege;
 
-import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface UserRoleRepository extends AuditingEntityRepository<UserRoleEntity> {
-	Set<UserRoleEntity> findByUserUsername(String username);
-
-	Optional<UserRoleEntity> findByUserUsernameAndRoleCode(String username, String roleCode);
+public class PrivilegeNotFoundException extends RuntimeException {
+	public PrivilegeNotFoundException(String privilege) {
+		super("Privilege not found: " + privilege);
+	}
 }

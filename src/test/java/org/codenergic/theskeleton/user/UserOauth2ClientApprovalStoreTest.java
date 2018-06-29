@@ -1,18 +1,11 @@
 package org.codenergic.theskeleton.user;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.codenergic.theskeleton.client.OAuth2ClientEntity;
 import org.codenergic.theskeleton.user.impl.UserOAuth2ClientApprovalStore;
@@ -23,6 +16,16 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.oauth2.provider.approval.Approval;
 import org.springframework.security.oauth2.provider.approval.Approval.ApprovalStatus;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class UserOauth2ClientApprovalStoreTest {
 	private ApprovalStore approvalStore;
@@ -42,17 +45,19 @@ public class UserOauth2ClientApprovalStoreTest {
 		assertThatThrownBy(() -> {
 			approvalStore.addApprovals(null);
 		}).isInstanceOf(NullPointerException.class);
+		when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(new UserEntity()));
 		when(approvalRepository.findByUserUsernameAndClientIdAndScope(anyString(), anyString(), eq("read")))
 				.thenReturn(new UserOAuth2ClientApprovalEntity()
 						.setUser(new UserEntity().setId("1"))
 						.setClient(new OAuth2ClientEntity().setId("2"))
 						.setScope("read")
 						.setApprovalStatus(ApprovalStatus.APPROVED));
-		approvalStore.addApprovals(Arrays.asList(new Approval("1", "2", "read", new Date(), ApprovalStatus.APPROVED)));
+		approvalStore.addApprovals(Collections.singletonList(new Approval("1", "2", "read", new Date(), ApprovalStatus.APPROVED)));
 		verify(approvalRepository).findByUserUsernameAndClientIdAndScope(anyString(), anyString(), eq("read"));
 		when(approvalRepository.findByUserUsernameAndClientIdAndScope(anyString(), anyString(), eq("write")))
 				.thenReturn(null);
-		approvalStore.addApprovals(Arrays.asList(new Approval("1", "2", "write", new Date(), ApprovalStatus.APPROVED)));
+		approvalStore.addApprovals(Collections.singletonList(new Approval("1", "2", "write", new Date(), ApprovalStatus.APPROVED)));
+		verify(userRepository, atLeastOnce()).findByUsername(anyString());
 		verify(approvalRepository).findByUserUsernameAndClientIdAndScope(anyString(), anyString(), eq("write"));
 		verify(approvalRepository, times(2)).save(any(UserOAuth2ClientApprovalEntity.class));
 	}

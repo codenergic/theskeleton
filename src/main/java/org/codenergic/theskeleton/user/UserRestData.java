@@ -15,17 +15,18 @@
  */
 package org.codenergic.theskeleton.user;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.google.auto.value.AutoValue;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.annotation.Nullable;
+import javax.validation.constraints.Pattern;
+
 import org.codenergic.theskeleton.core.data.RestData;
 import org.codenergic.theskeleton.core.web.ValidationConstants;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.annotation.Nullable;
-import javax.validation.constraints.Pattern;
-import java.util.Optional;
-import java.util.Set;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.auto.value.AutoValue;
 
 @SuppressWarnings("serial")
 @AutoValue

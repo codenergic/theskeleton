@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.registration;
 
+import javax.validation.Valid;
+
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.codenergic.theskeleton.tokenstore.TokenStoreType;
 import org.codenergic.theskeleton.user.UserEntity;
@@ -29,8 +31,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
-
-import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/registration")

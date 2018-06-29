@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.privilege;
 
+import java.util.Optional;
+
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +25,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PrivilegeRepository extends AuditingEntityRepository<PrivilegeEntity> {
-	PrivilegeEntity findByName(String name);
+	Optional<PrivilegeEntity> findByName(String name);
 
 	@Query("FROM PrivilegeEntity p WHERE p.name LIKE ?1% OR p.description LIKE ?1%")
 	Page<PrivilegeEntity> findByNameOrDescriptionStartsWith(String keyword, Pageable pageable);

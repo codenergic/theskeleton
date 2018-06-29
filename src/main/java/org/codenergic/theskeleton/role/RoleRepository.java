@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.role;
 
+import java.util.Optional;
+
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +25,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RoleRepository extends AuditingEntityRepository<RoleEntity> {
-	RoleEntity findByCode(String code);
+	Optional<RoleEntity> findByCode(String code);
 
 	@Query("FROM RoleEntity r WHERE r.code LIKE ?1% OR r.description LIKE ?1%")
 	Page<RoleEntity> findByCodeOrDescriptionStartsWith(String keyword, Pageable pageable);

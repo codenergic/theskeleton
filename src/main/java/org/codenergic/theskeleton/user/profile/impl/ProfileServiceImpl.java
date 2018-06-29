@@ -7,6 +7,7 @@ import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalRepository;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.codenergic.theskeleton.user.profile.ProfileService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,7 +41,7 @@ public class ProfileServiceImpl implements ProfileService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public UserEntity findProfileByUsername(String username) {
+	public Optional<UserEntity> findProfileByUsername(String username) {
 		return userRepository.findByUsername(username);
 	}
 
@@ -51,20 +53,24 @@ public class ProfileServiceImpl implements ProfileService {
 	@Override
 	public UserEntity updateProfile(String username, final UserEntity newUser) {
 		return findProfileByUsername(username)
-			.setUsername(newUser.getUsername())
-			.setEmail(newUser.getEmail())
-			.setPhoneNumber(newUser.getPhoneNumber());
+			.map(user -> user
+				.setUsername(newUser.getUsername())
+				.setEmail(newUser.getEmail())
+				.setPhoneNumber(newUser.getPhoneNumber()))
+			.orElseThrow(() -> new UsernameNotFoundException(username));
 	}
 
 	@Override
 	public UserEntity updateProfilePassword(String username, String rawPassword) {
 		return findProfileByUsername(username)
-			.setPassword(passwordEncoder.encode(rawPassword));
+			.map(user -> user.setPassword(passwordEncoder.encode(rawPassword)))
+			.orElseThrow(() -> new UsernameNotFoundException(username));
 	}
 
 	@Override
 	public UserEntity updateProfilePicture(String username, InputStream image, String contentType) throws Exception {
-		UserEntity user = findProfileByUsername(username);
+		UserEntity user = findProfileByUsername(username)
+			.orElseThrow(() -> new UsernameNotFoundException(username));
 		String imageObjectName = StringUtils.join(user.getId(), "/", Long.toHexString(Instant.now().toEpochMilli()),
 			"-", UUID.randomUUID().toString());
 		minioClient.putObject(PICTURE_BUCKET_NAME, imageObjectName, image, contentType);

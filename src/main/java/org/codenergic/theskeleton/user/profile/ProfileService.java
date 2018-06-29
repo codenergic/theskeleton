@@ -6,13 +6,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 
 public interface ProfileService {
 	@PreAuthorize("#username == principal.username")
 	List<UserOAuth2ClientApprovalEntity> findOAuth2ClientApprovalByUsername(String username);
 
 	@PreAuthorize("#username == principal.username")
-	UserEntity findProfileByUsername(String username);
+	Optional<UserEntity> findProfileByUsername(String username);
 
 	@PreAuthorize("#username == principal.username")
 	void removeOAuth2ClientApprovalByUsername(String username, String clientId);

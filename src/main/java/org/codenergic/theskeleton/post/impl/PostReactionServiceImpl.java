@@ -15,7 +15,11 @@
  */
 package org.codenergic.theskeleton.post.impl;
 
-import org.codenergic.theskeleton.post.*;
+import org.codenergic.theskeleton.post.PostEntity;
+import org.codenergic.theskeleton.post.PostReactionEntity;
+import org.codenergic.theskeleton.post.PostReactionRepository;
+import org.codenergic.theskeleton.post.PostReactionService;
+import org.codenergic.theskeleton.post.PostReactionType;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,9 +38,8 @@ public class PostReactionServiceImpl implements PostReactionService {
 	@Override
 	@Transactional
 	public void deletePostReaction(String userId, String postId) {
-		PostReactionEntity postReaction = postReactionRepository.findByUserIdAndPostId(userId, postId);
-		if (postReaction == null)
-			throw new IllegalArgumentException("Cannot find reaction");
+		PostReactionEntity postReaction = postReactionRepository.findByUserIdAndPostId(userId, postId)
+			.orElseThrow(() -> new IllegalArgumentException("Cannot find reaction"));
 		postReactionRepository.delete(postReaction);
 	}
 

@@ -15,13 +15,15 @@
  */
 package org.codenergic.theskeleton.post;
 
+import java.util.Optional;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 public interface PostService {
 	@PreAuthorize("isAuthenticated()")
@@ -31,7 +33,7 @@ public interface PostService {
 	Page<PostEntity> findPostByFollowerId(String followerId, Pageable pageable);
 
 	@PreAuthorize("permitAll()")
-	PostEntity findPostById(@NotNull String id);
+	Optional<PostEntity> findPostById(@NotNull String id);
 
 	@PreAuthorize("isAuthenticated() and principal.id == #userId")
 	Page<PostEntity> findPostByPosterAndStatus(String userId, PostStatus postStatus, Pageable pageable);

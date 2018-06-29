@@ -15,11 +15,13 @@
  */
 package org.codenergic.theskeleton.role.impl;
 
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.codenergic.theskeleton.role.RoleEntity;
+import org.codenergic.theskeleton.role.RoleNotFoundException;
 import org.codenergic.theskeleton.role.RoleRepository;
 import org.codenergic.theskeleton.role.RoleService;
 import org.codenergic.theskeleton.role.UserRoleEntity;
@@ -28,6 +30,7 @@ import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,37 +50,37 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	@Transactional
 	public UserEntity addRoleToUser(String username, String roleCode) {
-		UserEntity user = userRepository.findByUsername(username);
-		RoleEntity role = roleRepository.findByCode(roleCode);
+		UserEntity user = userRepository.findByUsername(username)
+			.orElseThrow(() -> new UsernameNotFoundException(username));
+		RoleEntity role = roleRepository.findByCode(roleCode)
+			.orElseThrow(() -> new RoleNotFoundException(roleCode));
 		return userRoleRepository.save(new UserRoleEntity(user, role)).getUser();
-	}
-
-	private void assertRoleNotNull(RoleEntity role) {
-		Objects.requireNonNull(role, "Role not found");
 	}
 
 	@Override
 	@Transactional
 	public void deleteRole(String idOrCode) {
-		RoleEntity e = findRoleByIdOrCode(idOrCode);
-		assertRoleNotNull(e);
+		RoleEntity e = findRoleByIdOrCode(idOrCode)
+			.orElseThrow(IllegalArgumentException::new);
 		roleRepository.delete(e);
 	}
 
 	@Override
-	public RoleEntity findRoleByCode(String code) {
+	public Optional<RoleEntity> findRoleByCode(String code) {
 		return roleRepository.findByCode(code);
 	}
 
 	@Override
-	public RoleEntity findRoleById(String id) {
-		return roleRepository.findOne(id);
+	public Optional<RoleEntity> findRoleById(String id) {
+		return roleRepository.findById(id);
 	}
 
 	@Override
-	public RoleEntity findRoleByIdOrCode(String idOrCode) {
-		RoleEntity role = findRoleById(idOrCode);
-		return role != null ? role : findRoleByCode(idOrCode);
+	public Optional<RoleEntity> findRoleByIdOrCode(String idOrCode) {
+		return Stream.of(findRoleById(idOrCode), findRoleByCode(idOrCode))
+			.filter(Optional::isPresent)
+			.map(Optional::get)
+			.findFirst();
 	}
 
 	@Override
@@ -95,9 +98,10 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	@Transactional
 	public UserEntity removeRoleFromUser(String username, String roleCode) {
-		UserRoleEntity userRole = userRoleRepository.findByUserUsernameAndRoleCode(username, roleCode);
-		userRoleRepository.delete(userRole);
-		return userRepository.findByUsername(username);
+		userRoleRepository.findByUserUsernameAndRoleCode(username, roleCode)
+			.ifPresent(userRoleRepository::delete);
+		return userRepository.findByUsername(username)
+			.orElseThrow(() -> new UsernameNotFoundException(username));
 	}
 
 	@Override
@@ -110,8 +114,8 @@ public class RoleServiceImpl implements RoleService {
 	@Override
 	@Transactional
 	public RoleEntity updateRole(String id, RoleEntity role) {
-		RoleEntity e = findRoleByIdOrCode(id);
-		assertRoleNotNull(e);
+		RoleEntity e = findRoleByIdOrCode(id)
+			.orElseThrow(() -> new RoleNotFoundException(id));
 		e.setCode(role.getCode());
 		e.setDescription(role.getDescription());
 		return e;

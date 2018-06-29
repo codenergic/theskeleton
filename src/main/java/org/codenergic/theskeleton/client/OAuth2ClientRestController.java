@@ -17,6 +17,7 @@ package org.codenergic.theskeleton.client;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +39,7 @@ public class OAuth2ClientRestController {
 	}
 
 	private OAuth2ClientRestData convertEntityToRestData(OAuth2ClientEntity client) {
-		return client == null ? null : OAuth2ClientRestData.builder(client).build();
+		return OAuth2ClientRestData.builder(client).build();
 	}
 
 	@DeleteMapping("/{id}")
@@ -47,9 +48,11 @@ public class OAuth2ClientRestController {
 	}
 
 	@GetMapping("/{id}")
-	public OAuth2ClientRestData findClientById(@PathVariable("id") final String id) {
-		OAuth2ClientEntity client = oAuth2ClientService.findClientById(id);
-		return convertEntityToRestData(client);
+	public ResponseEntity<OAuth2ClientRestData> findClientById(@PathVariable("id") final String id) {
+		return oAuth2ClientService.findClientById(id)
+			.map(this::convertEntityToRestData)
+			.map(ResponseEntity::ok)
+			.orElse(ResponseEntity.notFound().build());
 	}
 
 	@GetMapping

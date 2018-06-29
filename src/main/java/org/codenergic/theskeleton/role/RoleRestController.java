@@ -17,6 +17,7 @@ package org.codenergic.theskeleton.role;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,9 +44,11 @@ public class RoleRestController {
 	}
 
 	@GetMapping("/{idOrCode}")
-	public RoleRestData findRoleByIdOrCode(@PathVariable("idOrCode") final String idOrCode) {
-		RoleEntity role = roleService.findRoleByIdOrCode(idOrCode);
-		return convertEntityToRestData(role);
+	public ResponseEntity<RoleRestData> findRoleByIdOrCode(@PathVariable("idOrCode") final String idOrCode) {
+		return roleService.findRoleByIdOrCode(idOrCode)
+			.map(role -> RoleRestData.builder(role).build())
+			.map(ResponseEntity::ok)
+			.orElse(ResponseEntity.notFound().build());
 	}
 
 	@GetMapping
@@ -65,9 +68,5 @@ public class RoleRestController {
 	public RoleRestData updateRole(@PathVariable("code") String code, @RequestBody @Validated(RoleRestData.Existing.class) final RoleRestData role) {
 		return RoleRestData.builder(roleService.updateRole(code, role.toRoleEntity()))
 				.build();
-	}
-
-	private RoleRestData convertEntityToRestData(RoleEntity role) {
-		return role == null ? null : RoleRestData.builder(role).build();
 	}
 }

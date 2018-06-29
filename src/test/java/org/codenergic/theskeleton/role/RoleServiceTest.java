@@ -17,6 +17,7 @@ package org.codenergic.theskeleton.role;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -66,8 +67,8 @@ public class RoleServiceTest {
 			.setUsername("user");
 		UserRoleEntity result = new UserRoleEntity(user, role);
 		result.setId(UUID.randomUUID().toString());
-		when(roleRepository.findByCode("role")).thenReturn(role);
-		when(userRepository.findByUsername("user")).thenReturn(user);
+		when(roleRepository.findByCode("role")).thenReturn(Optional.of(role));
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
 		when(userRoleRepository.save(any(UserRoleEntity.class))).thenReturn(result);
 		assertThat(roleService.addRoleToUser("user", "role")).isEqualTo(user);
 		verify(roleRepository).findByCode("role");
@@ -79,7 +80,7 @@ public class RoleServiceTest {
 	@SuppressWarnings("serial")
 	public void testDeleteRole() {
 		RoleEntity input = new RoleEntity() {{ setId("123"); }}.setCode("user");
-		when(roleRepository.findByCode("123")).thenReturn(input);
+		when(roleRepository.findByCode("123")).thenReturn(Optional.of(input));
 		roleService.deleteRole("123");
 		verify(roleRepository).findByCode("123");
 		verify(roleRepository).delete(input);
@@ -89,11 +90,11 @@ public class RoleServiceTest {
 	public void testFindRoleByCode() {
 		RoleEntity result = new RoleEntity();
 		result.setCode("user");
-		when(roleRepository.findByCode(eq("user"))).thenReturn(result);
-		assertThat(roleService.findRoleByCode("user")).isEqualTo(result);
+		when(roleRepository.findByCode(eq("user"))).thenReturn(Optional.of(result));
+		assertThat(roleService.findRoleByCode("user").orElse(new RoleEntity())).isEqualTo(result);
 		verify(roleRepository).findByCode(eq("user"));
-		when(roleRepository.findByCode(eq("admin"))).thenReturn(null);
-		assertThat(roleService.findRoleByCode("admin")).isNull();
+		when(roleRepository.findByCode(eq("admin"))).thenReturn(Optional.empty());
+		assertThat(roleService.findRoleByCode("admin").isPresent()).isFalse();
 		verify(roleRepository).findByCode(eq("admin"));
 	}
 
@@ -101,12 +102,13 @@ public class RoleServiceTest {
 	@SuppressWarnings("serial")
 	public void testFindRoleById() {
 		RoleEntity result = new RoleEntity() {{ setId("123"); }}.setCode("user");
-		when(roleRepository.findOne(eq("123"))).thenReturn(result);
-		assertThat(roleService.findRoleById("123")).isEqualTo(result);
-		verify(roleRepository).findOne(eq("123"));
-		when(roleRepository.findOne(eq("124"))).thenReturn(null);
-		assertThat(roleService.findRoleById("124")).isNull();
-		verify(roleRepository).findOne(eq("124"));
+		when(roleRepository.findById(eq("123"))).thenReturn(Optional.of(result));
+		assertThat(roleService.findRoleById("123").orElse(new RoleEntity()))
+			.isEqualTo(result);
+		verify(roleRepository).findById(eq("123"));
+		when(roleRepository.findById(eq("124"))).thenReturn(Optional.empty());
+		assertThat(roleService.findRoleById("124").isPresent()).isFalse();
+		verify(roleRepository).findById(eq("124"));
 	}
 
 	@Test
@@ -134,7 +136,13 @@ public class RoleServiceTest {
 
 	@Test
 	public void testRemoveRoleFromUser() {
+		when(userRoleRepository.findByUserUsernameAndRoleCode(anyString(), anyString()))
+			.thenReturn(Optional.of(new UserRoleEntity()));
+		when(userRepository.findByUsername(anyString()))
+			.thenReturn(Optional.of(new UserEntity()));
 		roleService.removeRoleFromUser("", "");
+		verify(userRoleRepository).delete(any(UserRoleEntity.class));
+		verify(userRepository).findByUsername(anyString());
 	}
 
 	@Test
@@ -154,7 +162,7 @@ public class RoleServiceTest {
 		RoleEntity input = new RoleEntity() {{ setId("123"); }}.setCode("user");
 		RoleEntity result = new RoleEntity() {{ setId("123"); }}.setCode(UUID.randomUUID().toString());
 		when(roleRepository.findOne(anyString())).thenReturn(null);
-		when(roleRepository.findByCode(eq("123"))).thenReturn(result);
+		when(roleRepository.findByCode(eq("123"))).thenReturn(Optional.of(result));
 		when(roleRepository.save(eq(input))).thenReturn(input);
 		assertThat(roleService.updateRole("123", input)).isEqualTo(result);
 		assertThat(result.getId()).isEqualTo(input.getId());

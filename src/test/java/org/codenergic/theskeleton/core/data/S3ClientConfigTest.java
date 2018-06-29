@@ -15,25 +15,29 @@
  */
 package org.codenergic.theskeleton.core.data;
 
-import io.minio.MinioClient;
-import io.minio.errors.InvalidBucketNameException;
-import io.minio.policy.PolicyType;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.stream.Stream;
+import io.minio.MinioClient;
+import io.minio.errors.InvalidBucketNameException;
+import io.minio.policy.PolicyType;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class S3ClientConfigTest {
 	private S3ClientConfig s3ClientConfig = new S3ClientConfig();
@@ -70,10 +74,12 @@ public class S3ClientConfigTest {
 		});
 		when(minioClient.bucketExists(eq("test1"))).thenReturn(true);
 		when(minioClient.bucketExists(eq("test2"))).thenReturn(false);
+		doThrow(new RuntimeException()).when(minioClient).setBucketPolicy(eq("test2"), anyString(), any());
 		s3ClientConfig.createBuckets(minioClient, executorService, s3ClientProperties);
 		verify(minioClient, times(2)).bucketExists(anyString());
 		verify(minioClient).makeBucket(eq("test2"));
 		verify(executorService).schedule(argumentCaptor.capture(), anyLong(), any());
+		verify(minioClient, times(2)).setBucketPolicy(anyString(), anyString(), any());
 		when(minioClient.bucketExists(anyString())).thenThrow(InvalidBucketNameException.class);
 		s3ClientConfig.createBuckets(minioClient, executorService, s3ClientProperties);
 	}

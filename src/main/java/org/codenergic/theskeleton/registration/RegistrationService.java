@@ -1,5 +1,7 @@
 package org.codenergic.theskeleton.registration;
 
+import java.util.Optional;
+
 import org.codenergic.theskeleton.user.UserEntity;
 
 public interface RegistrationService {
@@ -9,7 +11,7 @@ public interface RegistrationService {
 
 	UserEntity registerUser(RegistrationForm form);
 
-	UserEntity findUserByEmail(String email);
+	Optional<UserEntity> findUserByEmail(String email);
 
 	boolean activateUser(String activationToken);
 

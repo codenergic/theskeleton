@@ -15,8 +15,12 @@
  */
 package org.codenergic.theskeleton.core.data;
 
+import java.util.Optional;
+
+import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+@NoRepositoryBean
 public interface AuditingEntityRepository<T extends AbstractAuditingEntity> extends PagingAndSortingRepository<T, String> {
-
+	Optional<T> findById(String id);
 }

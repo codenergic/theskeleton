@@ -15,6 +15,7 @@
  */
 package org.codenergic.theskeleton.role;
 
+import java.util.Optional;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -33,13 +34,13 @@ public interface RoleService {
 	void deleteRole(@NotNull String idOrCode);
 
 	@PreAuthorize("hasAuthority('role_read')")
-	RoleEntity findRoleByCode(@NotNull String code);
+	Optional<RoleEntity> findRoleByCode(@NotNull String code);
 
 	@PreAuthorize("hasAuthority('role_read')")
-	RoleEntity findRoleById(@NotNull String id);
+	Optional<RoleEntity> findRoleById(@NotNull String id);
 
 	@PreAuthorize("hasAuthority('role_read')")
-	RoleEntity findRoleByIdOrCode(@NotNull String idOrCode);
+	Optional<RoleEntity> findRoleByIdOrCode(@NotNull String idOrCode);
 
 	@PreAuthorize("hasAuthority('role_read_all')")
 	Page<RoleEntity> findRoles(String keyword, Pageable pageable);
