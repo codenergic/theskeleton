@@ -36,9 +36,8 @@ public class AuthorizationApprovalController {
 	@RequestMapping("/oauth/confirm_access")
 	public ModelAndView authorizationApproval(AuthorizationRequest request) {
 		ModelAndView modelAndView = new ModelAndView(AUTHORIZATION_APPROVAL);
-		modelAndView.addObject("client", clientService.findClientById(request.getClientId()));
+		modelAndView.addObject("client", clientService.loadClientByClientId(request.getClientId()));
 		modelAndView.addObject("authorizationRequest", request);
-
 		return modelAndView;
 	}
 }
