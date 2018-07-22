@@ -15,21 +15,21 @@
  */
 package org.codenergic.theskeleton.privilege;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.auto.value.AutoValue;
-import org.codenergic.theskeleton.core.data.RestData;
-
 import javax.annotation.Nullable;
 
-@SuppressWarnings("serial")
-@AutoValue
-@JsonDeserialize(builder = AutoValue_PrivilegeRestData.Builder.class)
-public abstract class PrivilegeRestData implements RestData {
-	public static Builder builder() {
-		return new AutoValue_PrivilegeRestData.Builder();
+import org.codenergic.theskeleton.core.data.RestData;
+import org.immutables.value.Value;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@Value.Immutable
+@JsonDeserialize(builder = ImmutablePrivilegeRestData.Builder.class)
+public interface PrivilegeRestData extends RestData {
+	static ImmutablePrivilegeRestData.Builder builder() {
+		return ImmutablePrivilegeRestData.builder();
 	}
 
-	public static Builder builder(PrivilegeEntity privilege) {
+	static ImmutablePrivilegeRestData.Builder builder(PrivilegeEntity privilege) {
 		return builder()
 			.id(privilege.getId())
 			.name(privilege.getName())
@@ -37,22 +37,11 @@ public abstract class PrivilegeRestData implements RestData {
 	}
 
 	@Nullable
-	abstract String getDescription();
+	String getDescription();
 
 	@Nullable
-	abstract String getId();
+	String getId();
 
 	@Nullable
-	abstract String getName();
-
-	@AutoValue.Builder
-	public interface Builder extends RestData.Builder {
-		PrivilegeRestData build();
-
-		Builder description(String description);
-
-		Builder id(String id);
-
-		Builder name(String id);
-	}
+	String getName();
 }

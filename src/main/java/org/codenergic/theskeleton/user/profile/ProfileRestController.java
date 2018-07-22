@@ -1,18 +1,28 @@
 package org.codenergic.theskeleton.user.profile;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
+import org.codenergic.theskeleton.user.ImmutableUserOAuth2ClientApprovalRestData;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalRestData;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -52,8 +62,8 @@ public class ProfileRestController {
 			.collect(Collectors.groupingBy(e -> e.getClient().getId()))
 			.values().stream()
 			.map(clients -> {
-				UserOAuth2ClientApprovalRestData.Builder builder = UserOAuth2ClientApprovalRestData.builder(clients.get(0));
-				clients.forEach(c -> builder.addScopeAndStatus(c.getScope(), c.getApprovalStatus()));
+				ImmutableUserOAuth2ClientApprovalRestData.Builder builder = UserOAuth2ClientApprovalRestData.builder(clients.get(0));
+				clients.forEach(c -> builder.putScopeAndStatus(c.getScope(), c.getApprovalStatus()));
 				return builder.build();
 			})
 			.collect(Collectors.toList());

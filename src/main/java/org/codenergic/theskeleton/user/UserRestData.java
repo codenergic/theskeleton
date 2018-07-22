@@ -24,19 +24,18 @@ import javax.validation.constraints.Pattern;
 import org.codenergic.theskeleton.core.data.RestData;
 import org.codenergic.theskeleton.core.web.ValidationConstants;
 import org.hibernate.validator.constraints.NotBlank;
+import org.immutables.value.Value;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.auto.value.AutoValue;
 
-@SuppressWarnings("serial")
-@AutoValue
-@JsonDeserialize(builder = AutoValue_UserRestData.Builder.class)
-public abstract class UserRestData implements RestData {
-	public static Builder builder() {
-		return new AutoValue_UserRestData.Builder();
+@Value.Immutable
+@JsonDeserialize(builder = ImmutableUserRestData.Builder.class)
+public interface UserRestData extends RestData {
+	static ImmutableUserRestData.Builder builder() {
+		return ImmutableUserRestData.builder();
 	}
 
-	public static Builder builder(UserEntity user) {
+	static ImmutableUserRestData.Builder builder(UserEntity user) {
 		return builder()
 			.id(user.getId())
 			.username(user.getUsername())
@@ -47,33 +46,33 @@ public abstract class UserRestData implements RestData {
 	}
 
 	@Nullable
-	abstract Set<String> getAuthorities();
+	Set<String> getAuthorities();
 
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	@Pattern(regexp = ValidationConstants.EMAIL_REGEX, message = "Not a valid email address", groups = {New.class, Existing.class})
-	abstract String getEmail();
+	String getEmail();
 
 	@Nullable
-	abstract String getId();
+	String getId();
 
 	@Nullable
-	abstract Boolean getIsNonLocked();
+	Boolean getIsNonLocked();
 
 	@Nullable
-	abstract String getPassword();
+	String getPassword();
 
 	@Nullable
-	abstract String getPhoneNumber();
+	String getPhoneNumber();
 
 	@Nullable
-	abstract String getPictureUrl();
+	String getPictureUrl();
 
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
-	abstract String getUsername();
+	String getUsername();
 
-	UserEntity toUserEntity() {
+	default UserEntity toUserEntity() {
 		return new UserEntity()
 			.setId(getId())
 			.setUsername(getUsername())
@@ -81,27 +80,6 @@ public abstract class UserRestData implements RestData {
 			.setPhoneNumber(getPhoneNumber())
 			.setPassword(getPassword())
 			.setAccountNonLocked(Optional.ofNullable(getIsNonLocked()).orElse(false));
-	}
-
-	@AutoValue.Builder
-	public interface Builder extends RestData.Builder {
-		Builder authorities(Set<String> authorities);
-
-		UserRestData build();
-
-		Builder email(String email);
-
-		Builder id(String id);
-
-		Builder isNonLocked(Boolean nonLocked);
-
-		Builder password(String password);
-
-		Builder phoneNumber(String phoneNumber);
-
-		Builder pictureUrl(String pictureUrl);
-
-		Builder username(String username);
 	}
 
 	interface New {

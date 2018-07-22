@@ -40,8 +40,8 @@ public class UserFollowerRestController {
 	public Page<UserFollowerRestData> findUserFollowers(@User UserEntity user, Pageable pageable) {
 		return userFollowerService.findUserFollowers(user.getId(), pageable)
 			.map(u -> UserFollowerRestData.builder()
-				.setFollowerUsername(u.getUsername())
-				.setFollowerPictureUrl(u.getPictureUrl())
+				.followerUsername(u.getUsername())
+				.followerPictureUrl(u.getPictureUrl())
 				.build());
 	}
 
@@ -49,8 +49,8 @@ public class UserFollowerRestController {
 	public Page<UserFollowerRestData> findUserFollowings(@User UserEntity user, Pageable pageable) {
 		return userFollowerService.findUserFollowings(user.getId(), pageable)
 			.map(u -> UserFollowerRestData.builder()
-				.setFollowingUsername(u.getUsername())
-				.setFollowingPictureUrl(u.getPictureUrl())
+				.followingUsername(u.getUsername())
+				.followingPictureUrl(u.getPictureUrl())
 				.build());
 	}
 
@@ -58,10 +58,10 @@ public class UserFollowerRestController {
 	public UserFollowerRestData followUser(@User UserEntity user, @AuthenticationPrincipal UserEntity currentUser) {
 		UserFollowerEntity userFollower = userFollowerService.followUser(currentUser.getId(), user.getId());
 		return UserFollowerRestData.builder()
-			.setFollowerUsername(userFollower.getFollower().getUsername())
-			.setFollowerPictureUrl(userFollower.getFollower().getPictureUrl())
-			.setFollowingUsername(userFollower.getUser().getUsername())
-			.setFollowingPictureUrl(userFollower.getUser().getPictureUrl())
+			.followerUsername(userFollower.getFollower().getUsername())
+			.followerPictureUrl(userFollower.getFollower().getPictureUrl())
+			.followingUsername(userFollower.getUser().getUsername())
+			.followingPictureUrl(userFollower.getUser().getPictureUrl())
 			.build();
 	}
 

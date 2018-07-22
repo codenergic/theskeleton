@@ -19,19 +19,19 @@ import javax.annotation.Nullable;
 
 import org.codenergic.theskeleton.core.data.RestData;
 import org.hibernate.validator.constraints.NotBlank;
+import org.immutables.value.Value;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.auto.value.AutoValue;
 
-@SuppressWarnings("serial")
-@AutoValue
-@JsonDeserialize(builder = AutoValue_RoleRestData.Builder.class)
-public abstract class RoleRestData implements RestData {
-	public static Builder builder() {
-		return new AutoValue_RoleRestData.Builder();
+@Value.Immutable
+//@RestData.Immutable
+@JsonDeserialize(builder = ImmutableRoleRestData.Builder.class)
+public interface RoleRestData extends RestData {
+	static ImmutableRoleRestData.Builder builder() {
+		return ImmutableRoleRestData.builder();
 	}
 
-	public static Builder builder(RoleEntity role) {
+	static ImmutableRoleRestData.Builder builder(RoleEntity role) {
 		return builder()
 			.id(role.getId())
 			.code(role.getCode())
@@ -40,35 +40,24 @@ public abstract class RoleRestData implements RestData {
 
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
-	abstract String getCode();
+	String getCode();
 
 	@Nullable
-	abstract String getDescription();
+	String getDescription();
 
 	@Nullable
-	abstract String getId();
+	String getId();
 
-	RoleEntity toRoleEntity() {
+	default RoleEntity toRoleEntity() {
 		return new RoleEntity()
 			.setId(getId())
 			.setCode(getCode())
 			.setDescription(getDescription());
 	}
 
-	@AutoValue.Builder
-	public interface Builder extends RestData.Builder {
-		RoleRestData build();
-
-		Builder code(String code);
-
-		Builder description(String description);
-
-		Builder id(String id);
+	interface New {
 	}
 
-	public interface New {
-	}
-
-	public interface Existing {
+	interface Existing {
 	}
 }

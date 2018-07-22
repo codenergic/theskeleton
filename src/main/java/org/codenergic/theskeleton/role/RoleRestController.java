@@ -46,7 +46,7 @@ public class RoleRestController {
 	@GetMapping("/{idOrCode}")
 	public ResponseEntity<RoleRestData> findRoleByIdOrCode(@PathVariable("idOrCode") final String idOrCode) {
 		return roleService.findRoleByIdOrCode(idOrCode)
-			.map(role -> RoleRestData.builder(role).build())
+			.<RoleRestData>map(role -> RoleRestData.builder(role).build())
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
 	}

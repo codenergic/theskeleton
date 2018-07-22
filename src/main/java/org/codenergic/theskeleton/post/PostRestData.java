@@ -15,23 +15,24 @@
  */
 package org.codenergic.theskeleton.post;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.auto.value.AutoValue;
-import org.codenergic.theskeleton.core.data.RestData;
-import org.hibernate.validator.constraints.NotBlank;
-
-import javax.annotation.Nullable;
 import java.util.Date;
 
-@SuppressWarnings("serial")
-@AutoValue
-@JsonDeserialize(builder = AutoValue_PostRestData.Builder.class)
-abstract class PostRestData implements RestData {
-	static Builder builder() {
-		return new AutoValue_PostRestData.Builder();
+import javax.annotation.Nullable;
+
+import org.codenergic.theskeleton.core.data.RestData;
+import org.hibernate.validator.constraints.NotBlank;
+import org.immutables.value.Value;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@Value.Immutable
+@JsonDeserialize(builder = ImmutablePostRestData.Builder.class)
+interface PostRestData extends RestData {
+	static ImmutablePostRestData.Builder builder() {
+		return ImmutablePostRestData.builder();
 	}
 
-	static Builder builder(PostEntity post) {
+	static ImmutablePostRestData.Builder builder(PostEntity post) {
 		return builder()
 			.id(post.getId())
 			.content(post.getContent())
@@ -45,61 +46,40 @@ abstract class PostRestData implements RestData {
 
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
-	abstract String getContent();
+	String getContent();
 
 	@Nullable
-	abstract Date getCreatedDate();
+	Date getCreatedDate();
 
 	@Nullable
-	abstract String getId();
+	String getId();
 
 	@Nullable
-	abstract Date getLastUpdatedDate();
+	Date getLastUpdatedDate();
 
 	@Nullable
-	abstract Boolean getResponse();
+	Boolean getResponse();
 
 	@Nullable
-	abstract String getResponseTo();
+	String getResponseTo();
 
 	@Nullable
-	abstract String getStatus();
+	String getStatus();
 
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
-	abstract String getTitle();
+	String getTitle();
 
-	PostEntity toPostEntity() {
+	default PostEntity toPostEntity() {
 		return new PostEntity()
 			.setContent(getContent())
 			.setId(getId())
 			.setTitle(getTitle());
 	}
 
-	@AutoValue.Builder
-	interface Builder extends RestData.Builder {
-		PostRestData build();
-
-		Builder content(String content);
-
-		Builder createdDate(Date createdDate);
-
-		Builder id(String id);
-
-		Builder lastUpdatedDate(Date updatedDate);
-
-		Builder response(Boolean isResponse);
-
-		Builder responseTo(String postId);
-
-		Builder status(String status);
-
-		Builder title(String title);
+	interface New {
 	}
 
-	public interface New {
-	}
-
-	public interface Existing {
+	interface Existing {
 	}
 }

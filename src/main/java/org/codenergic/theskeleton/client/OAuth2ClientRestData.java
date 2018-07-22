@@ -1,27 +1,27 @@
 package org.codenergic.theskeleton.client;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import com.google.auto.value.AutoValue;
-import org.codenergic.theskeleton.core.data.RestData;
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("serial")
-@AutoValue
-@JsonDeserialize(builder = AutoValue_OAuth2ClientRestData.Builder.class)
-abstract class OAuth2ClientRestData implements RestData {
-	static Builder builder() {
-		return new AutoValue_OAuth2ClientRestData.Builder();
+import javax.annotation.Nullable;
+
+import org.codenergic.theskeleton.core.data.RestData;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.immutables.value.Value;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@Value.Immutable
+@JsonDeserialize(builder = ImmutableOAuth2ClientRestData.Builder.class)
+interface OAuth2ClientRestData extends RestData {
+	static ImmutableOAuth2ClientRestData.Builder builder() {
+		return ImmutableOAuth2ClientRestData.builder();
 	}
 
-	static Builder builder(OAuth2ClientEntity oAuth2Client) {
+	static ImmutableOAuth2ClientRestData.Builder builder(OAuth2ClientEntity oAuth2Client) {
 		return builder()
 			.id(oAuth2Client.getId())
 			.name(oAuth2Client.getName())
@@ -38,41 +38,41 @@ abstract class OAuth2ClientRestData implements RestData {
 
 	@NotEmpty(groups = {New.class, Existing.class})
 	@Nullable
-	abstract Set<String> getAuthorizedGrantTypes();
+	Set<String> getAuthorizedGrantTypes();
 
 	@NotBlank(groups = {Existing.class})
 	@Nullable
-	abstract String getClientSecret();
+	String getClientSecret();
 
 	@Nullable
-	abstract String getDescription();
+	String getDescription();
 
 	@Nullable
-	abstract String getId();
+	String getId();
 
 	@Nullable
-	abstract Boolean getIsAutoApprove();
+	Boolean getIsAutoApprove();
 
 	@Nullable
-	abstract Boolean getIsScoped();
+	Boolean getIsScoped();
 
 	@Nullable
-	abstract Boolean getIsSecretRequired();
+	Boolean getIsSecretRequired();
 
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
-	abstract String getName();
+	String getName();
 
 	@Nullable
-	abstract Set<String> getRegisteredRedirectUris();
+	Set<String> getRegisteredRedirectUris();
 
 	@Nullable
-	abstract Set<String> getResourceIds();
+	Set<String> getResourceIds();
 
 	@Nullable
-	abstract Set<String> getScope();
+	Set<String> getScope();
 
-	OAuth2ClientEntity toOAuth2ClientEntity() {
+	default OAuth2ClientEntity toOAuth2ClientEntity() {
 		return new OAuth2ClientEntity()
 			.setId(getId())
 			.setName(getName())
@@ -88,34 +88,6 @@ abstract class OAuth2ClientRestData implements RestData {
 				.collect(Collectors.toSet()))
 			.setRegisteredRedirectUris(getRegisteredRedirectUris())
 			.setAutoApprove(Optional.ofNullable(getIsAutoApprove()).orElse(false));
-	}
-
-	@AutoValue.Builder
-	@JsonPOJOBuilder(withPrefix = "")
-	interface Builder {
-		Builder authorizedGrantTypes(Set<String> authorizedGrantTypes);
-
-		OAuth2ClientRestData build();
-
-		Builder clientSecret(String clientSecret);
-
-		Builder description(String description);
-
-		Builder id(String id);
-
-		Builder isAutoApprove(Boolean autoApprove);
-
-		Builder isScoped(Boolean scoped);
-
-		Builder isSecretRequired(Boolean secretRequired);
-
-		Builder name(String name);
-
-		Builder registeredRedirectUris(Set<String> registeredRedirectUris);
-
-		Builder resourceIds(Set<String> resourceIds);
-
-		Builder scope(Set<String> scope);
 	}
 
 	interface New {

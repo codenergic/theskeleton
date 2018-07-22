@@ -15,53 +15,33 @@
  */
 package org.codenergic.theskeleton.user;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableMap;
 import org.codenergic.theskeleton.core.data.RestData;
+import org.immutables.value.Value;
 import org.springframework.security.oauth2.provider.approval.Approval;
 
-import java.util.Map;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.collect.ImmutableMap;
 
-@AutoValue
-@JsonDeserialize(builder = AutoValue_UserOAuth2ClientApprovalRestData.Builder.class)
-public abstract class UserOAuth2ClientApprovalRestData implements RestData {
-	public static Builder builder() {
-		return new AutoValue_UserOAuth2ClientApprovalRestData.Builder();
+@Value.Immutable
+@JsonDeserialize(builder = ImmutableUserOAuth2ClientApprovalRestData.Builder.class)
+public interface UserOAuth2ClientApprovalRestData extends RestData {
+
+	static ImmutableUserOAuth2ClientApprovalRestData.Builder builder() {
+		return ImmutableUserOAuth2ClientApprovalRestData.builder();
 	}
 
-	public static Builder builder(UserOAuth2ClientApprovalEntity entity) {
+	static ImmutableUserOAuth2ClientApprovalRestData.Builder builder(UserOAuth2ClientApprovalEntity entity) {
 		return builder()
 			.clientId(entity.getClient().getClientId())
 			.clientName(entity.getClient().getName())
 			.username(entity.getUser().getUsername());
 	}
 
-	public abstract String getClientId();
+	String getClientId();
 
-	public abstract String getClientName();
+	String getClientName();
 
-	public abstract ImmutableMap<String, Approval.ApprovalStatus> getScopeAndStatus();
+	ImmutableMap<String, Approval.ApprovalStatus> getScopeAndStatus();
 
-	public abstract String getUsername();
-
-	@AutoValue.Builder
-	public interface Builder extends RestData.Builder {
-		default Builder addScopeAndStatus(String scope, Approval.ApprovalStatus approvalStatus) {
-			scopeAndStatusBuilder().put(scope, approvalStatus);
-			return this;
-		}
-
-		UserOAuth2ClientApprovalRestData build();
-
-		Builder clientId(String clientId);
-
-		Builder clientName(String clientName);
-
-		Builder scopeAndStatus(Map<String, Approval.ApprovalStatus> scopeAndStatus);
-
-		ImmutableMap.Builder<String, Approval.ApprovalStatus> scopeAndStatusBuilder();
-
-		Builder username(String username);
-	}
+	String getUsername();
 }

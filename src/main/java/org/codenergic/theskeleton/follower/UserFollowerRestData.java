@@ -15,41 +15,29 @@
  */
 package org.codenergic.theskeleton.follower;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.auto.value.AutoValue;
-import org.codenergic.theskeleton.core.data.RestData;
-
 import javax.annotation.Nullable;
 
-@AutoValue
-@JsonDeserialize(builder = AutoValue_UserFollowerRestData.Builder.class)
-public abstract class UserFollowerRestData implements RestData {
-	public static Builder builder() {
-		return new AutoValue_UserFollowerRestData.Builder();
+import org.codenergic.theskeleton.core.data.RestData;
+import org.immutables.value.Value;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+@Value.Immutable
+@JsonDeserialize(builder = ImmutableUserFollowerRestData.Builder.class)
+public interface UserFollowerRestData extends RestData {
+	static ImmutableUserFollowerRestData.Builder builder() {
+		return ImmutableUserFollowerRestData.builder();
 	}
 
 	@Nullable
-	abstract String getFollowerPictureUrl();
+	String getFollowerPictureUrl();
 
 	@Nullable
-	abstract String getFollowerUsername();
+	String getFollowerUsername();
 
 	@Nullable
-	abstract String getFollowingPictureUrl();
+	String getFollowingPictureUrl();
 
 	@Nullable
-	abstract String getFollowingUsername();
-
-	@AutoValue.Builder
-	interface Builder extends RestData.Builder {
-		UserFollowerRestData build();
-
-		Builder setFollowerPictureUrl(String newFollowerPictureUrl);
-
-		Builder setFollowerUsername(String newFollowerUsername);
-
-		Builder setFollowingPictureUrl(String newFollowingPictureUrl);
-
-		Builder setFollowingUsername(String newFollowingUsername);
-	}
+	String getFollowingUsername();
 }

@@ -16,33 +16,24 @@
 package org.codenergic.theskeleton.gallery;
 
 import org.codenergic.theskeleton.core.data.RestData;
+import org.immutables.value.Value;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.auto.value.AutoValue;
 
-@AutoValue
-@JsonDeserialize(builder = AutoValue_GalleryRestData.Builder.class)
-abstract class GalleryRestData implements RestData {
-	static Builder builder() {
-		return new AutoValue_GalleryRestData.Builder();
+@Value.Immutable
+@JsonDeserialize(builder = ImmutableGalleryRestData.Builder.class)
+interface GalleryRestData extends RestData {
+	static ImmutableGalleryRestData.Builder builder() {
+		return ImmutableGalleryRestData.builder();
 	}
 
-	static Builder builder(GalleryEntity gallery) {
+	static ImmutableGalleryRestData.Builder builder(GalleryEntity gallery) {
 		return builder()
 			.imageUrl(gallery.getImageUrl())
 			.userId(gallery.getCreatedBy().getUserId());
 	}
 
-	abstract String getImageUrl();
+	String getImageUrl();
 
-	abstract String getUserId();
-
-	@AutoValue.Builder
-	interface Builder extends RestData.Builder {
-		GalleryRestData build();
-
-		Builder imageUrl(String imageUrl);
-
-		Builder userId(String userId);
-	}
+	String getUserId();
 }

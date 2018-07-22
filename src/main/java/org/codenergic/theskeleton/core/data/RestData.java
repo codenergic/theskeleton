@@ -15,17 +15,16 @@
  */
 package org.codenergic.theskeleton.core.data;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-
 import java.io.Serializable;
 
-@JsonAutoDetect(fieldVisibility = Visibility.ANY, setterVisibility = Visibility.NONE)
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public interface RestData extends Serializable {
-	@JsonPOJOBuilder(withPrefix = "")
-	interface Builder {
-	}
+
+//	@Value.Style(builder = "new")
+//	@interface Immutable {
+//	}
 }

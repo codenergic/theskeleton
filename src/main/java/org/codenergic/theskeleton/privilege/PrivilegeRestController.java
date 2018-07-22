@@ -36,7 +36,7 @@ public class PrivilegeRestController {
 	@GetMapping("/{idOrName}")
 	public ResponseEntity<PrivilegeRestData> findPrivilegeByIdOrName(@PathVariable("idOrName") final String idOrName) {
 		return privilegeService.findPrivilegeByIdOrName(idOrName)
-			.map(privilege -> PrivilegeRestData.builder(privilege).build())
+			.<PrivilegeRestData>map(privilege -> PrivilegeRestData.builder(privilege).build())
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
 	}
