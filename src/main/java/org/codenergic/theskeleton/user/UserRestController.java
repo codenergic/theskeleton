@@ -35,18 +35,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/users")
 public class UserRestController {
-	private UserService userService;
-	private UserAdminService userAdminService;
-	private TokenStoreService tokenStoreService;
+	private final UserService userService;
+	private final UserAdminService userAdminService;
+	private final TokenStoreService tokenStoreService;
+	private final UserMapper userMapper = UserMapper.newInstance();
 
 	public UserRestController(UserService userService, UserAdminService userAdminService, TokenStoreService tokenStoreService) {
 		this.userService = userService;
 		this.userAdminService = userAdminService;
 		this.tokenStoreService = tokenStoreService;
-	}
-
-	private UserRestData convertEntityToRestData(UserEntity user) {
-		return UserRestData.builder(user).build();
 	}
 
 	@DeleteMapping("/{username}")
@@ -57,18 +54,18 @@ public class UserRestController {
 
 	@PutMapping("/{username}/enable")
 	public UserRestData enableOrDisableUser(@PathVariable("username") String username, @RequestBody Map<String, Boolean> body) {
-		return convertEntityToRestData(userAdminService.enableOrDisableUser(username, body.getOrDefault("enabled", true)));
+		return userMapper.toUserData(userAdminService.enableOrDisableUser(username, body.getOrDefault("enabled", true)));
 	}
 
 	@PutMapping("/{username}/exp")
 	public UserRestData extendsUserExpiration(@PathVariable("username") String username, @RequestBody Map<String, Integer> body) {
-		return convertEntityToRestData(userAdminService.extendsUserExpiration(username, body.getOrDefault("amount", 180)));
+		return userMapper.toUserData(userAdminService.extendsUserExpiration(username, body.getOrDefault("amount", 180)));
 	}
 
 	@GetMapping(path = "/{email}", params = { "email" })
 	public ResponseEntity<UserRestData> findUserByEmail(@PathVariable("email") String email) {
 		return userService.findUserByEmail(email)
-			.map(this::convertEntityToRestData)
+			.map(userMapper::toUserData)
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
 	}
@@ -76,7 +73,7 @@ public class UserRestController {
 	@GetMapping(path = "/{username}")
 	public ResponseEntity<UserRestData> findUserByUsername(@PathVariable("username") String username) {
 		return userService.findUserByUsername(username)
-			.map(this::convertEntityToRestData)
+			.map(userMapper::toUserData)
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
 	}
@@ -85,26 +82,26 @@ public class UserRestController {
 	public Page<UserRestData> findUsersByUsernameStartingWith(
 			@RequestParam(name = "username", defaultValue = "") String username, Pageable pageable) {
 		return userAdminService.findUsersByUsernameStartingWith(username, pageable)
-				.map(this::convertEntityToRestData);
+				.map(userMapper::toUserData);
 	}
 
 	@PutMapping("/{username}/lock")
 	public UserRestData lockOrUnlockUser(@PathVariable("username") String username, @RequestBody Map<String, Boolean> body) {
-		return convertEntityToRestData(userAdminService.lockOrUnlockUser(username, body.getOrDefault("unlocked", true)));
+		return userMapper.toUserData(userAdminService.lockOrUnlockUser(username, body.getOrDefault("unlocked", true)));
 	}
 
 	@PostMapping
 	public UserRestData saveUser(@RequestBody @Validated(UserRestData.New.class) UserRestData userData) {
-		return convertEntityToRestData(userAdminService.saveUser(userData.toUserEntity()));
+		return userMapper.toUserData(userAdminService.saveUser(userMapper.toUser(userData)));
 	}
 
 	@PutMapping("/{username}")
 	public UserRestData updateUser(@PathVariable("username") String username, @RequestBody @Validated(UserRestData.Existing.class) UserRestData userData) {
-		return convertEntityToRestData(userAdminService.updateUser(username, userData.toUserEntity()));
+		return userMapper.toUserData(userAdminService.updateUser(username, userMapper.toUser(userData)));
 	}
 
 	@PutMapping("/{username}/password")
 	public UserRestData updateUserPassword(@PathVariable("username") String username, @RequestBody Map<String, String> body) {
-		return convertEntityToRestData(userAdminService.updateUserPassword(username, body.get("password")));
+		return userMapper.toUserData(userAdminService.updateUserPassword(username, body.get("password")));
 	}
 }

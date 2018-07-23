@@ -15,7 +15,6 @@
  */
 package org.codenergic.theskeleton.user;
 
-import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -33,16 +32,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public interface UserRestData extends RestData {
 	static ImmutableUserRestData.Builder builder() {
 		return ImmutableUserRestData.builder();
-	}
-
-	static ImmutableUserRestData.Builder builder(UserEntity user) {
-		return builder()
-			.id(user.getId())
-			.username(user.getUsername())
-			.email(user.getEmail())
-			.phoneNumber(user.getPhoneNumber())
-			.isNonLocked(user.isAccountNonLocked())
-			.pictureUrl(user.getPictureUrl());
 	}
 
 	@Nullable
@@ -71,16 +60,6 @@ public interface UserRestData extends RestData {
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	String getUsername();
-
-	default UserEntity toUserEntity() {
-		return new UserEntity()
-			.setId(getId())
-			.setUsername(getUsername())
-			.setEmail(getEmail())
-			.setPhoneNumber(getPhoneNumber())
-			.setPassword(getPassword())
-			.setAccountNonLocked(Optional.ofNullable(getIsNonLocked()).orElse(false));
-	}
 
 	interface New {
 	}
