@@ -25,21 +25,13 @@ import com.google.common.collect.ImmutableMap;
 @Value.Immutable
 @JsonDeserialize(builder = ImmutableUserOAuth2ClientApprovalRestData.Builder.class)
 public interface UserOAuth2ClientApprovalRestData extends RestData {
-
-	static ImmutableUserOAuth2ClientApprovalRestData.Builder builder() {
-		return ImmutableUserOAuth2ClientApprovalRestData.builder();
-	}
-
-	static ImmutableUserOAuth2ClientApprovalRestData.Builder builder(UserOAuth2ClientApprovalEntity entity) {
-		return builder()
-			.clientId(entity.getClient().getClientId())
-			.clientName(entity.getClient().getName())
-			.username(entity.getUser().getUsername());
-	}
+	Approval.ApprovalStatus getApprovalStatus();
 
 	String getClientId();
 
 	String getClientName();
+
+	String getScope();
 
 	ImmutableMap<String, Approval.ApprovalStatus> getScopeAndStatus();
 

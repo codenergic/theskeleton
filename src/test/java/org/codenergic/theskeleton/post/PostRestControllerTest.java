@@ -15,9 +15,14 @@
  */
 package org.codenergic.theskeleton.post;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Optional;
+
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
 import org.codenergic.theskeleton.core.web.UserArgumentResolver;
+import org.codenergic.theskeleton.user.ImmutableUserRestData;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRestData;
 import org.junit.Before;
@@ -42,20 +47,22 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Optional;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -178,9 +185,10 @@ public class PostRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
-		Page<UserRestData> expectedResponse = new PageImpl<>(Collections.singletonList(UserRestData.builder()
+		Page<UserRestData> expectedResponse = new PageImpl<>(Collections.singletonList(ImmutableUserRestData.builder()
 			.username("user")
 			.pictureUrl("1234")
+			.isNonLocked(false)
 			.build()));
 		assertThat(response.getContentAsString()).isEqualTo(objectMapper.writeValueAsString(expectedResponse));
 		verify(postReactionService).findUserByPostReaction(eq("1234"), eq(PostReactionType.LIKE), any());

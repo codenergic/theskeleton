@@ -16,23 +16,25 @@
 
 package org.codenergic.theskeleton.user.profile;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionRepository;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 @RestController
 @RequestMapping("/api/profile/socials")
 public class ProfileSocialRestController {
 	private final ConnectionRepository connectionRepository;
+	private final ProfileMapper profileMapper = ProfileMapper.newInstance();
 
 	public ProfileSocialRestController(ConnectionRepository connectionRepository) {
 		this.connectionRepository = connectionRepository;
@@ -40,20 +42,15 @@ public class ProfileSocialRestController {
 
 	private ProfileSocialRestData mapConnections(Map.Entry<String, List<Connection<?>>> e) {
 		Connection<?> connection = e.getValue().get(0);
-		return ProfileSocialRestData.builder()
-			.imageUrl(connection.getImageUrl())
-			.profileId(connection.createData().getProviderUserId())
-			.profileUrl(connection.getProfileUrl())
-			.provider(e.getKey())
-			.build();
+		return profileMapper.toProfileSocialData(e.getKey(), connection, connection.createData());
 	}
 
-	@RequestMapping(method = RequestMethod.DELETE)
+	@DeleteMapping
 	public void removeSocialConnection(@RequestBody String provider) {
 		connectionRepository.removeConnections(provider);
 	}
 
-	@RequestMapping(method = RequestMethod.GET)
+	@GetMapping
 	public Map<String, ProfileSocialRestData> socialConnections(Authentication authentication) {
 		return connectionRepository.findAllConnections().entrySet()
 			.stream()

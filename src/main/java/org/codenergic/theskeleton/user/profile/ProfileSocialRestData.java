@@ -23,10 +23,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @Value.Immutable
 @JsonDeserialize(builder = ImmutableProfileSocialRestData.Builder.class)
 interface ProfileSocialRestData extends RestData {
-	static ImmutableProfileSocialRestData.Builder builder() {
-		return ImmutableProfileSocialRestData.builder();
-	}
-
 	String getImageUrl();
 
 	String getProfileId();

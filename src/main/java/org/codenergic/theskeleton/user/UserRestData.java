@@ -30,10 +30,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @Value.Immutable
 @JsonDeserialize(builder = ImmutableUserRestData.Builder.class)
 public interface UserRestData extends RestData {
-	static ImmutableUserRestData.Builder builder() {
-		return ImmutableUserRestData.builder();
-	}
-
 	@Nullable
 	Set<String> getAuthorities();
 

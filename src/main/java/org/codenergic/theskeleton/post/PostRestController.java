@@ -16,6 +16,7 @@
 package org.codenergic.theskeleton.post;
 
 import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.user.UserMapper;
 import org.codenergic.theskeleton.user.UserRestData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostRestController {
 	private final PostService postService;
 	private final PostReactionService postReactionService;
+	private final UserMapper userMapper = UserMapper.newInstance();
 
 	public PostRestController(PostService postService, PostReactionService postReactionService) {
 		this.postService = postService;
@@ -78,8 +80,8 @@ public class PostRestController {
 	@GetMapping("/{id}/reactions/{reaction}s")
 	public Page<UserRestData> findPostReactions(@PathVariable("id") String postId, @PathVariable("reaction") String reaction, Pageable pageable) {
 		PostReactionType reactionType = PostReactionType.valueOf(reaction.toUpperCase());
-		return postReactionService.findUserByPostReaction(postId, reactionType, pageable).map(user ->
-			UserRestData.builder().username(user.getUsername()).pictureUrl(user.getPictureUrl()).build());
+		return postReactionService.findUserByPostReaction(postId, reactionType, pageable)
+			.map(userMapper::toUserData);
 	}
 
 	@GetMapping("/{id}/responses")

@@ -15,7 +15,6 @@
  */
 package org.codenergic.theskeleton.user;
 
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -32,5 +31,6 @@ public interface UserMapper {
 
 	@Mapping(target = "authorities", ignore = true)
 	@Mapping(target = "nonLocked", source = "accountNonLocked")
+	@Mapping(target = "password", ignore = true)
 	UserRestData toUserData(UserEntity user);
 }

@@ -1,7 +1,7 @@
 package org.codenergic.theskeleton.user;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
@@ -54,7 +54,7 @@ public class UserRestControllerTest {
 
 	@Test
 	public void testSerializeDeserializeUser() throws IOException {
-		UserRestData user = UserRestData.builder()
+		UserRestData user = ImmutableUserRestData.builder()
 				.id("123")
 				.username("user")
 				.build();
@@ -148,7 +148,7 @@ public class UserRestControllerTest {
 		final UserEntity user = new UserEntity()
 				.setId("user123")
 				.setEmail("user@server");
-		final Page<UserEntity> users = new PageImpl<>(Arrays.asList(user));
+		final Page<UserEntity> users = new PageImpl<>(Collections.singletonList(user));
 		when(userAdminService.findUsersByUsernameStartingWith(eq("user123"), any())).thenReturn(users);
 		ResultActions resultActions = mockMvc.perform(get("/api/users?username=user123")
 					.contentType(MediaType.APPLICATION_JSON))
