@@ -25,17 +25,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @Value.Immutable
 @JsonDeserialize(builder = ImmutablePrivilegeRestData.Builder.class)
 public interface PrivilegeRestData extends RestData {
-	static ImmutablePrivilegeRestData.Builder builder() {
-		return ImmutablePrivilegeRestData.builder();
-	}
-
-	static ImmutablePrivilegeRestData.Builder builder(PrivilegeEntity privilege) {
-		return builder()
-			.id(privilege.getId())
-			.name(privilege.getName())
-			.description(privilege.getDescription());
-	}
-
 	@Nullable
 	String getDescription();
 

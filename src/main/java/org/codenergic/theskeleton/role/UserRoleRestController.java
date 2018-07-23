@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users/{username}/roles")
 public class UserRoleRestController {
 	private final RoleService roleService;
+	private final RoleMapper roleMapper = RoleMapper.newInstance();
 	private final UserMapper userMapper = UserMapper.newInstance();
 
 	public UserRoleRestController(RoleService roleService) {
@@ -49,7 +50,7 @@ public class UserRoleRestController {
 	@GetMapping
 	public Set<RoleRestData> findRolesByUserUsername(@User UserEntity user) {
 		return roleService.findRolesByUserUsername(user.getUsername()).stream()
-			.map(r -> RoleRestData.builder(r).build())
+			.map(roleMapper::toRoleData)
 			.collect(Collectors.toSet());
 	}
 

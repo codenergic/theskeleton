@@ -27,17 +27,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 //@RestData.Immutable
 @JsonDeserialize(builder = ImmutableRoleRestData.Builder.class)
 public interface RoleRestData extends RestData {
-	static ImmutableRoleRestData.Builder builder() {
-		return ImmutableRoleRestData.builder();
-	}
-
-	static ImmutableRoleRestData.Builder builder(RoleEntity role) {
-		return builder()
-			.id(role.getId())
-			.code(role.getCode())
-			.description(role.getDescription());
-	}
-
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	String getCode();
@@ -47,13 +36,6 @@ public interface RoleRestData extends RestData {
 
 	@Nullable
 	String getId();
-
-	default RoleEntity toRoleEntity() {
-		return new RoleEntity()
-			.setId(getId())
-			.setCode(getCode())
-			.setDescription(getDescription());
-	}
 
 	interface New {
 	}

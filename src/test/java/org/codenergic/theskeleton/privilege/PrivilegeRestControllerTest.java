@@ -16,7 +16,7 @@
 package org.codenergic.theskeleton.privilege;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
@@ -58,6 +58,7 @@ public class PrivilegeRestControllerTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private PrivilegeService privilegeService;
+	private final PrivilegeMapper privilegeMapper = PrivilegeMapper.newInstance();
 
 	@Test
 	public void testFindPrivilegeByName() throws Exception {
@@ -74,7 +75,7 @@ public class PrivilegeRestControllerTest {
 				.getResponse();
 		verify(privilegeService).findPrivilegeByIdOrName("123");
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(PrivilegeRestData.builder(dbResult).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(privilegeMapper.toPrivilegeData(dbResult)));
 	}
 
 	@Test
@@ -94,8 +95,8 @@ public class PrivilegeRestControllerTest {
 				.setId("123")
 				.setName("12345")
 				.setDescription("Description 12345");
-		Page<PrivilegeEntity> pageResponseBody = new PageImpl<>(Arrays.asList(dbResult));
-		Page<PrivilegeRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(PrivilegeRestData.builder(dbResult).build()));
+		Page<PrivilegeEntity> pageResponseBody = new PageImpl<>(Collections.singletonList(dbResult));
+		Page<PrivilegeRestData> expectedResponseBody = new PageImpl<>(Collections.singletonList(privilegeMapper.toPrivilegeData(dbResult)));
 		when(privilegeService.findPrivileges(anyString(), any())).thenReturn(pageResponseBody);
 		ResultActions resultActions = mockMvc.perform(get("/api/privileges").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -109,7 +110,7 @@ public class PrivilegeRestControllerTest {
 
 	@Test
 	public void testSerializeDeserializePrivilege() throws IOException {
-		PrivilegeRestData privilege = PrivilegeRestData.builder()
+		PrivilegeRestData privilege = ImmutablePrivilegeRestData.builder()
 				.id("123")
 				.name("12345")
 				.description("Description 12345")

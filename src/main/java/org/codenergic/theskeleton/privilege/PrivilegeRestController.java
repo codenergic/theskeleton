@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/privileges")
 public class PrivilegeRestController {
 	private final PrivilegeService privilegeService;
+	private final PrivilegeMapper privilegeMapper = PrivilegeMapper.newInstance();
 
 	public PrivilegeRestController(PrivilegeService privilegeService) {
 		this.privilegeService = privilegeService;
@@ -36,7 +37,7 @@ public class PrivilegeRestController {
 	@GetMapping("/{idOrName}")
 	public ResponseEntity<PrivilegeRestData> findPrivilegeByIdOrName(@PathVariable("idOrName") final String idOrName) {
 		return privilegeService.findPrivilegeByIdOrName(idOrName)
-			.<PrivilegeRestData>map(privilege -> PrivilegeRestData.builder(privilege).build())
+			.map(privilegeMapper::toPrivilegeData)
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
 	}
@@ -45,6 +46,6 @@ public class PrivilegeRestController {
 	public Page<PrivilegeRestData> findPrivileges(@RequestParam(name = "q", defaultValue = "") final String keywords,
 			final Pageable pageable) {
 		return privilegeService.findPrivileges(keywords, pageable)
-				.map(s -> PrivilegeRestData.builder(s).build());
+				.map(privilegeMapper::toPrivilegeData);
 	}
 }

@@ -60,7 +60,8 @@ public class UserRoleRestControllerTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private RoleService roleService;
-	private UserMapper userMapper = UserMapper.newInstance();
+	private final UserMapper userMapper = UserMapper.newInstance();
+	private final RoleMapper roleMapper = RoleMapper.newInstance();
 
 	@Test
 	public void testAddRoleToUser() throws Exception {
@@ -89,7 +90,7 @@ public class UserRoleRestControllerTest {
 			.setCode("role123");
 		final Set<RoleEntity> roles = new HashSet<>(Collections.singletonList(role));
 		final Set<RoleRestData> expected = roles.stream()
-			.map(r -> RoleRestData.builder(r).build())
+			.map(roleMapper::toRoleData)
 			.collect(Collectors.toSet());
 		when(roleService.findRolesByUserUsername("user123")).thenReturn(roles);
 		ResultActions resultActions = mockMvc.perform(get("/api/users/user123/roles")
