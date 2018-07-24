@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostRestController {
 	private final PostService postService;
 	private final PostReactionService postReactionService;
+	private final PostMapper postMapper = PostMapper.newInstance();
 	private final UserMapper userMapper = UserMapper.newInstance();
 
 	public PostRestController(PostService postService, PostReactionService postReactionService) {
@@ -60,13 +61,13 @@ public class PostRestController {
 	@GetMapping("/following")
 	public Page<PostRestData> findPostByFollower(@AuthenticationPrincipal UserEntity user,
 			@SortDefault(sort = "lastModifiedDate", direction = Sort.Direction.DESC) Pageable pageable) {
-		return postService.findPostByFollowerId(user.getId(), pageable).map(this::mapPostEntityToData);
+		return postService.findPostByFollowerId(user.getId(), pageable).map(postMapper::toPostData);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<PostRestData> findPostById(@PathVariable("id") String id) {
 		return postService.findPostById(id)
-			.map(this::mapPostEntityToData)
+			.map(postMapper::toPostData)
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
 	}
@@ -74,7 +75,7 @@ public class PostRestController {
 	@GetMapping
 	public Page<PostRestData> findPostByTitleContaining(@RequestParam(name = "title", defaultValue = "") String title,
 			Pageable pageable) {
-		return postService.findPostByTitleContaining(title, pageable).map(this::mapPostEntityToData);
+		return postService.findPostByTitleContaining(title, pageable).map(postMapper::toPostData);
 	}
 
 	@GetMapping("/{id}/reactions/{reaction}s")
@@ -86,17 +87,13 @@ public class PostRestController {
 
 	@GetMapping("/{id}/responses")
 	public Page<PostRestData> findPostReplies(@PathVariable("id") String id, Pageable pageable) {
-		return postService.findPostReplies(id, pageable).map(this::mapPostEntityToData);
-	}
-
-	private PostRestData mapPostEntityToData(PostEntity post) {
-		return PostRestData.builder(post).build();
+		return postService.findPostReplies(id, pageable).map(postMapper::toPostData);
 	}
 
 	@PutMapping("/{id}/publish")
 	public PostRestData publishPost(@PathVariable("id") String id, @RequestBody boolean publish) {
 		PostEntity post = publish ? postService.publishPost(id) : postService.unPublishPost(id);
-		return mapPostEntityToData(post);
+		return postMapper.toPostData(post);
 	}
 
 	@PutMapping("/{id}/reactions")
@@ -107,20 +104,20 @@ public class PostRestController {
 
 	@PostMapping("/{id}/responses")
 	public PostRestData replyPost(@PathVariable("id") String id, @RequestBody PostRestData reply) {
-		PostEntity postReply = postService.replyPost(id, reply.toPostEntity());
-		return mapPostEntityToData(postReply);
+		PostEntity postReply = postService.replyPost(id, postMapper.toPost(reply));
+		return postMapper.toPostData(postReply);
 	}
 
 	@PostMapping
 	public PostRestData savePost(@AuthenticationPrincipal UserEntity currentUser, @RequestBody @Validated(PostRestData.New.class) PostRestData postRestData) {
-		PostEntity post = postService.savePost(currentUser, postRestData.toPostEntity());
-		return mapPostEntityToData(post);
+		PostEntity post = postService.savePost(currentUser, postMapper.toPost(postRestData));
+		return postMapper.toPostData(post);
 	}
 
 	@PutMapping("/{id}")
 	public PostRestData updatePost(@PathVariable("id") String id,
 			@RequestBody @Validated(PostRestData.Existing.class) final PostRestData postRestData) {
-		PostEntity post = postService.updatePost(id, postRestData.toPostEntity());
-		return mapPostEntityToData(post);
+		PostEntity post = postService.updatePost(id, postMapper.toPost(postRestData));
+		return postMapper.toPostData(post);
 	}
 }

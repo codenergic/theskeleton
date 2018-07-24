@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users/{username}/posts")
 public class UserPostRestController {
 	private final PostService postService;
+	private final PostMapper postMapper = PostMapper.newInstance();
 
 	public UserPostRestController(PostService postService) {
 		this.postService = postService;
@@ -36,12 +37,12 @@ public class UserPostRestController {
 	@GetMapping
 	public Page<PostRestData> findUserPublishedPost(@User UserEntity user, Pageable pageable) {
 		return postService.findPublishedPostByPoster(user.getId(), pageable)
-			.map(post -> PostRestData.builder(post).build());
+			.map(postMapper::toPostData);
 	}
 
 	@GetMapping(params = {"status"})
 	public Page<PostRestData> findUserPostByStatus(@User UserEntity user, @RequestParam("status") String postStatus, Pageable pageable) {
 		return postService.findPostByPosterAndStatus(user.getId(), PostStatus.valueOf(postStatus.toUpperCase()), pageable)
-			.map(post -> PostRestData.builder(post).build());
+			.map(postMapper::toPostData);
 	}
 }

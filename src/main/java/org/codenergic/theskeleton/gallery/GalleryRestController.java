@@ -28,6 +28,7 @@ import java.io.InputStream;
 @RequestMapping("/api/galleries")
 public class GalleryRestController {
 	private final GalleryService galleryService;
+	private final GalleryMapper galleryMapper = GalleryMapper.newInstance();
 
 	public GalleryRestController(GalleryService galleryService) {
 		this.galleryService = galleryService;
@@ -41,17 +42,16 @@ public class GalleryRestController {
 	@GetMapping
 	public Page<GalleryRestData> findImageByUser(@AuthenticationPrincipal UserEntity userEntity, Pageable pageable) {
 		return galleryService.findImageByUser(userEntity.getId(), pageable)
-			.map(g -> GalleryRestData.builder(g).build());
+			.map(galleryMapper::toGalleryData);
 	}
 
 	@PostMapping(consumes = {"image/*"})
 	public GalleryRestData saveImage(@AuthenticationPrincipal UserEntity userEntity, HttpServletRequest request) throws Exception {
 		try (InputStream inputStream = request.getInputStream()) {
-			GalleryEntity galleryEntity = galleryService.saveImage(userEntity.getId(), new GalleryEntity()
-				.setImage(inputStream).setFormat(request.getContentType()));
-			return GalleryRestData.builder(galleryEntity).build();
+			GalleryEntity gallery = galleryService.saveImage(userEntity.getId(), new GalleryEntity()
+				.setImage(inputStream)
+				.setFormat(request.getContentType()));
+			return galleryMapper.toGalleryData(gallery);
 		}
 	}
-
-
 }

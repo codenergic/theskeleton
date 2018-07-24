@@ -23,16 +23,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @Value.Immutable
 @JsonDeserialize(builder = ImmutableGalleryRestData.Builder.class)
 interface GalleryRestData extends RestData {
-	static ImmutableGalleryRestData.Builder builder() {
-		return ImmutableGalleryRestData.builder();
-	}
-
-	static ImmutableGalleryRestData.Builder builder(GalleryEntity gallery) {
-		return builder()
-			.imageUrl(gallery.getImageUrl())
-			.userId(gallery.getCreatedBy().getUserId());
-	}
-
 	String getImageUrl();
 
 	String getUserId();

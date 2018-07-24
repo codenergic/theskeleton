@@ -28,22 +28,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @Value.Immutable
 @JsonDeserialize(builder = ImmutablePostRestData.Builder.class)
 interface PostRestData extends RestData {
-	static ImmutablePostRestData.Builder builder() {
-		return ImmutablePostRestData.builder();
-	}
-
-	static ImmutablePostRestData.Builder builder(PostEntity post) {
-		return builder()
-			.id(post.getId())
-			.content(post.getContent())
-			.responseTo(post.getResponseTo() == null ? null : post.getResponseTo().getId())
-			.response(post.getResponseTo() == null)
-			.status(post.getPostStatus().name())
-			.title(post.getTitle())
-			.createdDate(post.getCreatedDate())
-			.lastUpdatedDate(post.getLastModifiedDate());
-	}
-
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	String getContent();
@@ -69,13 +53,6 @@ interface PostRestData extends RestData {
 	@NotBlank(groups = {New.class, Existing.class})
 	@Nullable
 	String getTitle();
-
-	default PostEntity toPostEntity() {
-		return new PostEntity()
-			.setContent(getContent())
-			.setId(getId())
-			.setTitle(getTitle());
-	}
 
 	interface New {
 	}
