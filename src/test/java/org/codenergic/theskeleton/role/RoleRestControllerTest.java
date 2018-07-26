@@ -16,7 +16,7 @@
 package org.codenergic.theskeleton.role;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -64,10 +64,11 @@ public class RoleRestControllerTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private RoleService roleService;
+	private final RoleMapper roleMapper = RoleMapper.newInstance();
 
 	@Test
 	public void testSerializeDeserializeRole() throws IOException {
-		RoleRestData role = RoleRestData.builder()
+		RoleRestData role = ImmutableRoleRestData.builder()
 				.id("123")
 				.code("12345")
 				.description("Description 12345")
@@ -93,7 +94,7 @@ public class RoleRestControllerTest {
 				.getResponse();
 		verify(roleService).findRoleByIdOrCode("123");
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder(dbResult).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(roleMapper.toRoleData(dbResult)));
 	}
 
 	@Test
@@ -113,8 +114,8 @@ public class RoleRestControllerTest {
 				.setId("123")
 				.setCode("12345")
 				.setDescription("Description 12345");
-		Page<RoleEntity> pageResponseBody = new PageImpl<>(Arrays.asList(dbResult));
-		Page<RoleRestData> expectedResponseBody = new PageImpl<>(Arrays.asList(RoleRestData.builder(dbResult).build()));
+		Page<RoleEntity> pageResponseBody = new PageImpl<>(Collections.singletonList(dbResult));
+		Page<RoleRestData> expectedResponseBody = new PageImpl<>(Collections.singletonList(roleMapper.toRoleData(dbResult)));
 		when(roleService.findRoles(anyString(), any())).thenReturn(pageResponseBody);
 		ResultActions resultActions = mockMvc.perform(get("/api/roles")
 					.contentType(MediaType.APPLICATION_JSON))
@@ -137,7 +138,7 @@ public class RoleRestControllerTest {
 				.setId(UUID.randomUUID().toString())
 				.setCode("12345")
 				.setDescription("Description 12345");
-		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder(input).build());
+		byte[] jsonInput = objectMapper.writeValueAsBytes(roleMapper.toRoleData(input));
 		when(roleService.saveRole(any())).thenReturn(dbResult);
 		ResultActions resultActions = mockMvc.perform(post("/api/roles")
 					.contentType(MediaType.APPLICATION_JSON)
@@ -149,7 +150,7 @@ public class RoleRestControllerTest {
 				.getResponse();
 		verify(roleService).saveRole(any());
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder(dbResult).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(roleMapper.toRoleData(dbResult)));
 	}
 
 	@Test
@@ -162,7 +163,7 @@ public class RoleRestControllerTest {
 				.setId(UUID.randomUUID().toString())
 				.setCode("12345")
 				.setDescription("Description 12345");
-		byte[] jsonInput = objectMapper.writeValueAsBytes(RoleRestData.builder(input).build());
+		byte[] jsonInput = objectMapper.writeValueAsBytes(roleMapper.toRoleData(input));
 		when(roleService.updateRole(eq("123"), any())).thenReturn(dbResult);
 		ResultActions resultActions = mockMvc.perform(put("/api/roles/123")
 					.contentType(MediaType.APPLICATION_JSON)
@@ -174,7 +175,7 @@ public class RoleRestControllerTest {
 				.getResponse();
 		verify(roleService).updateRole(eq("123"), any());
 		assertThat(response.getContentAsByteArray())
-				.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder(dbResult).build()));
+				.isEqualTo(objectMapper.writeValueAsBytes(roleMapper.toRoleData(dbResult)));
 	}
 
 	@Test

@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.codenergic.theskeleton.role.RoleMapper;
 import org.codenergic.theskeleton.role.RoleRestData;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/roles/{code}/privileges")
 public class RolePrivilegeRestController {
 	private final PrivilegeService privilegeService;
+	private final PrivilegeMapper privilegeMapper = PrivilegeMapper.newInstance();
+	private final RoleMapper roleMapper = RoleMapper.newInstance();
 
 	public RolePrivilegeRestController(PrivilegeService privilegeService) {
 		this.privilegeService = privilegeService;
@@ -39,18 +42,18 @@ public class RolePrivilegeRestController {
 
 	@PutMapping
 	public RoleRestData addPrivilegeToRole(@PathVariable("code") String code, @RequestBody Map<String, String> body) {
-		return RoleRestData.builder(privilegeService.addPrivilegeToRole(code, body.get("privilege"))).build();
+		return roleMapper.toRoleData(privilegeService.addPrivilegeToRole(code, body.get("privilege")));
 	}
 
 	@GetMapping
 	public Set<PrivilegeRestData> findPrivilegesByRoleCode(@PathVariable("code") String code) {
 		return privilegeService.findPrivilegesByRoleCode(code).stream()
-			.map(p -> PrivilegeRestData.builder(p).build())
+			.map(privilegeMapper::toPrivilegeData)
 			.collect(Collectors.toSet());
 	}
 
 	@DeleteMapping
 	public RoleRestData removePrivilegeFromRole(@PathVariable("code") String code, @RequestBody Map<String, String> body) {
-		return RoleRestData.builder(privilegeService.removePrivilegeFromRole(code, body.get("privilege"))).build();
+		return roleMapper.toRoleData(privilegeService.removePrivilegeFromRole(code, body.get("privilege")));
 	}
 }

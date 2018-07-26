@@ -1,8 +1,13 @@
 package org.codenergic.theskeleton.user.profile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
-import com.google.common.collect.ImmutableMap;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.commons.io.IOUtils;
 import org.codenergic.theskeleton.client.OAuth2ClientEntity;
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
@@ -25,20 +30,20 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.google.common.collect.ImmutableMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = {ProfileRestController.class})
@@ -53,6 +58,7 @@ public class ProfileRestControllerTest {
 	private ProfileService profileService;
 	@MockBean
 	private SessionRegistry sessionRegistry;
+	private final ProfileMapper profileMapper = ProfileMapper.newInstance();
 
 	@Test
 	@WithMockUser("user123")
@@ -129,7 +135,7 @@ public class ProfileRestControllerTest {
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder(user).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(profileMapper.toProfileData(user)));
 		verify(profileService).findProfileByUsername("user123");
 	}
 
@@ -165,7 +171,7 @@ public class ProfileRestControllerTest {
 
 	@Test
 	public void testSerializeDeserializeUser() throws IOException {
-		ProfileRestData user = ProfileRestData.builder()
+		ProfileRestData user = ImmutableProfileRestData.builder()
 			.username("user")
 			.password("123123123")
 			.phoneNumber("1231123123123")
@@ -192,7 +198,7 @@ public class ProfileRestControllerTest {
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder(user).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(profileMapper.toProfileData(user)));
 		verify(profileService).updateProfile(eq("user123"), any());
 	}
 
@@ -213,7 +219,7 @@ public class ProfileRestControllerTest {
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder(user).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(profileMapper.toProfileData(user)));
 		verify(profileService).updateProfilePassword(eq("user123"), any());
 	}
 
@@ -235,7 +241,7 @@ public class ProfileRestControllerTest {
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(ProfileRestData.builder(user).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(profileMapper.toProfileData(user)));
 		verify(profileService).updateProfilePicture(eq("user123"), any(), eq("image/png"));
 		image.close();
 	}

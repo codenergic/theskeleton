@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/roles")
 public class RoleRestController {
 	private final RoleService roleService;
+	private final RoleMapper roleMapper = RoleMapper.newInstance();
 
 	public RoleRestController(RoleService roleService) {
 		this.roleService = roleService;
@@ -46,7 +47,7 @@ public class RoleRestController {
 	@GetMapping("/{idOrCode}")
 	public ResponseEntity<RoleRestData> findRoleByIdOrCode(@PathVariable("idOrCode") final String idOrCode) {
 		return roleService.findRoleByIdOrCode(idOrCode)
-			.map(role -> RoleRestData.builder(role).build())
+			.map(roleMapper::toRoleData)
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
 	}
@@ -55,18 +56,18 @@ public class RoleRestController {
 	public Page<RoleRestData> findRoles(@RequestParam(name = "q", defaultValue = "") final String keywords,
 			final Pageable pageable) {
 		return roleService.findRoles(keywords, pageable)
-				.map(s -> RoleRestData.builder(s).build());
+				.map(roleMapper::toRoleData);
 	}
 
 	@PostMapping
-	public RoleRestData saveRole(@RequestBody @Validated(RoleRestData.New.class) final RoleRestData role) {
-		return RoleRestData.builder(roleService.saveRole(role.toRoleEntity()))
-				.build();
+	public RoleRestData saveRole(@RequestBody @Validated(RoleRestData.New.class) final RoleRestData roleData) {
+		final RoleEntity role = roleMapper.toRole(roleData);
+		return roleMapper.toRoleData(roleService.saveRole(role));
 	}
 
 	@PutMapping("/{code}")
-	public RoleRestData updateRole(@PathVariable("code") String code, @RequestBody @Validated(RoleRestData.Existing.class) final RoleRestData role) {
-		return RoleRestData.builder(roleService.updateRole(code, role.toRoleEntity()))
-				.build();
+	public RoleRestData updateRole(@PathVariable("code") String code, @RequestBody @Validated(RoleRestData.Existing.class) final RoleRestData roleData) {
+		final RoleEntity role = roleMapper.toRole(roleData);
+		return roleMapper.toRoleData(roleService.updateRole(code, role));
 	}
 }

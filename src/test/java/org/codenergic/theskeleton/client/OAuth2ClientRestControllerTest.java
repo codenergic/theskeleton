@@ -67,6 +67,7 @@ public class OAuth2ClientRestControllerTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private OAuth2ClientService oAuth2ClientService;
+	private final OAuth2ClientMapper oAuth2ClientMapper = OAuth2ClientMapper.newInstance();
 
 	@Test
 	@WithMockUser("user123")
@@ -97,7 +98,7 @@ public class OAuth2ClientRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder(client).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(oAuth2ClientMapper.toOAuth2ClientData(client)));
 		verify(oAuth2ClientService).findClientById("client123");
 	}
 
@@ -123,7 +124,7 @@ public class OAuth2ClientRestControllerTest {
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(
-				clients.map(c -> OAuth2ClientRestData.builder(c).build())));
+				clients.map(oAuth2ClientMapper::toOAuth2ClientData)));
 		verify(oAuth2ClientService).findClients(anyString(), any());
 	}
 
@@ -141,7 +142,7 @@ public class OAuth2ClientRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder(client).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(oAuth2ClientMapper.toOAuth2ClientData(client)));
 		verify(oAuth2ClientService).generateSecret(eq("client123"));
 	}
 
@@ -167,13 +168,13 @@ public class OAuth2ClientRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder(client).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(oAuth2ClientMapper.toOAuth2ClientData(client)));
 		verify(oAuth2ClientService).saveClient(any());
 	}
 
 	@Test
 	public void testSerializeDeserializeClient() throws IOException {
-		OAuth2ClientRestData client = OAuth2ClientRestData.builder()
+		OAuth2ClientRestData client = ImmutableOAuth2ClientRestData.builder()
 			.id("client123")
 			.name("client")
 			.description("description")
@@ -204,7 +205,7 @@ public class OAuth2ClientRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(OAuth2ClientRestData.builder(client).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(oAuth2ClientMapper.toOAuth2ClientData(client)));
 		verify(oAuth2ClientService).updateClient(eq("client123"), any());
 	}
 }

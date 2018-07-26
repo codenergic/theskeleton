@@ -16,7 +16,7 @@
 
 package org.codenergic.theskeleton.role;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
 import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
 import org.codenergic.theskeleton.user.UserEntity;
-import org.codenergic.theskeleton.user.UserRestData;
+import org.codenergic.theskeleton.user.UserMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +60,8 @@ public class UserRoleRestControllerTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private RoleService roleService;
+	private final UserMapper userMapper = UserMapper.newInstance();
+	private final RoleMapper roleMapper = RoleMapper.newInstance();
 
 	@Test
 	public void testAddRoleToUser() throws Exception {
@@ -77,7 +79,7 @@ public class UserRoleRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(userMapper.toUserData(user)));
 		verify(roleService).addRoleToUser("user123", "role123");
 	}
 
@@ -86,9 +88,9 @@ public class UserRoleRestControllerTest {
 		final RoleEntity role = new RoleEntity()
 			.setId("role123")
 			.setCode("role123");
-		final Set<RoleEntity> roles = new HashSet<>(Arrays.asList(role));
+		final Set<RoleEntity> roles = new HashSet<>(Collections.singletonList(role));
 		final Set<RoleRestData> expected = roles.stream()
-			.map(r -> RoleRestData.builder(r).build())
+			.map(roleMapper::toRoleData)
 			.collect(Collectors.toSet());
 		when(roleService.findRolesByUserUsername("user123")).thenReturn(roles);
 		ResultActions resultActions = mockMvc.perform(get("/api/users/user123/roles")
@@ -116,7 +118,7 @@ public class UserRoleRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(UserRestData.builder(user).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(userMapper.toUserData(user)));
 		verify(roleService).removeRoleFromUser("user123", "role123");
 	}
 }

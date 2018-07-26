@@ -30,7 +30,7 @@ public class GalleryEntity extends AbstractAuditingEntity {
 	@Column(name = "image_url")
 	private String imageUrl;
 	@Transient
-	private InputStream image;
+	private transient InputStream image;
 	@Transient
 	private String format;
 

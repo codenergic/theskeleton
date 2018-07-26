@@ -15,36 +15,19 @@
  */
 package org.codenergic.theskeleton.user.profile;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.auto.value.AutoValue;
 import org.codenergic.theskeleton.core.data.RestData;
+import org.immutables.value.Value;
 
-@SuppressWarnings("serial")
-@AutoValue
-@JsonDeserialize(builder = AutoValue_ProfileSocialRestData.Builder.class)
-abstract class ProfileSocialRestData implements RestData {
-	static Builder builder() {
-		return new AutoValue_ProfileSocialRestData.Builder();
-	}
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-	abstract String getImageUrl();
+@Value.Immutable
+@JsonDeserialize(builder = ImmutableProfileSocialRestData.Builder.class)
+interface ProfileSocialRestData extends RestData {
+	String getImageUrl();
 
-	abstract String getProfileId();
+	String getProfileId();
 
-	abstract String getProfileUrl();
+	String getProfileUrl();
 
-	abstract String getProvider();
-
-	@AutoValue.Builder
-	interface Builder extends RestData.Builder {
-		ProfileSocialRestData build();
-
-		Builder imageUrl(String imageUrl);
-
-		Builder profileId(String providerUserId);
-
-		Builder profileUrl(String profileUrl);
-
-		Builder provider(String providerName);
-	}
+	String getProvider();
 }

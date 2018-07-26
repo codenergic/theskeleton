@@ -187,6 +187,10 @@ public class OAuth2ClientEntity extends AbstractAuditingEntity implements Client
 		return scope == null ? new HashSet<>() : new HashSet<>(Arrays.asList(scope));
 	}
 
+	public OAuth2ClientEntity setScope(Set<String> scopes) {
+		return setScopes(scopes == null || scopes.isEmpty() ? getScopes() : StringUtils.join(scopes, SEPARATOR));
+	}
+
 	public String getScopes() {
 		return scopes;
 	}
@@ -238,9 +242,5 @@ public class OAuth2ClientEntity extends AbstractAuditingEntity implements Client
 
 	public OAuth2ClientEntity setRegisteredRedirectUris(Set<String> registeredRedirectUris) {
 		return setRedirectUris(StringUtils.join(registeredRedirectUris, SEPARATOR));
-	}
-
-	public OAuth2ClientEntity setScopes(Set<String> scopes) {
-		return setScopes(scopes == null || scopes.isEmpty() ? getScopes() : StringUtils.join(scopes, SEPARATOR));
 	}
 }

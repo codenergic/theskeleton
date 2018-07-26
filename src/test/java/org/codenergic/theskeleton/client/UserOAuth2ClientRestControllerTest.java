@@ -62,6 +62,7 @@ public class UserOAuth2ClientRestControllerTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private OAuth2ClientService oAuth2ClientService;
+	private final OAuth2ClientMapper oAuth2ClientMapper = OAuth2ClientMapper.newInstance();
 
 	@Test
 	@WithMockUser("user123")
@@ -84,8 +85,7 @@ public class UserOAuth2ClientRestControllerTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response.getContentAsString())
-			.isEqualTo(objectMapper.writeValueAsString(
-				clients.map(c -> OAuth2ClientRestData.builder(c).build())));
+			.isEqualTo(objectMapper.writeValueAsString(clients.map(oAuth2ClientMapper::toOAuth2ClientData)));
 		verify(oAuth2ClientService).findClientByOwner(any(), any());
 	}
 }

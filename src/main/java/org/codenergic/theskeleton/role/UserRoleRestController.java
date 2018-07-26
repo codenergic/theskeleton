@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import org.codenergic.theskeleton.core.web.User;
 import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.user.UserMapper;
 import org.codenergic.theskeleton.user.UserRestData;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users/{username}/roles")
 public class UserRoleRestController {
 	private final RoleService roleService;
+	private final RoleMapper roleMapper = RoleMapper.newInstance();
+	private final UserMapper userMapper = UserMapper.newInstance();
 
 	public UserRoleRestController(RoleService roleService) {
 		this.roleService = roleService;
@@ -41,18 +44,18 @@ public class UserRoleRestController {
 
 	@PutMapping
 	public UserRestData addRoleToUser(@User UserEntity user, @RequestBody Map<String, String> body) {
-		return UserRestData.builder(roleService.addRoleToUser(user.getUsername(), body.get("role"))).build();
+		return userMapper.toUserData(roleService.addRoleToUser(user.getUsername(), body.get("role")));
 	}
 
 	@GetMapping
 	public Set<RoleRestData> findRolesByUserUsername(@User UserEntity user) {
 		return roleService.findRolesByUserUsername(user.getUsername()).stream()
-			.map(r -> RoleRestData.builder(r).build())
+			.map(roleMapper::toRoleData)
 			.collect(Collectors.toSet());
 	}
 
 	@DeleteMapping
 	public UserRestData removeRoleFromUser(@User UserEntity user, @RequestBody Map<String, String> body) {
-		return UserRestData.builder(roleService.removeRoleFromUser(user.getUsername(), body.get("role"))).build();
+		return userMapper.toUserData(roleService.removeRoleFromUser(user.getUsername(), body.get("role")));
 	}
 }

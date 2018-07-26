@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users/{username}/clients")
 public class UserOAuth2ClientRestController {
 	private final OAuth2ClientService oAuth2ClientService;
+	private final OAuth2ClientMapper oAuth2ClientMapper = OAuth2ClientMapper.newInstance();
 
 	public UserOAuth2ClientRestController(OAuth2ClientService oAuth2ClientService) {
 		this.oAuth2ClientService = oAuth2ClientService;
@@ -34,7 +35,7 @@ public class UserOAuth2ClientRestController {
 
 	@GetMapping
 	public Page<OAuth2ClientRestData> findClientByUser(@User UserEntity user, Pageable pageable) {
-		Page<OAuth2ClientEntity> clients = oAuth2ClientService.findClientByOwner(user.getId(), pageable);
-		return clients.map(client -> OAuth2ClientRestData.builder(client).build());
+		return oAuth2ClientService.findClientByOwner(user.getId(), pageable)
+			.map(oAuth2ClientMapper::toOAuth2ClientData);
 	}
 }

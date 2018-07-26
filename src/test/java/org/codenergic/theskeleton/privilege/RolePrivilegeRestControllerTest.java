@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
 import org.codenergic.theskeleton.core.test.InjectUserDetailsService;
 import org.codenergic.theskeleton.role.RoleEntity;
-import org.codenergic.theskeleton.role.RoleRestData;
+import org.codenergic.theskeleton.role.RoleMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +60,8 @@ public class RolePrivilegeRestControllerTest {
 	private ObjectMapper objectMapper;
 	@MockBean
 	private PrivilegeService privilegeService;
+	private final PrivilegeMapper privilegeMapper = PrivilegeMapper.newInstance();
+	private final RoleMapper roleMapper = RoleMapper.newInstance();
 
 	@Test
 	public void testAddPrivilegeToRole() throws Exception {
@@ -77,7 +79,7 @@ public class RolePrivilegeRestControllerTest {
 			.getResponse();
 		verify(privilegeService).addPrivilegeToRole("role123", "privilege123");
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder(role).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(roleMapper.toRoleData(role)));
 	}
 
 	@Test
@@ -87,7 +89,7 @@ public class RolePrivilegeRestControllerTest {
 			.setName("user_list_read");
 		final Set<PrivilegeEntity> privileges = new HashSet<>(Arrays.asList(privilege));
 		final Set<PrivilegeRestData> expected = privileges.stream()
-			.map(p -> PrivilegeRestData.builder(p).build())
+			.map(privilegeMapper::toPrivilegeData)
 			.collect(Collectors.toSet());
 		when(privilegeService.findPrivilegesByRoleCode("role123")).thenReturn(privileges);
 		ResultActions resultActions = mockMvc.perform(get("/api/roles/role123/privileges")
@@ -117,6 +119,6 @@ public class RolePrivilegeRestControllerTest {
 			.getResponse();
 		verify(privilegeService).removePrivilegeFromRole("role123", "privilege123");
 		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(RoleRestData.builder(role).build()));
+			.isEqualTo(objectMapper.writeValueAsBytes(roleMapper.toRoleData(role)));
 	}
 }
