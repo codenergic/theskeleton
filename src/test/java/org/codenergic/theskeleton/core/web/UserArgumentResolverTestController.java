@@ -15,34 +15,35 @@
  */
 package org.codenergic.theskeleton.core.web;
 
-import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.core.security.ImmutableUser;
+import org.codenergic.theskeleton.core.security.User;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 class UserArgumentResolverTestController {
 	@RequestMapping("/test1/{username}")
-	public UserEntity test1(@User UserEntity user) {
-		return user.setId(user.getId().concat("12345"));
+	public User test1(@User.Inject User user) {
+		return ImmutableUser.copyOf(user).withId(user.getUsername().concat("12345"));
 	}
 
 	@RequestMapping("/test2/{id}")
-	public UserEntity test2(@User("id") UserEntity user) {
-		return user.setId(user.getId().concat("12345"));
+	public User test2(@User.Inject("id") User user) {
+		return ImmutableUser.copyOf(user).withId(user.getUsername().concat("12345"));
 	}
 
 	@RequestMapping("/test3/{id}")
-	public UserEntity test3(@User(parameterName = "id") UserEntity user) {
-		return user.setId(user.getId().concat("12345"));
+	public User test3(@User.Inject(parameterName = "id") User user) {
+		return ImmutableUser.copyOf(user).withId(user.getUsername().concat("12345"));
 	}
 
 	@RequestMapping("/test4/{id}")
-	public UserEntity test4(@User(parameterName = "idx") UserEntity user) {
-		return user == null ? null : user.setId(user.getId().concat("12345"));
+	public User test4(@User.Inject(parameterName = "idx") User user) {
+		return user == null ? null : ImmutableUser.copyOf(user).withId(user.getUsername().concat("12345"));
 	}
 
 	@RequestMapping("/test5/{username}")
-	public UserEntity test5(@User UserEntity user) {
+	public User test5(@User.Inject User user) {
 		return user;
 	}
 }

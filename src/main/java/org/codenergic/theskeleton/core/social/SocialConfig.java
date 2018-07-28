@@ -15,8 +15,15 @@
  */
 package org.codenergic.theskeleton.core.social;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.codenergic.theskeleton.core.security.User;
 import org.codenergic.theskeleton.social.SocialConnectionRepository;
-import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.social.FacebookAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -40,12 +47,6 @@ import org.springframework.social.connect.web.ProviderSignInController;
 import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.social.connect.web.SignInAdapter;
 import org.springframework.social.google.config.boot.GoogleAutoConfiguration;
-
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 @Configuration
 @EnableSocial
@@ -91,8 +92,8 @@ public class SocialConfig extends SocialConfigurerAdapter {
 	public UserIdSource getUserIdSource() {
 		return () -> {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			if (authentication.getPrincipal() instanceof UserEntity)
-				return ((UserEntity) authentication.getPrincipal()).getId();
+			if (authentication.getPrincipal() instanceof User)
+				return ((User) authentication.getPrincipal()).getId();
 			return authentication.getName();
 		};
 	}

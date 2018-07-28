@@ -15,23 +15,33 @@
  */
 package org.codenergic.theskeleton.user;
 
-import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
-import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
-import org.codenergic.theskeleton.role.UserRoleEntity;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+
+import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
+import org.codenergic.theskeleton.core.security.User;
+import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
+import org.codenergic.theskeleton.role.UserRoleEntity;
+
 @Entity
 @Table(name = "ts_user")
 @SuppressWarnings("serial")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class UserEntity extends AbstractAuditingEntity implements UserDetails {
+public class UserEntity extends AbstractAuditingEntity implements User {
 	@NotNull
 	@Column(name = "account_non_locked")
 	private boolean accountNonLocked = false;

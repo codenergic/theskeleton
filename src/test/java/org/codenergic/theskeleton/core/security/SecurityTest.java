@@ -15,6 +15,9 @@
  */
 package org.codenergic.theskeleton.core.security;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.codenergic.theskeleton.client.OAuth2ClientService;
 import org.codenergic.theskeleton.core.security.SecurityTest.SecurityTestConfiguration;
 import org.codenergic.theskeleton.user.UserEntity;
@@ -35,12 +38,12 @@ import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { SecurityTestConfiguration.class }, webEnvironment = WebEnvironment.MOCK)
@@ -59,7 +62,7 @@ public class SecurityTest {
 	public void testConvertUserAuthentication2() {
 		UserAuthenticationConverter authenticationConverter = new UserAccessTokenAuthenticationConverter();
 		Authentication authentication = mock(Authentication.class);
-		when(authentication.getPrincipal()).thenReturn(new UserEntity().setId("123"));
+		when(authentication.getPrincipal()).thenReturn(ImmutableUser.builder().id("123").username("user123").build());
 		Map<String, ?> response = authenticationConverter.convertUserAuthentication(authentication);
 		assertThat(response).hasSize(3);
 		assertThat(response).containsKey("user_name");
@@ -79,7 +82,7 @@ public class SecurityTest {
 		assertThatThrownBy(() -> authenticationConverter.extractAuthentication(map)).isInstanceOf(BadCredentialsException.class);
 		map.put("email", "user@example.com");
 		Authentication authentication = authenticationConverter.extractAuthentication(map);
-		assertThat(authentication.getPrincipal()).isInstanceOf(UserEntity.class);
+		assertThat(authentication.getPrincipal()).isInstanceOf(User.class);
 		map.remove("email");
 		assertThatThrownBy(() -> authenticationConverter.extractAuthentication(map)).isInstanceOf(BadCredentialsException.class);
 	}
