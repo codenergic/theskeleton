@@ -16,7 +16,7 @@
 
 package org.codenergic.theskeleton.core.web;
 
-import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.core.security.ImmutableUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -24,15 +24,16 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,40 +53,43 @@ public class UserArgumentResolverTest {
 
 	@Test
 	public void testUserArgumentResolver1() throws Exception {
-		when(userDetailsService.loadUserByUsername("username")).thenReturn(new UserEntity().setId("username2"));
+		when(userDetailsService.loadUserByUsername("username"))
+			.thenReturn(ImmutableUser.builder().id("1234").username("usernameX").build());
 		MockHttpServletResponse response = mockMvc.perform(get("/test1/username")
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
-		assertThat(response.getContentAsString()).contains("username212345");
+		assertThat(response.getContentAsString()).contains("\"id\":\"usernameX12345\"", "\"username\":\"usernameX\"");
 		verify(userDetailsService).loadUserByUsername("username");
 	}
 
 	@Test
 	public void testUserArgumentResolver2() throws Exception {
-		when(userDetailsService.loadUserByUsername("username")).thenReturn(new UserEntity().setId("username2"));
+		when(userDetailsService.loadUserByUsername("username"))
+			.thenReturn(ImmutableUser.builder().id("1234").username("usernameX").build());
 		MockHttpServletResponse response = mockMvc.perform(get("/test2/username")
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
-		assertThat(response.getContentAsString()).contains("username212345");
+		assertThat(response.getContentAsString()).contains("\"id\":\"usernameX12345\"", "\"username\":\"usernameX\"");
 		verify(userDetailsService).loadUserByUsername("username");
 	}
 
 	@Test
 	public void testUserArgumentResolver3() throws Exception {
-		when(userDetailsService.loadUserByUsername("username")).thenReturn(new UserEntity().setId("username2"));
+		when(userDetailsService.loadUserByUsername("username"))
+			.thenReturn(ImmutableUser.builder().id("1234").username("usernameX").build());
 		MockHttpServletResponse response = mockMvc.perform(get("/test3/username")
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
 			.andReturn()
 			.getResponse();
 		assertThat(response.getStatus()).isEqualTo(200);
-		assertThat(response.getContentAsString()).contains("username212345");
+		assertThat(response.getContentAsString()).contains("\"id\":\"usernameX12345\"", "\"username\":\"usernameX\"");
 		verify(userDetailsService).loadUserByUsername("username");
 	}
 
@@ -109,11 +113,12 @@ public class UserArgumentResolverTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response1.getStatus()).isEqualTo(200);
-		assertThat(response1.getContentAsString()).isEmpty();
+		assertThat(response1.getContentAsString()).contains("\"username\":\"me\"");
 		verify(userDetailsService, never()).loadUserByUsername(any());
 
 		SecurityContextHolder.getContext()
-			.setAuthentication(new TestingAuthenticationToken(new UserEntity().setId("1234"), ""));
+			.setAuthentication(new TestingAuthenticationToken(ImmutableUser
+				.builder().id("12345").username("username").build(), ""));
 		SecurityContextHolder.getContext().getAuthentication();
 		final MockHttpServletResponse response2 = mockMvc.perform(get("/test5/me")
 			.contentType(MediaType.APPLICATION_JSON))
@@ -121,20 +126,7 @@ public class UserArgumentResolverTest {
 			.andReturn()
 			.getResponse();
 		assertThat(response2.getStatus()).isEqualTo(200);
-		assertThat(response2.getContentAsString()).contains("\"id\":\"1234\"");
+		assertThat(response2.getContentAsString()).contains("\"id\":\"12345\"", "\"username\":\"username\"");
 		verify(userDetailsService, never()).loadUserByUsername(any());
-
-		when(userDetailsService.loadUserByUsername("1234")).thenReturn(new UserEntity().setId("12345"));
-		SecurityContextHolder.getContext()
-			.setAuthentication(new TestingAuthenticationToken("1234", ""));
-		SecurityContextHolder.getContext().getAuthentication();
-		final MockHttpServletResponse response3 = mockMvc.perform(get("/test5/me")
-			.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andReturn()
-			.getResponse();
-		assertThat(response3.getStatus()).isEqualTo(200);
-		assertThat(response3.getContentAsString()).contains("\"id\":\"12345\"");
-		verify(userDetailsService).loadUserByUsername("1234");
 	}
 }

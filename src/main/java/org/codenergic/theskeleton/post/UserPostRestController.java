@@ -15,8 +15,7 @@
  */
 package org.codenergic.theskeleton.post;
 
-import org.codenergic.theskeleton.core.web.User;
-import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.core.security.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,13 +34,13 @@ public class UserPostRestController {
 	}
 
 	@GetMapping
-	public Page<PostRestData> findUserPublishedPost(@User UserEntity user, Pageable pageable) {
+	public Page<PostRestData> findUserPublishedPost(@User.Inject User user, Pageable pageable) {
 		return postService.findPublishedPostByPoster(user.getId(), pageable)
 			.map(postMapper::toPostData);
 	}
 
 	@GetMapping(params = {"status"})
-	public Page<PostRestData> findUserPostByStatus(@User UserEntity user, @RequestParam("status") String postStatus, Pageable pageable) {
+	public Page<PostRestData> findUserPostByStatus(@User.Inject User user, @RequestParam("status") String postStatus, Pageable pageable) {
 		return postService.findPostByPosterAndStatus(user.getId(), PostStatus.valueOf(postStatus.toUpperCase()), pageable)
 			.map(postMapper::toPostData);
 	}

@@ -15,8 +15,7 @@
  */
 package org.codenergic.theskeleton.client;
 
-import org.codenergic.theskeleton.core.web.User;
-import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.core.security.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +33,7 @@ public class UserOAuth2ClientRestController {
 	}
 
 	@GetMapping
-	public Page<OAuth2ClientRestData> findClientByUser(@User UserEntity user, Pageable pageable) {
+	public Page<OAuth2ClientRestData> findClientByUser(@User.Inject User user, Pageable pageable) {
 		return oAuth2ClientService.findClientByOwner(user.getId(), pageable)
 			.map(oAuth2ClientMapper::toOAuth2ClientData);
 	}

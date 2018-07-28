@@ -20,8 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.codenergic.theskeleton.core.web.User;
-import org.codenergic.theskeleton.user.UserEntity;
+import org.codenergic.theskeleton.core.security.User;
 import org.codenergic.theskeleton.user.UserMapper;
 import org.codenergic.theskeleton.user.UserRestData;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,19 +42,19 @@ public class UserRoleRestController {
 	}
 
 	@PutMapping
-	public UserRestData addRoleToUser(@User UserEntity user, @RequestBody Map<String, String> body) {
+	public UserRestData addRoleToUser(@User.Inject User user, @RequestBody Map<String, String> body) {
 		return userMapper.toUserData(roleService.addRoleToUser(user.getUsername(), body.get("role")));
 	}
 
 	@GetMapping
-	public Set<RoleRestData> findRolesByUserUsername(@User UserEntity user) {
+	public Set<RoleRestData> findRolesByUserUsername(@User.Inject User user) {
 		return roleService.findRolesByUserUsername(user.getUsername()).stream()
 			.map(roleMapper::toRoleData)
 			.collect(Collectors.toSet());
 	}
 
 	@DeleteMapping
-	public UserRestData removeRoleFromUser(@User UserEntity user, @RequestBody Map<String, String> body) {
+	public UserRestData removeRoleFromUser(@User.Inject User user, @RequestBody Map<String, String> body) {
 		return userMapper.toUserData(roleService.removeRoleFromUser(user.getUsername(), body.get("role")));
 	}
 }
