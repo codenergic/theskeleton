@@ -74,7 +74,7 @@ public class UserFollowerRestControllerTest {
 	private MockMvc mockMvc;
 
 	@Before
-	public void init() throws Exception {
+	public void init() {
 		when(userDetailsService.loadUserByUsername(USERNAME)).thenReturn(new UserEntity().setId(USER_ID).setUsername(USERNAME));
 		mockMvc = MockMvcBuilders
 			.standaloneSetup(new UserFollowerRestController(userFollowerService))

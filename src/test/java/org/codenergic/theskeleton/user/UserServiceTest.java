@@ -1,16 +1,19 @@
 package org.codenergic.theskeleton.user;
 
-import java.util.Arrays;
+import java.io.InputStream;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import org.codenergic.theskeleton.client.OAuth2ClientEntity;
+import org.codenergic.theskeleton.core.security.ImmutableUser;
+import org.codenergic.theskeleton.core.security.User;
 import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
-import org.codenergic.theskeleton.role.RoleRepository;
-import org.codenergic.theskeleton.role.UserRoleRepository;
 import org.codenergic.theskeleton.user.impl.UserServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,36 +21,42 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.approval.Approval;
+
+import io.minio.MinioClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class UserServiceTest {
+	@Mock
+	private MinioClient minioClient;
 	private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 	@Mock
-	private RoleRepository roleRepository;
+	private UserOAuth2ClientApprovalRepository clientApprovalRepository;
 	@Mock
 	private UserRepository userRepository;
 	@Mock
-	private UserRoleRepository userRoleRepository;
-	@Mock
 	private RolePrivilegeRepository rolePrivilegeRepository;
-	private UserAdminService userAdminService;
+	@Mock
+	private SessionRegistry sessionRegistry;
 	private UserService userService;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.userAdminService = new UserServiceImpl(passwordEncoder, userRepository, rolePrivilegeRepository);
-		this.userService = new UserServiceImpl(passwordEncoder, userRepository, rolePrivilegeRepository);
+		this.userService = new UserServiceImpl(minioClient, passwordEncoder, userRepository, rolePrivilegeRepository, clientApprovalRepository, sessionRegistry);
 	}
 
 	@Test
@@ -57,7 +66,7 @@ public class UserServiceTest {
 				.setUsername("user")
 				.setPassword(passwordEncoder.encode("user"));
 		when(userRepository.findByUsername("user")).thenReturn(Optional.of(user));
-		userAdminService.deleteUser("user");
+		userService.deleteUser("user");
 		verify(userRepository).findByUsername("user");
 		verify(userRepository).delete(user);
 	}
@@ -69,7 +78,7 @@ public class UserServiceTest {
 				.setUsername("user")
 				.setEnabled(false);
 		when(userRepository.findByUsername("user")).thenReturn(Optional.of(input));
-		UserEntity result = userAdminService.enableOrDisableUser("user", true);
+		UserEntity result = userService.enableOrDisableUser("user", true);
 		assertThat(result.getId()).isEqualTo(input.getId());
 		assertThat(result.isEnabled()).isTrue();
 		verify(userRepository).findByUsername("user");
@@ -83,11 +92,24 @@ public class UserServiceTest {
 				.setUsername("user")
 				.setExpiredAt(expiredAt);
 		when(userRepository.findByUsername("user")).thenReturn(Optional.of(input));
-		UserEntity result = userAdminService.extendsUserExpiration("user", 60);
+		UserEntity result = userService.extendsUserExpiration("user", 60);
 		assertThat(result.getId()).isEqualTo(input.getId());
 		assertThat(result.getExpiredAt()).isAfter(expiredAt);
 		assertThat((result.getExpiredAt().getTime() - expiredAt.getTime()) / 1000).isEqualTo(3600);
 		verify(userRepository).findByUsername("user");
+	}
+
+	@Test
+	public void testFindUserActiveSessions() {
+		User user = ImmutableUser.builder().id("12345").username("username12345").build();
+		when(sessionRegistry.getAllPrincipals()).thenReturn(Collections.singletonList(user));
+		when(sessionRegistry.getAllSessions(user, true))
+			.thenReturn(Collections.singletonList(new SessionInformation(user, "12345", new Date())));
+		List<SessionInformation> activeSessions = userService.findUserActiveSessions("username12345");
+		assertThat(activeSessions).hasSize(1);
+		assertThat(activeSessions).first().hasFieldOrPropertyWithValue("principal", user);
+		verify(sessionRegistry).getAllPrincipals();
+		verify(sessionRegistry).getAllSessions(user, true);
 	}
 
 	@Test
@@ -100,11 +122,28 @@ public class UserServiceTest {
 	}
 
 	@Test
+	public void testFindUserOAuth2ClientApprovalByUsername() {
+		final UserOAuth2ClientApprovalEntity result = new UserOAuth2ClientApprovalEntity()
+			.setId("123")
+			.setUser(new UserEntity().setUsername("user"))
+			.setClient(new OAuth2ClientEntity().setId("123"))
+			.setApprovalStatus(Approval.ApprovalStatus.APPROVED)
+			.setScope("scope1");
+		when(clientApprovalRepository.findByUserUsername("user"))
+			.thenReturn(Collections.singletonList(result));
+		List<UserOAuth2ClientApprovalEntity> approvals = userService.findUserOAuth2ClientApprovalByUsername("user");
+		assertThat(approvals).isNotEmpty();
+		assertThat(approvals).hasSize(1);
+		assertThat(approvals.get(0)).isEqualTo(result);
+		verify(clientApprovalRepository).findByUserUsername("user");
+	}
+
+	@Test
 	public void testFindUsersByUsernameStartingWith() {
-		Page<UserEntity> dbResult = new PageImpl<>(Arrays.asList(new UserEntity().setUsername("user")));
+		Page<UserEntity> dbResult = new PageImpl<>(Collections.singletonList(new UserEntity().setUsername("user")));
 		when(userRepository.findByUsernameStartingWith(eq("user"), any()))
 				.thenReturn(dbResult);
-		Page<UserEntity> result = userAdminService.findUsersByUsernameStartingWith("user", null);
+		Page<UserEntity> result = userService.findUsersByUsernameStartingWith("user", null);
 		assertThat(result.getNumberOfElements()).isEqualTo(1);
 		assertThat(result).isEqualTo(dbResult);
 		verify(userRepository).findByUsernameStartingWith(eq("user"), any());
@@ -127,14 +166,26 @@ public class UserServiceTest {
 	public void testLockOrUnlockUser() {
 		UserEntity dbResult = new UserEntity().setAccountNonLocked(false);
 		when(userRepository.findByUsername("user")).thenReturn(Optional.of(dbResult));
-		UserEntity result = userAdminService.lockOrUnlockUser("user", true);
+		UserEntity result = userService.lockOrUnlockUser("user", true);
 		assertThat(result.isAccountNonLocked()).isEqualTo(true);
 		verify(userRepository).findByUsername("user");
 	}
 
 	@Test
+	public void testRemoveOAuth2ClientApprovalByUsername() {
+		userService.removeUserOAuth2ClientApprovalByUsername("user", "client");
+		verify(clientApprovalRepository).deleteByUserUsernameAndClientId("user", "client");
+	}
+
+	@Test
+	public void testRevokeProfileSession() {
+		userService.revokeUserSession("", "12345");
+		verify(sessionRegistry).removeSessionInformation("12345");
+	}
+
+	@Test
 	public void testSaveUser() {
-		userAdminService.saveUser(new UserEntity());
+		userService.saveUser(new UserEntity());
 	}
 
 	@Test
@@ -143,7 +194,7 @@ public class UserServiceTest {
 				.setUsername("user")
 				.setEnabled(false);
 		when(userRepository.findByUsername("user")).thenReturn(Optional.of(input));
-		UserEntity updatedUser = userAdminService.updateUser("user", new UserEntity().setUsername("updated"));
+		UserEntity updatedUser = userService.updateUser("user", new UserEntity().setUsername("updated"));
 		assertThat(updatedUser.getUsername()).isEqualTo(input.getUsername());
 		verify(userRepository).findByUsername("user");
 	}
@@ -152,8 +203,19 @@ public class UserServiceTest {
 	public void testUpdateUserPassword() {
 		String rawPassword = "p@$$w0rd!";
 		when(userRepository.findByUsername("user")).thenReturn(Optional.of(new UserEntity()));
-		UserEntity result = userAdminService.updateUserPassword("user", rawPassword);
+		UserEntity result = userService.updateUserPassword("user", rawPassword);
 		assertThat(passwordEncoder.matches(rawPassword, result.getPassword())).isTrue();
 		verify(userRepository).findByUsername("user");
+	}
+
+	@Test
+	public void testUpdateUserPicture() throws Exception {
+		final InputStream inputStream = ClassLoader.getSystemResourceAsStream("static/logo.png");
+		when(userRepository.findByUsername("user")).thenReturn(Optional.of(new UserEntity()));
+		userService.updateUserPicture("user", inputStream, "image/png");
+		verify(userRepository).findByUsername("user");
+		verify(minioClient).putObject(anyString(), anyString(), any(InputStream.class), eq("image/png"));
+		verify(minioClient).getObjectUrl(anyString(), anyString());
+		inputStream.close();
 	}
 }

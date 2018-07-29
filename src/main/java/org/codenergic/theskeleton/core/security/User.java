@@ -29,10 +29,11 @@ import org.springframework.core.annotation.AliasFor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@Value.Immutable
 @Nullable
+@Value.Immutable
 public interface User extends UserDetails, Identifiable<String> {
 	@Nullable
+	@Value.Auxiliary
 	Collection<? extends GrantedAuthority> getAuthorities();
 
 	@Nullable
@@ -43,6 +44,7 @@ public interface User extends UserDetails, Identifiable<String> {
 	String getId();
 
 	@Nullable
+	@Value.Auxiliary
 	String getPassword();
 
 	String getUsername();
