@@ -15,17 +15,64 @@
  */
 package org.codenergic.theskeleton.user;
 
+import java.io.InputStream;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
-	@PreAuthorize("hasAuthority('user_read')")
+	@PreAuthorize("isAuthenticated() and (hasAuthority('user_delete') or principal.username == #username)")
+	void deleteUser(@NotNull String username);
+
+	@PreAuthorize("isAuthenticated() and hasAuthority('user_update')")
+	UserEntity enableOrDisableUser(@NotNull String username, boolean enabled);
+
+	@PreAuthorize("isAuthenticated() and hasAuthority('user_update')")
+	UserEntity extendsUserExpiration(@NotNull String username, int amountInMinutes);
+
+	@PreAuthorize("isAuthenticated() and (hasAuthority('user_read') or principal.username == #username)")
+	List<SessionInformation> findUserActiveSessions(@NotNull String username);
+
 	Optional<UserEntity> findUserByEmail(@NotNull String email);
 
-	@PreAuthorize("hasAuthority('user_read')")
 	Optional<UserEntity> findUserByUsername(@NotNull String username);
+
+	@PreAuthorize("isAuthenticated() and principal.username == #username")
+	List<UserOAuth2ClientApprovalEntity> findUserOAuth2ClientApprovalByUsername(String username);
+
+	@PreAuthorize("isAuthenticated() and hasAuthority('user_read_all')")
+	Page<UserEntity> findUsersByUsernameStartingWith(@NotNull String username, Pageable pageable);
+
+	@PreAuthorize("isAuthenticated() and hasAuthority('user_update')")
+	UserEntity lockOrUnlockUser(@NotNull String username, boolean unlocked);
+
+	@PreAuthorize("isAuthenticated() and principal.username == #username")
+	void removeUserOAuth2ClientApprovalByUsername(String username, String clientId);
+
+	@PreAuthorize("isAuthenticated() and (hasAuthority('user_update') or principal.username == #username)")
+	void revokeUserSession(String username, String sessionId);
+
+	@PreAuthorize("isAuthenticated() and hasAuthority('user_write')")
+	UserEntity saveUser(@NotNull @Valid UserEntity user);
+
+	@PreAuthorize("isAuthenticated() and isAuthenticated() and principal.username == #username")
+	UserEntity updateUser(@NotNull String username, @NotNull @Valid UserEntity newUser);
+
+	@PreAuthorize("isAuthenticated() and hasAuthority('user_update')")
+	UserEntity updateUserExpirationDate(@NotNull String username, Date date);
+
+	@PreAuthorize("isAuthenticated() and (hasAuthority('user_update') or principal.username == #username)")
+	UserEntity updateUserPassword(@NotNull String username, @NotNull String rawPassword);
+
+	@PreAuthorize("isAuthenticated() and principal.username == #username")
+	UserEntity updateUserPicture(String username, InputStream image, String contentType) throws Exception;
 }
