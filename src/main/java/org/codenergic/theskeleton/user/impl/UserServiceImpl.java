@@ -102,9 +102,14 @@ public class UserServiceImpl implements UserService {
 	public List<SessionInformation> findUserActiveSessions(@NotNull String username) {
 		return sessionRegistry.getAllPrincipals().stream()
 			.filter(principal -> principal instanceof User)
+			.distinct()
 			.filter(principal -> ((User) principal).getUsername().equals(username))
 			.flatMap(principal -> sessionRegistry.getAllSessions(principal, true).stream())
-			.distinct()
+			.map(session -> {
+				SessionInformation newSession = new SessionInformation(username, session.getSessionId(), session.getLastRequest());
+				if (session.isExpired()) newSession.expireNow();
+				return newSession;
+			})
 			.collect(Collectors.toList());
 	}
 

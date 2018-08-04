@@ -107,7 +107,7 @@ public class UserServiceTest {
 			.thenReturn(Collections.singletonList(new SessionInformation(user, "12345", new Date())));
 		List<SessionInformation> activeSessions = userService.findUserActiveSessions("username12345");
 		assertThat(activeSessions).hasSize(1);
-		assertThat(activeSessions).first().hasFieldOrPropertyWithValue("principal", user);
+		assertThat(activeSessions).first().hasFieldOrPropertyWithValue("principal", user.getUsername());
 		verify(sessionRegistry).getAllPrincipals();
 		verify(sessionRegistry).getAllSessions(user, true);
 	}

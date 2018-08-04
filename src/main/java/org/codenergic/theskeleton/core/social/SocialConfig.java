@@ -85,7 +85,7 @@ public class SocialConfig extends SocialConfigurerAdapter {
 	public void connectionFactories(ConnectionFactoryLocator connectionFactoryLocator) {
 		OAuth2ConnectionFactory<?> fbConnectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory("facebook");
 		if (fbConnectionFactory != null)
-			fbConnectionFactory.setScope("email public_profile");
+			fbConnectionFactory.setScope("email public_profile user_link");
 	}
 
 	@Override

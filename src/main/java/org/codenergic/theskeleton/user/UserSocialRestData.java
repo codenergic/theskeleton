@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.user;
 
+import javax.annotation.Nullable;
+
 import org.codenergic.theskeleton.core.data.RestData;
 import org.immutables.value.Value;
 
@@ -29,6 +31,7 @@ interface UserSocialRestData extends RestData {
 
 	String getProfileId();
 
+	@Nullable
 	String getProfileUrl();
 
 	String getProvider();
