@@ -18,7 +18,9 @@ package org.codenergic.theskeleton.user.impl;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -32,8 +34,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codenergic.theskeleton.core.security.User;
-import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
-import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
+import org.codenergic.theskeleton.user.UserAuthorityService;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalEntity;
 import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalRepository;
@@ -41,6 +42,7 @@ import org.codenergic.theskeleton.user.UserRepository;
 import org.codenergic.theskeleton.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -58,17 +60,17 @@ public class UserServiceImpl implements UserService {
 	private final MinioClient minioClient;
 	private final PasswordEncoder passwordEncoder;
 	private final UserRepository userRepository;
-	private final RolePrivilegeRepository rolePrivilegeRepository;
+	private final UserAuthorityService<? extends GrantedAuthority> userAuthorityService;
 	private final UserOAuth2ClientApprovalRepository clientApprovalRepository;
 	private final SessionRegistry sessionRegistry;
 
 	public UserServiceImpl(MinioClient minioClient, PasswordEncoder passwordEncoder, UserRepository userRepository,
-						   RolePrivilegeRepository rolePrivilegeRepository, UserOAuth2ClientApprovalRepository clientApprovalRepository,
+						   UserAuthorityService<? extends GrantedAuthority> userAuthorityService, UserOAuth2ClientApprovalRepository clientApprovalRepository,
 						   SessionRegistry sessionRegistry) {
 		this.minioClient = minioClient;
 		this.passwordEncoder = passwordEncoder;
 		this.userRepository = userRepository;
-		this.rolePrivilegeRepository = rolePrivilegeRepository;
+		this.userAuthorityService = userAuthorityService;
 		this.clientApprovalRepository = clientApprovalRepository;
 		this.sessionRegistry = sessionRegistry;
 	}
@@ -140,10 +142,8 @@ public class UserServiceImpl implements UserService {
 			.map(Optional::get)
 			.findFirst()
 			.map(u -> {
-				Set<RolePrivilegeEntity> rolePrivileges = u.getRoles().stream()
-					.flatMap(role -> rolePrivilegeRepository.findByRoleCode(role.getRole().getCode()).stream())
-					.collect(Collectors.toSet());
-				return u.setAuthorities(rolePrivileges);
+				Set<? extends GrantedAuthority> authorities = userAuthorityService.getAuthorities(u);
+				return u.setAuthorities(Collections.unmodifiableSet(new HashSet<>(authorities)));
 			})
 			.orElseThrow(throwUsernameNotFound(username));
 	}

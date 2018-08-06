@@ -13,19 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.codenergic.theskeleton.privilege;
 
-import java.util.Optional;
+package org.codenergic.theskeleton.user;
+
 import java.util.Set;
 
-import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-@Repository
-public interface RolePrivilegeRepository extends AuditingEntityRepository<RolePrivilegeEntity> {
-	Set<RolePrivilegeEntity> findByRoleCode(String code);
-
-	Optional<RolePrivilegeEntity> findByRoleCodeAndPrivilegeName(String code, String privilegeName);
-
-	Set<RolePrivilegeEntity> findByRoleCodeIn(Set<String> codes);
+public interface UserAuthorityService<T extends GrantedAuthority> {
+	Set<T> getAuthorities(UserDetails user);
 }

@@ -16,8 +16,8 @@
 package org.codenergic.theskeleton.user;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -25,7 +25,6 @@ import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Lob;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -34,8 +33,7 @@ import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
 import org.codenergic.theskeleton.core.security.User;
-import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
-import org.codenergic.theskeleton.role.UserRoleEntity;
+import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "ts_user")
@@ -65,10 +63,8 @@ public class UserEntity extends AbstractAuditingEntity implements User {
 	@NotNull
 	@Column(unique = true)
 	private String username;
-	@OneToMany(mappedBy = "user")
-	private Set<UserRoleEntity> roles = new HashSet<>();
 	@Transient
-	private Set<RolePrivilegeEntity> authorities = new HashSet<>();
+	private Set<GrantedAuthority> authorities = Collections.emptySet();
 	@Column(name = "picture_url")
 	private String pictureUrl;
 
@@ -82,7 +78,6 @@ public class UserEntity extends AbstractAuditingEntity implements User {
 		this.password = other.password;
 		this.phoneNumber = other.phoneNumber;
 		this.username = other.username;
-		this.roles = other.roles;
 		this.authorities = other.authorities;
 		this.pictureUrl = other.pictureUrl;
 	}
@@ -91,11 +86,11 @@ public class UserEntity extends AbstractAuditingEntity implements User {
 	}
 
 	@Override
-	public Collection<RolePrivilegeEntity> getAuthorities() {
+	public Collection<GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
 
-	public UserEntity setAuthorities(Set<RolePrivilegeEntity> authorities) {
+	public UserEntity setAuthorities(Set<GrantedAuthority> authorities) {
 		this.authorities = authorities;
 		return this;
 	}
@@ -143,15 +138,6 @@ public class UserEntity extends AbstractAuditingEntity implements User {
 
 	public UserEntity setPictureUrl(String pictureUrl) {
 		this.pictureUrl = pictureUrl;
-		return this;
-	}
-
-	public Set<UserRoleEntity> getRoles() {
-		return roles;
-	}
-
-	public UserEntity setRoles(Set<UserRoleEntity> roles) {
-		this.roles = roles;
 		return this;
 	}
 

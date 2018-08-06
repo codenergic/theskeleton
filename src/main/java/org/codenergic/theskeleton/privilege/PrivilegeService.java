@@ -21,11 +21,12 @@ import java.util.Set;
 import javax.validation.constraints.NotNull;
 
 import org.codenergic.theskeleton.role.RoleEntity;
+import org.codenergic.theskeleton.user.UserAuthorityService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-public interface PrivilegeService {
+public interface PrivilegeService extends UserAuthorityService<RolePrivilegeEntity> {
 	@PreAuthorize("hasAuthority('role_assign_privilege')")
 	RoleEntity addPrivilegeToRole(@NotNull String code, @NotNull String privilegeName);
 

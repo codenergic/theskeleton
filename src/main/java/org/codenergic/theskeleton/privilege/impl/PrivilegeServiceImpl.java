@@ -29,8 +29,11 @@ import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
 import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RoleNotFoundException;
 import org.codenergic.theskeleton.role.RoleRepository;
+import org.codenergic.theskeleton.role.UserRoleEntity;
+import org.codenergic.theskeleton.role.UserRoleRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,11 +43,14 @@ public class PrivilegeServiceImpl implements PrivilegeService {
 	private final PrivilegeRepository privilegeRepository;
 	private final RoleRepository roleRepository;
 	private final RolePrivilegeRepository rolePrivilegeRepository;
+	private final UserRoleRepository userRoleRepository;
 
-	public PrivilegeServiceImpl(PrivilegeRepository privilegeRepository, RoleRepository roleRepository, RolePrivilegeRepository rolePrivilegeRepository) {
+	public PrivilegeServiceImpl(PrivilegeRepository privilegeRepository, RoleRepository roleRepository,
+								RolePrivilegeRepository rolePrivilegeRepository, UserRoleRepository userRoleRepository) {
 		this.privilegeRepository = privilegeRepository;
 		this.roleRepository = roleRepository;
 		this.rolePrivilegeRepository = rolePrivilegeRepository;
+		this.userRoleRepository = userRoleRepository;
 	}
 
 	@Override
@@ -90,6 +96,15 @@ public class PrivilegeServiceImpl implements PrivilegeService {
 		return rolePrivilegeRepository.findByRoleCode(code).stream()
 			.map(RolePrivilegeEntity::getPrivilege)
 			.collect(Collectors.toSet());
+	}
+
+	@Override
+	public Set<RolePrivilegeEntity> getAuthorities(UserDetails user) {
+		Set<String> roles = userRoleRepository.findByUserUsername(user.getUsername()).stream()
+			.map(UserRoleEntity::getRole)
+			.map(RoleEntity::getCode)
+			.collect(Collectors.toSet());
+		return rolePrivilegeRepository.findByRoleCodeIn(roles);
 	}
 
 	@Override

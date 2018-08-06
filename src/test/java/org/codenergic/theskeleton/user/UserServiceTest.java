@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -21,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,12 +51,14 @@ public class UserServiceTest {
 	private RolePrivilegeRepository rolePrivilegeRepository;
 	@Mock
 	private SessionRegistry sessionRegistry;
+	@Mock
+	private UserAuthorityService<? extends GrantedAuthority> userAuthorityService;
 	private UserService userService;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.userService = new UserServiceImpl(minioClient, passwordEncoder, userRepository, rolePrivilegeRepository, clientApprovalRepository, sessionRegistry);
+		this.userService = new UserServiceImpl(minioClient, passwordEncoder, userRepository, userAuthorityService, clientApprovalRepository, sessionRegistry);
 	}
 
 	@Test
@@ -156,10 +158,11 @@ public class UserServiceTest {
 		verify(userRepository).findByEmail("123");
 		verify(userRepository).findById("123");
 
-		when(userRepository.findByUsername("1234")).thenReturn(Optional.of(new UserEntity().setRoles(new HashSet<>())));
+		when(userRepository.findByUsername("1234")).thenReturn(Optional.of(new UserEntity()));
 		UserDetails user = userService.loadUserByUsername("1234");
 		assertThat(user).isInstanceOf(UserEntity.class);
 		verify(userRepository).findByUsername("1234");
+		verify(userAuthorityService).getAuthorities(user);
 	}
 
 	@Test

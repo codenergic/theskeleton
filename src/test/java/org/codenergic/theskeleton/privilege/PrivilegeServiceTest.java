@@ -22,10 +22,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.codenergic.theskeleton.core.security.ImmutableUser;
 import org.codenergic.theskeleton.privilege.impl.PrivilegeServiceImpl;
 import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RoleNotFoundException;
 import org.codenergic.theskeleton.role.RoleRepository;
+import org.codenergic.theskeleton.role.UserRoleRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -34,6 +36,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -51,11 +54,24 @@ public class PrivilegeServiceTest {
 	private RoleRepository roleRepository;
 	@Mock
 	private RolePrivilegeRepository rolePrivilegeRepository;
+	@Mock
+	private UserRoleRepository userRoleRepository;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.privilegeService = new PrivilegeServiceImpl(privilegeRepository, roleRepository, rolePrivilegeRepository);
+		this.privilegeService = new PrivilegeServiceImpl(privilegeRepository, roleRepository, rolePrivilegeRepository, userRoleRepository);
+	}
+
+	@Test
+	public void testGetAuthorities() {
+		final UserDetails user = ImmutableUser.builder().username("test").build();
+		when(userRoleRepository.findByUserUsername(user.getUsername())).thenReturn(new HashSet<>());
+		when(rolePrivilegeRepository.findByRoleCodeIn(any())).thenReturn(new HashSet<>());
+		Set<RolePrivilegeEntity> authorities = privilegeService.getAuthorities(user);
+		assertThat(authorities).isEmpty();
+		verify(userRoleRepository).findByUserUsername(user.getUsername());
+		verify(rolePrivilegeRepository).findByRoleCodeIn(any());
 	}
 
 	@Test
