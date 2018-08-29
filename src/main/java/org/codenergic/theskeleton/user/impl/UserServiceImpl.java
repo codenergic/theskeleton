@@ -158,6 +158,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public void removeUserOAuth2ClientApprovalByUsername(String username, String clientId) {
 		clientApprovalRepository.deleteByUserUsernameAndClientId(username, clientId);
 	}
@@ -213,6 +214,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public UserEntity updateUserPicture(String username, InputStream image, String contentType) throws Exception {
 		UserEntity user = findUserByUsername(username)
 			.orElseThrow(() -> new UsernameNotFoundException(username));
