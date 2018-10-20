@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.core.security;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.session.SessionRegistry;
@@ -34,7 +36,7 @@ public class WebSessionConfig {
 
 	@Bean
 	public MapSessionRepository sessionRepository() {
-		return new MapSessionRepository();
+		return new MapSessionRepository(new ConcurrentHashMap<>());
 	}
 
 	@Bean

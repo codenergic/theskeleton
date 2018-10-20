@@ -49,7 +49,7 @@ public class GalleryServiceImpl implements GalleryService {
 	@Transactional
 	public void deleteImages(String userId, String... imagesId) {
 		for (String imageId : imagesId) {
-			galleryRepository.delete(imageId);
+			galleryRepository.deleteById(imageId);
 		}
 	}
 

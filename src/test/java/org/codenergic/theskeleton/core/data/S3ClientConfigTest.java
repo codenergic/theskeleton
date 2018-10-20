@@ -28,13 +28,11 @@ import org.mockito.MockitoAnnotations;
 
 import io.minio.MinioClient;
 import io.minio.errors.InvalidBucketNameException;
-import io.minio.policy.PolicyType;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,9 +54,6 @@ public class S3ClientConfigTest {
 		Stream.of("test1", "test2").forEach(bucketName -> {
 			S3ClientConfig.S3BucketProperties bucketProperties = new S3ClientConfig.S3BucketProperties();
 			bucketProperties.setName(bucketName);
-			bucketProperties.getPolicies().add(new S3ClientConfig.S3BucketPolicyProperties()
-				.setPolicy(PolicyType.NONE)
-				.setPrefix("*"));
 			s3ClientProperties.getBuckets().add(bucketProperties);
 		});
 	}
@@ -74,12 +69,10 @@ public class S3ClientConfigTest {
 		});
 		when(minioClient.bucketExists(eq("test1"))).thenReturn(true);
 		when(minioClient.bucketExists(eq("test2"))).thenReturn(false);
-		doThrow(new RuntimeException()).when(minioClient).setBucketPolicy(eq("test2"), anyString(), any());
 		s3ClientConfig.createBuckets(minioClient, executorService, s3ClientProperties);
 		verify(minioClient, times(2)).bucketExists(anyString());
 		verify(minioClient).makeBucket(eq("test2"));
 		verify(executorService).schedule(argumentCaptor.capture(), anyLong(), any());
-		verify(minioClient, times(2)).setBucketPolicy(anyString(), anyString(), any());
 		when(minioClient.bucketExists(anyString())).thenThrow(InvalidBucketNameException.class);
 		s3ClientConfig.createBuckets(minioClient, executorService, s3ClientProperties);
 	}

@@ -20,9 +20,6 @@ import javax.validation.Valid;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.codenergic.theskeleton.tokenstore.TokenStoreType;
 import org.codenergic.theskeleton.user.UserEntity;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.UserProfile;
-import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -41,22 +38,14 @@ public class RegistrationController {
 
 	private final RegistrationService registrationService;
 	private final TokenStoreService tokenStoreService;
-	private final ProviderSignInUtils providerSignInUtils;
 
-	public RegistrationController(RegistrationService registrationService, TokenStoreService tokenStoreService, ProviderSignInUtils providerSignInUtils) {
+	public RegistrationController(RegistrationService registrationService, TokenStoreService tokenStoreService) {
 		this.registrationService = registrationService;
 		this.tokenStoreService = tokenStoreService;
-		this.providerSignInUtils = providerSignInUtils;
 	}
 
 	@GetMapping
 	public String registrationView(RegistrationForm registrationForm, WebRequest request) {
-		Connection<?> connection = providerSignInUtils.getConnectionFromSession(request);
-		if (connection != null) {
-			UserProfile profile = connection.fetchUserProfile();
-			registrationForm.setUsername(profile.getUsername());
-			registrationForm.setEmail(profile.getEmail());
-		}
 		return REGISTRATION;
 	}
 
@@ -68,7 +57,6 @@ public class RegistrationController {
 			UserEntity user = registrationService.registerUser(registrationForm);
 			if (user != null && user.getId() != null) {
 				tokenStoreService.sendTokenNotification(TokenStoreType.USER_ACTIVATION, user);
-				providerSignInUtils.doPostSignUp(user.getId(), request);
 			}
 		} catch (RegistrationException e) {
 			bindingResult.rejectValue("username", "error.registrationForm", e.getMessage());

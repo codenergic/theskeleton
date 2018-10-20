@@ -18,7 +18,7 @@ package org.codenergic.theskeleton.core.data;
 import java.io.Serializable;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerator;
 
 import com.github.rholder.fauxflake.IdGenerators;
@@ -28,7 +28,7 @@ public class FlakeIdGenerator implements IdentifierGenerator {
 	private IdGenerator flake = IdGenerators.newFlakeIdGenerator();
 
 	@Override
-	public Serializable generate(SessionImplementor session, Object object) {
+	public Serializable generate(SharedSessionContractImplementor session, Object object) {
 		try {
 			return flake.generateId(1_000).asString();
 		} catch (InterruptedException e) {

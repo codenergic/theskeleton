@@ -65,7 +65,7 @@ public class PostServiceTest {
 	@Test
 	public void testDeletePost() {
 		postService.deletePost("123");
-		verify(postRepository).delete("123");
+		verify(postRepository).deleteById("123");
 	}
 
 	@Test

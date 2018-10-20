@@ -15,18 +15,20 @@
  */
 package org.codenergic.theskeleton.core.data;
 
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.temporal.TemporalAccessor;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import org.springframework.data.auditing.DateTimeProvider;
 
-public class UTCDateTimeProvider implements DateTimeProvider {
-	public UTCDateTimeProvider() {
+class UTCDateTimeProvider implements DateTimeProvider {
+	UTCDateTimeProvider() {
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 	}
 
 	@Override
-	public Calendar getNow() {
-		return Calendar.getInstance(TimeZone.getDefault());
+	public Optional<TemporalAccessor> getNow() {
+		return Optional.of(Instant.now());
 	}
 }

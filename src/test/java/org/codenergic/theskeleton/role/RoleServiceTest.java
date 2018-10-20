@@ -117,7 +117,7 @@ public class RoleServiceTest {
 		RoleEntity result = new RoleEntity() {{ setId("123"); }}.setCode("user");
 		Page<RoleEntity> page = new PageImpl<>(Collections.singletonList(result));
 		when(roleRepository.findByCodeOrDescriptionStartsWith(anyString(), any(Pageable.class))).thenReturn(page);
-		assertThat(roleService.findRoles("", new PageRequest(1, 10))).isEqualTo(page);
+		assertThat(roleService.findRoles("", PageRequest.of(1, 10))).isEqualTo(page);
 		verify(roleRepository).findByCodeOrDescriptionStartsWith(anyString(), any(Pageable.class));
 	}
 
@@ -161,7 +161,6 @@ public class RoleServiceTest {
 	public void testUpdateRole() {
 		RoleEntity input = new RoleEntity() {{ setId("123"); }}.setCode("user");
 		RoleEntity result = new RoleEntity() {{ setId("123"); }}.setCode(UUID.randomUUID().toString());
-		when(roleRepository.findOne(anyString())).thenReturn(null);
 		when(roleRepository.findByCode(eq("123"))).thenReturn(Optional.of(result));
 		when(roleRepository.save(eq(input))).thenReturn(input);
 		assertThat(roleService.updateRole("123", input)).isEqualTo(result);

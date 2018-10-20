@@ -15,12 +15,20 @@
  */
 package org.codenergic.theskeleton.core.mail;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import it.ozimov.springboot.mail.configuration.EnableEmailTools;
+import it.ozimov.springboot.mail.service.TemplateService;
 
 @Configuration
 @EnableEmailTools
 public class EmailConfig {
-
+	@Bean
+	public TemplateService thymeleafTemplateService(SpringTemplateEngine thymeleafEngine,
+													@Value("${spring.thymeleaf.suffix:.html}") String thymeleafSuffix) {
+		return new ThymeleafTemplateService(thymeleafEngine, thymeleafSuffix);
+	}
 }

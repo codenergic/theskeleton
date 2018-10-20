@@ -12,14 +12,12 @@ import org.codenergic.theskeleton.tokenstore.TokenStoreType;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionSignUp;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class RegistrationServiceImpl implements RegistrationService, ConnectionSignUp {
+public class RegistrationServiceImpl implements RegistrationService {
 	private UserRepository userRepository;
 	private TokenStoreRepository tokenStoreRepository;
 	private PasswordEncoder passwordEncoder;
@@ -86,11 +84,5 @@ public class RegistrationServiceImpl implements RegistrationService, ConnectionS
 		user.setPassword(passwordEncoder.encode(password));
 		tokenStoreEntity.setStatus(Activeable.Status.INACTIVE.getStatus());
 		return true;
-	}
-
-	@Override
-	@Transactional
-	public String execute(Connection<?> connection) {
-		throw new UnsupportedOperationException();
 	}
 }

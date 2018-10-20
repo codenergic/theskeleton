@@ -17,13 +17,11 @@ package org.codenergic.theskeleton.core.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -33,7 +31,6 @@ import org.springframework.context.annotation.Configuration;
 import io.minio.MinioClient;
 import io.minio.errors.InvalidEndpointException;
 import io.minio.errors.InvalidPortException;
-import io.minio.policy.PolicyType;
 
 @Configuration
 class S3ClientConfig {
@@ -56,18 +53,6 @@ class S3ClientConfig {
 					logger.error(e.getMessage(), e);
 				}
 			})
-			.peek(bucket -> bucket.getPolicies().stream()
-				.filter(Objects::nonNull)
-				.filter(policy -> Objects.nonNull(policy.policy))
-				.filter(policy -> StringUtils.isNotBlank(policy.prefix))
-				.peek(policy -> logger.info("Setting policy [{}] to bucket [{}] with prefix [{}]", policy.policy, bucket.name, policy.prefix))
-				.forEach(policy -> {
-					try {
-						minioClient.setBucketPolicy(bucket.name, policy.prefix, policy.policy);
-					} catch (Exception e) {
-						logger.error(e.getMessage(), e);
-					}
-				}))
 			.map(bucket -> bucket.name)
 			.collect(Collectors.toList()), 5, TimeUnit.SECONDS);
 	}
@@ -108,29 +93,9 @@ class S3ClientConfig {
 
 	public static class S3BucketProperties {
 		private String name;
-		private List<S3BucketPolicyProperties> policies = new ArrayList<>();
-
-		public List<S3BucketPolicyProperties> getPolicies() {
-			return policies;
-		}
 
 		public S3BucketProperties setName(String name) {
 			this.name = name;
-			return this;
-		}
-	}
-
-	public static class S3BucketPolicyProperties {
-		private PolicyType policy;
-		private String prefix = "*";
-
-		public S3BucketPolicyProperties setPolicy(PolicyType policy) {
-			this.policy = policy;
-			return this;
-		}
-
-		public S3BucketPolicyProperties setPrefix(String prefix) {
-			this.prefix = prefix;
 			return this;
 		}
 	}

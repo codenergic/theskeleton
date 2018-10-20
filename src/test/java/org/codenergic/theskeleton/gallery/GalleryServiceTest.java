@@ -51,17 +51,17 @@ public class GalleryServiceTest {
 	}
 
 	@Test
-	public void testDeleteImages() throws Exception {
+	public void testDeleteImages() {
 		galleryService.deleteImages("123", "1234", "12345");
-		verify(galleryRepository).delete("1234");
-		verify(galleryRepository).delete("12345");
+		verify(galleryRepository).deleteById("1234");
+		verify(galleryRepository).deleteById("12345");
 	}
 
 	@Test
-	public void testFindImageByUser() throws Exception {
+	public void testFindImageByUser() {
 		when(galleryRepository.findByCreatedByUserIdOrderByIdDesc(eq("1234"), any()))
 			.thenReturn(new PageImpl<>(new ArrayList<>()));
-		Page<GalleryEntity> result = galleryService.findImageByUser("1234", new PageRequest(0, 10));
+		Page<GalleryEntity> result = galleryService.findImageByUser("1234", PageRequest.of(0, 10));
 		assertThat(result).hasSize(0);
 		assertThat(result.getTotalPages()).isEqualTo(1);
 		verify(galleryRepository).findByCreatedByUserIdOrderByIdDesc(eq("1234"), any());

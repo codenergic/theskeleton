@@ -36,7 +36,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.social.security.SpringSocialConfigurer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -103,8 +102,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.csrf()
 				.requireCsrfProtectionMatcher(new AntPathRequestMatcher("/oauth/authorize"))
 				.disable()
-			.cors().and()
-			.apply(new SpringSocialConfigurer());
+			.cors();
 	}
 
 	/**
@@ -123,7 +121,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
-		FilterRegistrationBean corsFilter = new FilterRegistrationBean(new CorsFilter(source));
+		FilterRegistrationBean corsFilter = new FilterRegistrationBean<>(new CorsFilter(source));
 		corsFilter.setOrder(Ordered.HIGHEST_PRECEDENCE);
 		return corsFilter;
 	}

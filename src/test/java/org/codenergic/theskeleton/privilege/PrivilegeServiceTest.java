@@ -145,7 +145,7 @@ public class PrivilegeServiceTest {
 		PrivilegeEntity result = new PrivilegeEntity() {{ setId("123"); }}.setName("user_list_read");
 		Page<PrivilegeEntity> page = new PageImpl<>(Collections.singletonList(result));
 		when(privilegeRepository.findAll(any(Pageable.class))).thenReturn(page);
-		assertThat(privilegeService.findPrivileges(new PageRequest(1, 10))).isEqualTo(page);
+		assertThat(privilegeService.findPrivileges(PageRequest.of(1, 10))).isEqualTo(page);
 		verify(privilegeRepository).findAll(any(Pageable.class));
 
 		when(privilegeRepository.findByNameOrDescriptionStartsWith(anyString(), any())).thenReturn(page);

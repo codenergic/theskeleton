@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.social.connect.web.ProviderSignInUtils;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -31,8 +30,6 @@ public class RegistrationControllerTest {
 	private RegistrationService registrationService;
 	@MockBean
 	private TokenStoreService tokenStoreService;
-	@MockBean
-	private ProviderSignInUtils providerSignInUtils;
 
 	@Test
 	public void testRegisterUserAlreadyExist() throws Exception {
