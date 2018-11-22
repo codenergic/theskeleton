@@ -11,7 +11,7 @@ deploy:
   # push docker image to docker hub
   - provider: script
     skip_cleanup: true
-    script: >
+    script: >-
       docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       docker build -t $DOCKER_IMAGE .;
       docker tag $DOCKER_IMAGE $DOCKER_IMAGE:$DOCKER_TAG;
