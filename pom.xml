@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.codenergic.theskeleton</groupId>
 	<artifactId>theskeleton-server</artifactId>
-	<version>0.12.0</version>
+	<version>0.13.0-SNAPSHOT</version>
 	<name>TheSkeleton Server</name>
 	<description>
 		TheSkeleton is the full-stack project template used to help developer building modern web application quickly.
@@ -12,7 +12,7 @@
 		<connection>scm:git:ssh://git@github.com/codenergic/theskeleton.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/codenergic/theskeleton.git</developerConnection>
 		<url>https://github.com/codenergic/theskeleton</url>
-		<tag>v0.12.0</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<licenses>
@@ -36,7 +36,7 @@
 		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
 		<minio.version>3.0.6</minio.version>
 		<mockito.version>2.18.3</mockito.version>
-		<spring-boot.version>1.5.13.RELEASE</spring-boot.version>
+		<spring-boot.version>1.5.18.RELEASE</spring-boot.version>
 		<spring-boot-email.version>0.6.3</spring-boot-email.version>
 		<spring-restdocs.version>1.2.4.RELEASE</spring-restdocs.version>
 		<spring-social-google.version>1.1.3</spring-social-google.version>
@@ -211,9 +211,7 @@
 				</exclusion>
 				<exclusion>
 					<groupId>org.springframework.boot</groupId>
-					<artifactId>
-						spring-boot-starter-data-redis
-					</artifactId>
+					<artifactId>spring-boot-starter-data-redis</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -229,11 +227,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons-lang3.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.slugify</groupId>
-			<artifactId>slugify</artifactId>
-			<version>2.1.12</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>

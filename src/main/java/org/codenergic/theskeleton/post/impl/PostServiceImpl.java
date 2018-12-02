@@ -29,14 +29,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.github.slugify.Slugify;
-
 @Service
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
 	private final PostFollowingRepository postFollowingRepository;
 	private final PostRepository postRepository;
-	private final Slugify slugify = new Slugify();
 
 	public PostServiceImpl(PostRepository postRepository, PostFollowingRepository postFollowingRepository) {
 		this.postRepository = postRepository;
@@ -96,7 +93,6 @@ public class PostServiceImpl implements PostService {
 	@Override
 	@Transactional
 	public PostEntity savePost(UserEntity currentUser, PostEntity post) {
-		post.setSlug(slugifyTitle(post.getTitle()));
 		post.setPostStatus(PostStatus.DRAFT);
 		post.setPoster(currentUser);
 		return postRepository.save(post);
@@ -113,17 +109,12 @@ public class PostServiceImpl implements PostService {
 	public PostEntity updatePost(String id, PostEntity post) {
 		PostEntity p = findPostByIdOrThrow(id);
 		return p.setTitle(post.getTitle())
-			.setContent(post.getContent())
-			.setSlug(slugifyTitle(post.getTitle()));
+			.setContent(post.getContent());
 	}
 
 	private PostEntity findPostByIdOrThrow(String id) {
 		return findPostById(id)
 			.orElseThrow(() -> new IllegalArgumentException("Post not found"));
-	}
-
-	private String slugifyTitle(String title) {
-		return StringUtils.substring(slugify.slugify(title), 0, 20);
 	}
 
 	private PostEntity updatePostStatus(String id, PostStatus status) {
