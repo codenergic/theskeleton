@@ -23,12 +23,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostRepository extends AuditingEntityRepository<PostEntity> {
-	Page<PostEntity> findByPosterUsername(String posterUsername, Pageable pageable);
+	Page<PostEntity> findByPosterId(String posterId, Pageable pageable);
 
 	Page<PostEntity> findByResponseToId(String postId, Pageable pageable);
 
-	@Query("select p from PostEntity  p where p.title like %?1% and p.postStatus = 'PUBLISHED'")
-	Page<PostEntity> findByTitleContaining(String title, Pageable pageable);
-
-	Page<PostEntity> findByPosterIdAndPostStatus(String posterId, PostStatus postStatus, Pageable pageable);
+	@Query("from PostEntity p where p.content like %?1% order by p.createdDate desc")
+	Page<PostEntity> findByContentContaining(String title, Pageable pageable);
 }

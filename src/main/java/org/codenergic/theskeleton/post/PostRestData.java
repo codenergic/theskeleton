@@ -47,13 +47,6 @@ interface PostRestData extends RestData {
 	@Nullable
 	String getResponseTo();
 
-	@Nullable
-	String getStatus();
-
-	@NotBlank(groups = {New.class, Existing.class})
-	@Nullable
-	String getTitle();
-
 	interface New {
 	}
 

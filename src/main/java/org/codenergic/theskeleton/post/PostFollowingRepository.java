@@ -8,9 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PostFollowingRepository extends AuditingEntityRepository<PostEntity> {
-	@Query("FROM PostEntity pe "
-			+ "WHERE pe.poster.id IN (SELECT uf.user.id FROM UserFollowerEntity uf "
-				+ "WHERE uf.follower.id = ?1) "
-			+ "AND pe.postStatus = 'PUBLISHED' ")
+	@Query("FROM PostEntity pe WHERE pe.poster.id" +
+		" IN (SELECT uf.user.id FROM UserFollowerEntity uf  WHERE uf.follower.id = ?1)" +
+		" ORDER BY pe.createdDate")
 	Page<PostEntity> findByFollowerId(String followerId, Pageable pageable);
 }

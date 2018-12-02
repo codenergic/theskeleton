@@ -17,12 +17,10 @@ package org.codenergic.theskeleton.post.impl;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.codenergic.theskeleton.post.PostEntity;
 import org.codenergic.theskeleton.post.PostFollowingRepository;
 import org.codenergic.theskeleton.post.PostRepository;
 import org.codenergic.theskeleton.post.PostService;
-import org.codenergic.theskeleton.post.PostStatus;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +44,11 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
+	public Page<PostEntity> findPostByContentContaining(String content, Pageable pageable) {
+		return postRepository.findByContentContaining(content, pageable);
+	}
+
+	@Override
 	public Page<PostEntity> findPostByFollowerId(String followerId, Pageable pageable) {
 		return postFollowingRepository.findByFollowerId(followerId, pageable);
 	}
@@ -55,14 +58,14 @@ public class PostServiceImpl implements PostService {
 		return postRepository.findById(id);
 	}
 
-	@Override
-	public Page<PostEntity> findPostByPosterAndStatus(String userId, PostStatus postStatus, Pageable pageable) {
-		return postRepository.findByPosterIdAndPostStatus(userId, postStatus, pageable);
+	private PostEntity findPostByIdOrThrow(String id) {
+		return findPostById(id)
+			.orElseThrow(() -> new IllegalArgumentException("Post not found"));
 	}
 
 	@Override
-	public Page<PostEntity> findPostByTitleContaining(String title, Pageable pageable) {
-		return postRepository.findByTitleContaining(title, pageable);
+	public Page<PostEntity> findPostByPosterId(String userId, Pageable pageable) {
+		return postRepository.findByPosterId(userId, pageable);
 	}
 
 	@Override
@@ -71,54 +74,23 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public Page<PostEntity> findPublishedPostByPoster(String userId, Pageable pageable) {
-		return postRepository.findByPosterIdAndPostStatus(userId, PostStatus.PUBLISHED, pageable);
-	}
-
-	@Override
-	@Transactional
-	public PostEntity publishPost(String id) {
-		return updatePostStatus(id, PostStatus.PUBLISHED);
-	}
-
-	@Override
 	public PostEntity replyPost(String postId, PostEntity replyPost) {
 		PostEntity post = findPostByIdOrThrow(postId);
 		return postRepository.save(replyPost.setResponse(true)
-			.setPostStatus(PostStatus.PUBLISHED)
-			.setTitle(StringUtils.substring(replyPost.getContent(), 0, 20))
 			.setResponseTo(post));
 	}
 
 	@Override
 	@Transactional
 	public PostEntity savePost(UserEntity currentUser, PostEntity post) {
-		post.setPostStatus(PostStatus.DRAFT);
 		post.setPoster(currentUser);
 		return postRepository.save(post);
 	}
 
 	@Override
 	@Transactional
-	public PostEntity unPublishPost(String id) {
-		return updatePostStatus(id, PostStatus.DRAFT);
-	}
-
-	@Override
-	@Transactional
 	public PostEntity updatePost(String id, PostEntity post) {
 		PostEntity p = findPostByIdOrThrow(id);
-		return p.setTitle(post.getTitle())
-			.setContent(post.getContent());
-	}
-
-	private PostEntity findPostByIdOrThrow(String id) {
-		return findPostById(id)
-			.orElseThrow(() -> new IllegalArgumentException("Post not found"));
-	}
-
-	private PostEntity updatePostStatus(String id, PostStatus status) {
-		PostEntity p = findPostByIdOrThrow(id);
-		return p.setPostStatus(status);
+		return p.setContent(post.getContent());
 	}
 }

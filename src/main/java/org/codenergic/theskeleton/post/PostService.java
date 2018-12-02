@@ -29,6 +29,9 @@ public interface PostService {
 	@PreAuthorize("isAuthenticated()")
 	void deletePost(@NotNull String id);
 
+	@PreAuthorize("permitAll()")
+	Page<PostEntity> findPostByContentContaining(@NotNull String content, Pageable pageable);
+
 	@PreAuthorize("isAuthenticated() and principal.id == #followerId")
 	Page<PostEntity> findPostByFollowerId(String followerId, Pageable pageable);
 
@@ -36,28 +39,16 @@ public interface PostService {
 	Optional<PostEntity> findPostById(@NotNull String id);
 
 	@PreAuthorize("isAuthenticated() and principal.id == #userId")
-	Page<PostEntity> findPostByPosterAndStatus(String userId, PostStatus postStatus, Pageable pageable);
-
-	@PreAuthorize("permitAll()")
-	Page<PostEntity> findPostByTitleContaining(@NotNull String title, Pageable pageable);
+	Page<PostEntity> findPostByPosterId(String userId, Pageable pageable);
 
 	@PreAuthorize("permitAll()")
 	Page<PostEntity> findPostReplies(String postId, Pageable pageable);
-
-	@PreAuthorize("permitAll()")
-	Page<PostEntity> findPublishedPostByPoster(@NotNull String userId, Pageable pageable);
-
-	@PreAuthorize("isAuthenticated()")
-	PostEntity publishPost(@NotNull String id);
 
 	@PreAuthorize("isAuthenticated()")
 	PostEntity replyPost(@NotNull String postId, @NotNull @Valid PostEntity replyPost);
 
 	@PreAuthorize("isAuthenticated() and principal == #currentUser")
 	PostEntity savePost(UserEntity currentUser, @NotNull @Valid PostEntity post);
-
-	@PreAuthorize("isAuthenticated()")
-	PostEntity unPublishPost(@NotNull String id);
 
 	@PreAuthorize("isAuthenticated()")
 	PostEntity updatePost(@NotNull String id, @NotNull @Valid PostEntity post);

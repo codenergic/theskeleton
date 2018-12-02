@@ -28,13 +28,10 @@ public interface PostMapper {
 	@Mapping(target = "lastUpdatedDate", source = "lastModifiedDate")
 	@Mapping(target = "response", expression = "java(post.getResponseTo() != null)")
 	@Mapping(target = "responseTo", source = "responseTo.id")
-	@Mapping(target = "status", source = "postStatus")
 	PostRestData toPostData(PostEntity post);
 
 	@Mapping(target = "createdDate", ignore = true)
-	@Mapping(target = "postStatus", ignore = true)
 	@Mapping(target = "response", ignore = true)
 	@Mapping(target = "responseTo", ignore = true)
-	@Mapping(target = "status", ignore = true)
 	PostEntity toPost(PostRestData postData);
 }

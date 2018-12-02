@@ -15,6 +15,7 @@
  */
 package org.codenergic.theskeleton.post;
 
+import org.codenergic.theskeleton.core.security.User;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserMapper;
 import org.codenergic.theskeleton.user.UserRestData;
@@ -48,18 +49,24 @@ public class PostRestController {
 		this.postReactionService = postReactionService;
 	}
 
-	@DeleteMapping("/{id}/reactions")
-	public void deleteReaction(@PathVariable("id") String postId, @AuthenticationPrincipal UserEntity user) {
-		postReactionService.deletePostReaction(user.getId(), postId);
-	}
-
 	@DeleteMapping("/{id}")
-	public void deleteRole(@PathVariable("id") final String id) {
+	public void deletePost(@PathVariable("id") final String id) {
 		postService.deletePost(id);
 	}
 
+	@DeleteMapping("/{id}/reactions")
+	public void deleteReaction(@PathVariable("id") String postId, @AuthenticationPrincipal User user) {
+		postReactionService.deletePostReaction(user.getId(), postId);
+	}
+
+	@GetMapping
+	public Page<PostRestData> findPostByContentContaining(@RequestParam(name = "q", defaultValue = "") String content,
+			Pageable pageable) {
+		return postService.findPostByContentContaining(content, pageable).map(postMapper::toPostData);
+	}
+
 	@GetMapping("/following")
-	public Page<PostRestData> findPostByFollower(@AuthenticationPrincipal UserEntity user,
+	public Page<PostRestData> findPostByFollower(@AuthenticationPrincipal User user,
 			@SortDefault(sort = "lastModifiedDate", direction = Sort.Direction.DESC) Pageable pageable) {
 		return postService.findPostByFollowerId(user.getId(), pageable).map(postMapper::toPostData);
 	}
@@ -70,12 +77,6 @@ public class PostRestController {
 			.map(postMapper::toPostData)
 			.map(ResponseEntity::ok)
 			.orElse(ResponseEntity.notFound().build());
-	}
-
-	@GetMapping
-	public Page<PostRestData> findPostByTitleContaining(@RequestParam(name = "title", defaultValue = "") String title,
-			Pageable pageable) {
-		return postService.findPostByTitleContaining(title, pageable).map(postMapper::toPostData);
 	}
 
 	@GetMapping("/{id}/reactions/{reaction}s")
@@ -90,14 +91,8 @@ public class PostRestController {
 		return postService.findPostReplies(id, pageable).map(postMapper::toPostData);
 	}
 
-	@PutMapping("/{id}/publish")
-	public PostRestData publishPost(@PathVariable("id") String id, @RequestBody boolean publish) {
-		PostEntity post = publish ? postService.publishPost(id) : postService.unPublishPost(id);
-		return postMapper.toPostData(post);
-	}
-
 	@PutMapping("/{id}/reactions")
-	public void reactToPost(@PathVariable("id") String postId, @RequestBody String reaction, @AuthenticationPrincipal UserEntity user) {
+	public void reactToPost(@PathVariable("id") String postId, @RequestBody String reaction, @AuthenticationPrincipal User user) {
 		PostReactionType reactionType = PostReactionType.valueOf(reaction.toUpperCase());
 		postReactionService.reactToPost(user.getId(), postId, reactionType);
 	}

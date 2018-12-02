@@ -20,7 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,13 +34,7 @@ public class UserPostRestController {
 
 	@GetMapping
 	public Page<PostRestData> findUserPublishedPost(@User.Inject User user, Pageable pageable) {
-		return postService.findPublishedPostByPoster(user.getId(), pageable)
-			.map(postMapper::toPostData);
-	}
-
-	@GetMapping(params = {"status"})
-	public Page<PostRestData> findUserPostByStatus(@User.Inject User user, @RequestParam("status") String postStatus, Pageable pageable) {
-		return postService.findPostByPosterAndStatus(user.getId(), PostStatus.valueOf(postStatus.toUpperCase()), pageable)
+		return postService.findPostByPosterId(user.getId(), pageable)
 			.map(postMapper::toPostData);
 	}
 }

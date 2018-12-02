@@ -38,7 +38,7 @@ security:
       filter-order: 3
 spring:
   datasource:
-    url: jdbc:h2:~/.theskeleton;AUTO_SERVER=TRUE
+    url: jdbc:h2:~/.theskeleton-0.13.0;AUTO_SERVER=TRUE
     username: sa
     password:
   h2:

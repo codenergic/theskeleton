@@ -15,17 +15,6 @@
  */
 package org.codenergic.theskeleton.post;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.codenergic.theskeleton.post.PostStatus.DRAFT;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.Collections;
 import java.util.Date;
 
@@ -55,6 +44,16 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @RunWith(SpringRunner.class)
 @ContextConfiguration
 @WebAppConfiguration
@@ -72,7 +71,7 @@ public class UserPostRestControllerTest {
 	private final PostMapper postMapper = PostMapper.newInstance();
 
 	@Before
-	public void init() throws Exception {
+	public void init() {
 		mockMvc = MockMvcBuilders
 			.standaloneSetup(new UserPostRestController(postService))
 			.setCustomArgumentResolvers(new UserArgumentResolver(username -> new UserEntity().setUsername(username)),
@@ -86,29 +85,11 @@ public class UserPostRestControllerTest {
 	}
 
 	@Test
-	public void testFindUserPostByStatus() throws Exception {
-		PostServiceTest.DUMMY_POST2.setCreatedDate(new Date());
-		PostServiceTest.DUMMY_POST2.setLastModifiedDate(new Date());
-		PageImpl<PostEntity> result = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST2));
-		when(postService.findPostByPosterAndStatus(eq(USER_ID), eq(DRAFT), any())).thenReturn(result);
-		MockHttpServletResponse response = mockMvc.perform(get("/api/users/me/posts?status=draft")
-			.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk())
-			.andDo(document("user-post-published"))
-			.andReturn()
-			.getResponse();
-		assertThat(response.getStatus()).isEqualTo(200);
-		Page<PostRestData> expectedResult = result.map(postMapper::toPostData);
-		assertThat(response.getContentAsString()).isEqualTo(objectMapper.writeValueAsString(expectedResult));
-		verify(postService).findPostByPosterAndStatus(eq(USER_ID), eq(DRAFT), any());
-	}
-
-	@Test
 	public void testFindUserPublishedPost() throws Exception {
 		PostServiceTest.DUMMY_POST.setCreatedDate(new Date());
 		PostServiceTest.DUMMY_POST.setLastModifiedDate(new Date());
 		PageImpl<PostEntity> result = new PageImpl<>(Collections.singletonList(PostServiceTest.DUMMY_POST));
-		when(postService.findPublishedPostByPoster(eq(USER_ID), any())).thenReturn(result);
+		when(postService.findPostByPosterId(eq(USER_ID), any())).thenReturn(result);
 		MockHttpServletResponse response = mockMvc.perform(get("/api/users/me/posts")
 			.contentType(MediaType.APPLICATION_JSON))
 			.andExpect(status().isOk())
@@ -118,6 +99,6 @@ public class UserPostRestControllerTest {
 		assertThat(response.getStatus()).isEqualTo(200);
 		Page<PostRestData> expectedResult = result.map(postMapper::toPostData);
 		assertThat(response.getContentAsString()).isEqualTo(objectMapper.writeValueAsString(expectedResult));
-		verify(postService).findPublishedPostByPoster(eq(USER_ID), any());
+		verify(postService).findPostByPosterId(eq(USER_ID), any());
 	}
 }
