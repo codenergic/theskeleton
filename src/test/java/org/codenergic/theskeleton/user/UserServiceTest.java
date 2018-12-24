@@ -13,7 +13,6 @@ import org.codenergic.theskeleton.client.OAuth2ClientEntity;
 import org.codenergic.theskeleton.core.security.ImmutableUser;
 import org.codenergic.theskeleton.core.security.User;
 import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
-import org.codenergic.theskeleton.user.impl.UserServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

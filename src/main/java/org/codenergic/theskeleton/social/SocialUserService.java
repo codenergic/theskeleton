@@ -22,7 +22,7 @@ import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SocialUserService implements SocialUserDetailsService {
+class SocialUserService implements SocialUserDetailsService {
 	private final UserRepository userRepository;
 
 	public SocialUserService(UserRepository userRepository) {
