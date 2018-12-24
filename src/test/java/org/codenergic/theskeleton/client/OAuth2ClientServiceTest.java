@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 
-import org.codenergic.theskeleton.client.impl.OAuth2ClientServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

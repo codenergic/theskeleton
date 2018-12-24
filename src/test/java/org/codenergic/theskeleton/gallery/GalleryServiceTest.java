@@ -17,7 +17,7 @@
 package org.codenergic.theskeleton.gallery;
 
 import io.minio.MinioClient;
-import org.codenergic.theskeleton.gallery.impl.GalleryServiceImpl;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

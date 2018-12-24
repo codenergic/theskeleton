@@ -18,7 +18,6 @@ package org.codenergic.theskeleton.post;
 import java.util.Collections;
 import java.util.Optional;
 
-import org.codenergic.theskeleton.post.impl.PostServiceImpl;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Before;
 import org.junit.Test;

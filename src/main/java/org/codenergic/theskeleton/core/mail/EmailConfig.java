@@ -15,6 +15,8 @@
  */
 package org.codenergic.theskeleton.core.mail;
 
+import org.springframework.boot.autoconfigure.mail.MailProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import it.ozimov.springboot.mail.configuration.EnableEmailTools;
@@ -22,5 +24,8 @@ import it.ozimov.springboot.mail.configuration.EnableEmailTools;
 @Configuration
 @EnableEmailTools
 public class EmailConfig {
-
+	@Bean
+	public EmailService emailService(it.ozimov.springboot.mail.service.EmailService emailService, MailProperties mailProperties) {
+		return new EmailServiceImpl(emailService, mailProperties);
+	}
 }

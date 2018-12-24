@@ -3,7 +3,6 @@ package org.codenergic.theskeleton.registration;
 import java.util.Optional;
 
 import org.codenergic.theskeleton.core.test.NoOpPasswordEncoder;
-import org.codenergic.theskeleton.registration.impl.RegistrationServiceImpl;
 import org.codenergic.theskeleton.tokenstore.TokenStoreEntity;
 import org.codenergic.theskeleton.tokenstore.TokenStoreRepository;
 import org.codenergic.theskeleton.tokenstore.TokenStoreType;

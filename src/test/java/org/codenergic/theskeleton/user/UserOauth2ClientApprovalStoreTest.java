@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.codenergic.theskeleton.client.OAuth2ClientEntity;
-import org.codenergic.theskeleton.user.impl.UserOAuth2ClientApprovalStore;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
