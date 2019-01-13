@@ -34,3 +34,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+## Powered by
+Thanks to JetBrains for All Products Pack OS licenses.
+
+<a href="https://www.jetbrains.com/?from=TheSkeleton">
+	<img src="https://user-images.githubusercontent.com/363775/51085266-5bc2aa80-1769-11e9-88c8-cd424ed623fa.png" alt="JetBrains" width="75" />
+</a>
+<a href="https://www.jetbrains.com/?from=TheSkeleton">
+	<img src="https://user-images.githubusercontent.com/363775/51085300-8b71b280-1769-11e9-97be-71420a40372d.png" alt="Intellij IDEA" width="75" />
+</a>
