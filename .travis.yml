@@ -7,12 +7,17 @@ script:
 - mvn clean jacoco:prepare-agent install sonar:sonar
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-- if [ "$TRAVIS_BRANCH" == "master" ]; then
-  docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-  docker build -t $DOCKER_IMAGE .;
-  docker tag $DOCKER_IMAGE $DOCKER_IMAGE:$DOCKER_TAG;
-  docker push $DOCKER_IMAGE;
-  fi
+deploy:
+  # push docker image to docker hub
+  - provider: script
+    skip_cleanup: true
+    script: >-
+      docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+      docker build -t $DOCKER_IMAGE .;
+      docker tag $DOCKER_IMAGE $DOCKER_IMAGE:$DOCKER_TAG;
+      docker push $DOCKER_IMAGE;
+    on:
+      branch: master
 addons:
   sonarcloud:
     organization: codenergic

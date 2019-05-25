@@ -21,13 +21,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface PostReactionService {
-	@PreAuthorize("principal.id == #userId")
+	@PreAuthorize("isAuthenticated() && principal.id == #userId")
 	void deletePostReaction(String userId, String postId);
 
 	Page<UserEntity> findUserByPostReaction(String postId, PostReactionType reactionType, Pageable pageable);
 
 	long getNumberOfPostReactions(String postId, PostReactionType reactionType);
 
-	@PreAuthorize("principal.id == #userId")
+	@PreAuthorize("isAuthenticated() && principal.id == #userId")
 	PostReactionEntity reactToPost(String userId, String postId, PostReactionType reactionType);
 }

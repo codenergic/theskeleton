@@ -9,10 +9,8 @@ import javax.mail.internet.MimeMessage;
 import org.codenergic.theskeleton.core.mail.EmailConfig;
 import org.codenergic.theskeleton.core.mail.EmailService;
 import org.codenergic.theskeleton.core.mail.EmailServiceTest;
-import org.codenergic.theskeleton.core.mail.impl.EmailServiceImpl;
 import org.codenergic.theskeleton.core.test.NoOpPasswordEncoder;
 import org.codenergic.theskeleton.registration.RegistrationException;
-import org.codenergic.theskeleton.tokenstore.impl.TokenStoreServiceImpl;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.After;
 import org.junit.Before;
@@ -30,6 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
+
 import it.ozimov.springboot.mail.configuration.EnableEmailTools;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = { EmailServiceTest.EmailTestConfiguration.class, EmailConfig.class, EmailServiceImpl.class },
+@SpringBootTest(classes = { EmailServiceTest.EmailTestConfiguration.class, EmailConfig.class },
 	webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class TokenStoreServiceTest {
 

@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.codenergic.theskeleton.core.security.ImmutableUser;
-import org.codenergic.theskeleton.privilege.impl.PrivilegeServiceImpl;
 import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RoleNotFoundException;
 import org.codenergic.theskeleton.role.RoleRepository;

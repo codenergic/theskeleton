@@ -16,7 +16,6 @@
 
 package org.codenergic.theskeleton.post;
 
-import org.codenergic.theskeleton.post.impl.PostReactionServiceImpl;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Before;
 import org.junit.Test;

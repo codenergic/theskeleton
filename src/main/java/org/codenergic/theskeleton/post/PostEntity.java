@@ -15,20 +15,20 @@
  */
 package org.codenergic.theskeleton.post;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.codenergic.theskeleton.core.data.AbstractAuditingEntity;
 import org.codenergic.theskeleton.user.UserEntity;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "ts_post")
 public class PostEntity extends AbstractAuditingEntity {
-	@NotNull
-	@Column(name = "title")
-	private String title;
-	private String slug;
 	@Lob
 	@Column(name = "content")
 	private String content;
@@ -40,9 +40,6 @@ public class PostEntity extends AbstractAuditingEntity {
 	private PostEntity responseTo;
 	@Column(name = "is_response")
 	private boolean isResponse = false;
-	@Enumerated(EnumType.STRING)
-	@Column(name = "post_status")
-	private PostStatus postStatus = PostStatus.DRAFT;
 
 	public String getContent() {
 		return content;
@@ -50,15 +47,6 @@ public class PostEntity extends AbstractAuditingEntity {
 
 	public PostEntity setContent(String content) {
 		this.content = content;
-		return this;
-	}
-
-	public PostStatus getPostStatus() {
-		return postStatus;
-	}
-
-	public PostEntity setPostStatus(PostStatus status) {
-		this.postStatus = status;
 		return this;
 	}
 
@@ -77,24 +65,6 @@ public class PostEntity extends AbstractAuditingEntity {
 
 	public PostEntity setResponseTo(PostEntity responseTo) {
 		this.responseTo = responseTo;
-		return this;
-	}
-
-	public String getSlug() {
-		return slug;
-	}
-
-	public PostEntity setSlug(String slug) {
-		this.slug = slug;
-		return this;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public PostEntity setTitle(String title) {
-		this.title = title;
 		return this;
 	}
 

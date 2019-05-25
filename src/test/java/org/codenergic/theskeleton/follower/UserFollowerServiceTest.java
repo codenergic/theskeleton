@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.codenergic.theskeleton.follower.impl.UserFollowerServiceImpl;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Before;
 import org.junit.Test;

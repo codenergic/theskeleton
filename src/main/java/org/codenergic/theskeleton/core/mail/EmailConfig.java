@@ -16,6 +16,7 @@
 package org.codenergic.theskeleton.core.mail;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -30,5 +31,10 @@ public class EmailConfig {
 	public TemplateService thymeleafTemplateService(SpringTemplateEngine thymeleafEngine,
 													@Value("${spring.thymeleaf.suffix:.html}") String thymeleafSuffix) {
 		return new ThymeleafTemplateService(thymeleafEngine, thymeleafSuffix);
+	}
+
+	@Bean
+	public EmailService emailService(it.ozimov.springboot.mail.service.EmailService emailService, MailProperties mailProperties) {
+		return new EmailServiceImpl(emailService, mailProperties);
 	}
 }

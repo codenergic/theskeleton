@@ -24,7 +24,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.codenergic.theskeleton.core.mail.EmailServiceTest.EmailTestConfiguration;
-import org.codenergic.theskeleton.core.mail.impl.EmailServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

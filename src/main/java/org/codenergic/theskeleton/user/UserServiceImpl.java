@@ -1,19 +1,19 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2018 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
-package org.codenergic.theskeleton.user.impl;
+package org.codenergic.theskeleton.user;
 
 import java.io.InputStream;
 import java.time.Instant;
@@ -34,12 +34,6 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codenergic.theskeleton.core.security.User;
-import org.codenergic.theskeleton.user.UserAuthorityService;
-import org.codenergic.theskeleton.user.UserEntity;
-import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalEntity;
-import org.codenergic.theskeleton.user.UserOAuth2ClientApprovalRepository;
-import org.codenergic.theskeleton.user.UserRepository;
-import org.codenergic.theskeleton.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
@@ -55,7 +49,7 @@ import io.minio.MinioClient;
 
 @Service
 @Transactional(readOnly = true)
-public class UserServiceImpl implements UserService {
+class UserServiceImpl implements UserService {
 	private static final String PICTURE_BUCKET_NAME = "profile-pictures";
 	private final MinioClient minioClient;
 	private final PasswordEncoder passwordEncoder;

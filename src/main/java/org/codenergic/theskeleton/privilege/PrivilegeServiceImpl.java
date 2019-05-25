@@ -1,31 +1,25 @@
 /*
- * Copyright 2017 the original author or authors.
+ * Copyright 2018 the original author or authors.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
-package org.codenergic.theskeleton.privilege.impl;
+package org.codenergic.theskeleton.privilege;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.codenergic.theskeleton.privilege.PrivilegeEntity;
-import org.codenergic.theskeleton.privilege.PrivilegeNotFoundException;
-import org.codenergic.theskeleton.privilege.PrivilegeRepository;
-import org.codenergic.theskeleton.privilege.PrivilegeService;
-import org.codenergic.theskeleton.privilege.RolePrivilegeEntity;
-import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
 import org.codenergic.theskeleton.role.RoleEntity;
 import org.codenergic.theskeleton.role.RoleNotFoundException;
 import org.codenergic.theskeleton.role.RoleRepository;
@@ -39,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class PrivilegeServiceImpl implements PrivilegeService {
+class PrivilegeServiceImpl implements PrivilegeService {
 	private final PrivilegeRepository privilegeRepository;
 	private final RoleRepository roleRepository;
 	private final RolePrivilegeRepository rolePrivilegeRepository;
