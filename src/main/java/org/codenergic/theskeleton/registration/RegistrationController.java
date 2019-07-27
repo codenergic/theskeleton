@@ -18,7 +18,6 @@ package org.codenergic.theskeleton.registration;
 import javax.validation.Valid;
 
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
-import org.codenergic.theskeleton.tokenstore.TokenStoreType;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UserProfile;
@@ -67,7 +66,6 @@ public class RegistrationController {
 		try {
 			UserEntity user = registrationService.registerUser(registrationForm);
 			if (user != null && user.getId() != null) {
-				tokenStoreService.sendTokenNotification(TokenStoreType.USER_ACTIVATION, user);
 				providerSignInUtils.doPostSignUp(user.getId(), request);
 			}
 		} catch (RegistrationException e) {

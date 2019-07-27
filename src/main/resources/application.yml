@@ -58,6 +58,8 @@ spring:
           region:
             factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
           use_second_level_cache: true
+        jdbc:
+          time_zone: UTC
   thymeleaf:
     cache: false
   mail:
@@ -70,7 +72,7 @@ spring:
       senderAlias: TheSkeleton
       mail:
         smtp:
-          auth: true
+          auth: false
           starttls:
             enable: false
             required: false
