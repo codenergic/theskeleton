@@ -17,9 +17,6 @@ package org.codenergic.theskeleton.registration;
 
 import javax.validation.Valid;
 
-import org.codenergic.theskeleton.tokenstore.TokenStoreService;
-import org.codenergic.theskeleton.tokenstore.TokenStoreType;
-import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,19 +26,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/register")
 public class RegistrationRestController {
 	private RegistrationService registrationService;
-	private TokenStoreService tokenStoreService;
 
-	public RegistrationRestController(RegistrationService registrationService,
-			TokenStoreService tokenStoreService) {
+	public RegistrationRestController(RegistrationService registrationService) {
 		this.registrationService = registrationService;
-		this.tokenStoreService = tokenStoreService;
 	}
 
 	@PostMapping
 	public RegistrationForm register(@RequestBody @Valid RegistrationForm registrationForm) {
-		UserEntity user = registrationService.registerUser(registrationForm);
-		if (user != null && user.getId() != null)
-			tokenStoreService.sendTokenNotification(TokenStoreType.USER_ACTIVATION, user);
+		registrationService.registerUser(registrationForm);
 		return registrationForm;
 	}
 }

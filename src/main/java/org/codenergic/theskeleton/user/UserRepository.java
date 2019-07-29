@@ -16,21 +16,22 @@
 package org.codenergic.theskeleton.user;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.codenergic.theskeleton.core.data.AuditingEntityRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends AuditingEntityRepository<UserEntity> {
-	boolean existsByEmail(String email);
-
-	boolean existsByUsername(String username);
-
 	Optional<UserEntity> findByEmail(String email);
 
 	Optional<UserEntity> findByUsername(String username);
+
+	@Query("from UserEntity where (username = ?1 or email = ?2) and enabled = ?3")
+	Stream<UserEntity> findByUsernameOrEmailAndEnabled(String username, String email, boolean enabled);
 
 	Page<UserEntity> findByUsernameStartingWith(String username, Pageable pageable);
 }

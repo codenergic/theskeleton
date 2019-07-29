@@ -73,8 +73,8 @@ public class RegistrationRestControllerTest {
 			.andDo(document("registration"))
 			.andReturn()
 			.getResponse();
-		assertThat(response.getContentAsByteArray())
-			.isEqualTo(objectMapper.writeValueAsBytes(form));
+		assertThat(response.getContentAsString())
+			.isEqualTo(objectMapper.writeValueAsString(form));
 		verify(registrationService).registerUser(any());
 	}
 }

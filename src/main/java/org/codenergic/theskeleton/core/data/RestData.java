@@ -23,8 +23,4 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public interface RestData extends Serializable {
-
-//	@Value.Style(builder = "new")
-//	@interface Immutable {
-//	}
 }

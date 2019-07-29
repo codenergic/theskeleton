@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.codenergic.theskeleton.core.security.User;
-import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -44,18 +43,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/users")
 public class UserRestController {
 	private final UserService userService;
-	private final TokenStoreService tokenStoreService;
 	private final UserMapper userMapper = UserMapper.newInstance();
 	private final UserOAuth2ClientApprovalMapper clientApprovalMapper = UserOAuth2ClientApprovalMapper.newInstance();
 
-	public UserRestController(UserService userService, TokenStoreService tokenStoreService) {
+	public UserRestController(UserService userService) {
 		this.userService = userService;
-		this.tokenStoreService = tokenStoreService;
 	}
 
 	@DeleteMapping("/{username}")
 	public void deleteUser(@User.Inject User user) {
-		userService.findUserByUsername(user.getUsername()).ifPresent(tokenStoreService::deleteTokenByUser);
 		userService.deleteUser(user.getUsername());
 	}
 
