@@ -17,8 +17,6 @@ package org.codenergic.theskeleton.registration;
 
 import javax.validation.Valid;
 
-import org.codenergic.theskeleton.tokenstore.TokenStoreService;
-import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,11 +34,9 @@ public class RegistrationController {
 	private static final String REGISTRATION_ACTIVATION = "registration_activation";
 
 	private final RegistrationService registrationService;
-	private final TokenStoreService tokenStoreService;
 
-	public RegistrationController(RegistrationService registrationService, TokenStoreService tokenStoreService) {
+	public RegistrationController(RegistrationService registrationService) {
 		this.registrationService = registrationService;
-		this.tokenStoreService = tokenStoreService;
 	}
 
 	@GetMapping
