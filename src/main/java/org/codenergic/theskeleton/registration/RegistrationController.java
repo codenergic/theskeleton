@@ -18,7 +18,6 @@ package org.codenergic.theskeleton.registration;
 import javax.validation.Valid;
 
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
-import org.codenergic.theskeleton.tokenstore.TokenStoreType;
 import org.codenergic.theskeleton.user.UserEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -54,10 +53,7 @@ public class RegistrationController {
 		if (bindingResult.hasErrors())
 			return registrationView(registrationForm, request);
 		try {
-			UserEntity user = registrationService.registerUser(registrationForm);
-			if (user != null && user.getId() != null) {
-				tokenStoreService.sendTokenNotification(TokenStoreType.USER_ACTIVATION, user);
-			}
+			registrationService.registerUser(registrationForm);
 		} catch (RegistrationException e) {
 			bindingResult.rejectValue("username", "error.registrationForm", e.getMessage());
 			return registrationView(registrationForm, request);

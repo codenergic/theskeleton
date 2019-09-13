@@ -16,77 +16,109 @@
 
 package org.codenergic.theskeleton.tokenstore;
 
+import java.io.IOException;
+import java.time.Instant;
+import java.time.Period;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.UUID;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.codenergic.theskeleton.core.mail.EmailService;
 import org.codenergic.theskeleton.registration.RegistrationException;
 import org.codenergic.theskeleton.user.UserEntity;
-import org.joda.time.DateTime;
+import org.codenergic.theskeleton.user.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.jwt.Jwt;
+import org.springframework.security.jwt.JwtHelper;
+import org.springframework.security.jwt.crypto.sign.MacSigner;
+import org.springframework.security.jwt.crypto.sign.SignerVerifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 class TokenStoreServiceImpl implements TokenStoreService {
+	private final String emailBaseUrl;
+	private final EmailService emailService;
+	private final UserRepository userRepository;
+	private final ObjectMapper objectMapper;
 
-	@Value("${email.baseurl}")
-	private String baseUrl;
-
-	private EmailService emailService;
-	private TokenStoreRepository tokenStoreRepository;
-
-	public TokenStoreServiceImpl(EmailService emailService, TokenStoreRepository tokenStoreRepository) {
+	public TokenStoreServiceImpl(@Value("${email.baseurl}") String emailBaseUrl, EmailService emailService,
+								 UserRepository userRepository, ObjectMapper objectMapper) {
+		this.emailBaseUrl = emailBaseUrl;
 		this.emailService = emailService;
-		this.tokenStoreRepository = tokenStoreRepository;
+		this.userRepository = userRepository;
+		this.objectMapper = objectMapper;
+	}
+
+	private SignerVerifier createSignerVerifier(UserEntity user) {
+		return new MacSigner(user.getPassword() + user.getLastModifiedDate().toInstant().toString());
 	}
 
 	@Override
-	public TokenStoreEntity sendTokenNotification(TokenStoreType type, UserEntity user) {
-		String token = RandomStringUtils.randomAlphabetic(24);
-		TokenStoreEntity tokenStoreEntity = new TokenStoreEntity()
-			.setToken(token)
-			.setUser(user)
-			.setType(type)
-			.setExpiryDate(DateTime.now().plusDays(15).toDate());
-		sendEmail(tokenStoreEntity, user);
-		return tokenStoreRepository.save(tokenStoreEntity);
+	public TokenStoreRestData findAndVerifyToken(String token) {
+		try {
+			Jwt jwt = JwtHelper.decode(token);
+			TokenStoreRestData data = objectMapper.readValue(jwt.getClaims(), TokenStoreRestData.class);
+			UserEntity user = userRepository.findById(data.getUserId())
+				.orElseThrow(() -> new UsernameNotFoundException(data.getUserId()));
+			SignerVerifier verifier = createSignerVerifier(user);
+			jwt.verifySignature(verifier);
+			return ImmutableTokenStoreRestData.builder()
+				.from(data)
+				.signedToken(jwt.getEncoded())
+				.user(user)
+				.build();
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
-	@Override
-	public Optional<TokenStoreEntity> findByTokenAndType(String token, TokenStoreType type) {
-		return tokenStoreRepository.findByTokenAndType(token, type);
-	}
-
-	@Override
-	@Transactional
-	public void deleteTokenByUser(UserEntity userEntity) {
-		tokenStoreRepository.deleteTokenStoreEntityByUser(userEntity);
-	}
-
-
-	private void sendEmail(TokenStoreEntity token, UserEntity user) {
+	private void sendEmail(String token, TokenStoreType type, String email) {
 		Map<String, Object> params = new HashMap<>();
 		String subject;
 		String template;
-		if (TokenStoreType.USER_ACTIVATION.equals(token.getType())){
-			params.put("activationUrl", baseUrl + "/registration/activate?at=" + token.getToken());
+		if (TokenStoreType.USER_ACTIVATION.equals(type)) {
+			params.put("activationUrl", emailBaseUrl + "/registration/activate?at=" + token);
 			subject = "Registration Confirmation";
 			template = "email/registration.html";
 		} else {
-			params.put("changepassUrl", baseUrl + "/changepass/update?rt=" + token.getToken());
+			params.put("changepassUrl", emailBaseUrl + "/changepass/update?rt=" + token);
 			subject = "Reset Password Confirmation";
 			template = "email/changepass.html";
 		}
 		try {
-			emailService.sendEmail(null, new InternetAddress(user.getEmail()), subject, params, template);
+			emailService.sendEmail(null, new InternetAddress(email), subject, params, template);
 		} catch (AddressException e) {
 			throw new RegistrationException("Unable to send activation link");
+		}
+	}
+
+	@Override
+	public TokenStoreRestData sendTokenNotification(TokenStoreType type, UserEntity user) {
+		try {
+			TokenStoreRestData data = ImmutableTokenStoreRestData.builder()
+				.userId(user.getId())
+				.expiryDate(Date.from(Instant.now().plus(Period.ofDays(1))))
+				.tokenType(type)
+				.uuid(UUID.randomUUID())
+				.build();
+			SignerVerifier signer = createSignerVerifier(user);
+			Jwt token = JwtHelper.encode(objectMapper.writeValueAsString(data), signer);
+			sendEmail(token.getEncoded(), type, user.getEmail());
+			return ImmutableTokenStoreRestData.builder()
+				.from(data)
+				.signedToken(token.getEncoded())
+				.user(user)
+				.build();
+		} catch (JsonProcessingException e) {
+			throw new IllegalStateException(e);
 		}
 	}
 }

@@ -4,8 +4,11 @@ import javax.validation.Valid;
 
 import org.codenergic.theskeleton.registration.RegistrationException;
 import org.codenergic.theskeleton.registration.RegistrationService;
+import org.codenergic.theskeleton.tokenstore.TokenStoreRestData;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.codenergic.theskeleton.tokenstore.TokenStoreType;
+import org.codenergic.theskeleton.user.UserService;
+import org.springframework.security.jwt.crypto.sign.InvalidSignatureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,12 +27,15 @@ public class ChangePasswordController {
 	private static final String ERROR = "error";
 	private static final String MESSAGE = "message";
 
-	private RegistrationService registrationService;
-	private TokenStoreService tokenStoreService;
+	private final RegistrationService registrationService;
+	private final TokenStoreService tokenStoreService;
+	private final UserService userService;
 
-	public ChangePasswordController(RegistrationService registrationService, TokenStoreService tokenStoreService) {
+	public ChangePasswordController(RegistrationService registrationService, TokenStoreService tokenStoreService,
+									UserService userService) {
 		this.registrationService = registrationService;
 		this.tokenStoreService = tokenStoreService;
+		this.userService = userService;
 	}
 
 	@GetMapping
@@ -42,7 +48,7 @@ public class ChangePasswordController {
 		if (bindingResult.hasErrors())
 			return changepassView(changePasswordForm);
 
-		return registrationService.findUserByEmail(changePasswordForm.getEmail())
+		return userService.findUserByEmail(changePasswordForm.getEmail())
 			.map(user -> {
 				tokenStoreService.sendTokenNotification(TokenStoreType.CHANGE_PASSWORD, user);
 				model.addAttribute(MESSAGE, CHANGEPASS);
@@ -57,12 +63,13 @@ public class ChangePasswordController {
 
 	@GetMapping(path = "/update")
 	public String updateView(@RequestParam(name = "rt") String resetToken, UpdatePasswordForm updatePasswordForm) {
-		return tokenStoreService.findByTokenAndType(resetToken, TokenStoreType.CHANGE_PASSWORD)
-			.map(t -> {
-				updatePasswordForm.setToken(t.getToken());
-				return CHANGEPASS_UPDATE;
-			})
-			.orElse("redirect:/changepass");
+		try {
+			TokenStoreRestData token = tokenStoreService.findAndVerifyToken(resetToken);
+			updatePasswordForm.setToken(token.getSignedToken());
+			return CHANGEPASS_UPDATE;
+		} catch (InvalidSignatureException e) {
+			return "redirect:/changepass";
+		}
 	}
 
 	@PostMapping(path = "/update")
