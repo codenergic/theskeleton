@@ -23,7 +23,7 @@
 	</licenses>
 
 	<properties>
-		<bootstrap.version>4.1.0</bootstrap.version>
+		<bootstrap.version>4.5.2</bootstrap.version>
 		<commons-lang3.version>3.7</commons-lang3.version>
 		<fauxflake-core.version>1.1.0</fauxflake-core.version>
 		<guava.version>21.0</guava.version>
