@@ -15,26 +15,20 @@
  */
 package org.codenergic.theskeleton.gallery;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.codenergic.theskeleton.core.data.S3ClientProperties;
+import org.codenergic.theskeleton.core.data.S3ClientUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.xmlpull.v1.XmlPullParserException;
 
 import io.minio.MinioClient;
-import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidArgumentException;
-import io.minio.errors.InvalidBucketNameException;
-import io.minio.errors.NoResponseException;
+import io.minio.ObjectWriteResponse;
+import io.minio.PutObjectArgs;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,10 +36,12 @@ class GalleryServiceImpl implements GalleryService {
 	private static final String GALLERY_BUCKET_NAME = "galleries";
 	private final GalleryRepository galleryRepository;
 	private final MinioClient minioClient;
+	private final S3ClientProperties s3ClientProperties;
 
-	public GalleryServiceImpl(GalleryRepository galleryRepository, MinioClient minioClient) {
+	public GalleryServiceImpl(GalleryRepository galleryRepository, MinioClient minioClient, S3ClientProperties s3ClientProperties) {
 		this.galleryRepository = galleryRepository;
 		this.minioClient = minioClient;
+		this.s3ClientProperties = s3ClientProperties;
 	}
 
 	@Override
@@ -69,10 +65,16 @@ class GalleryServiceImpl implements GalleryService {
 		return galleryRepository.save(image);
 	}
 
-	private String saveImageToS3(String userId, GalleryEntity image) throws InvalidBucketNameException, NoSuchAlgorithmException, InsufficientDataException, IOException, InvalidKeyException, NoResponseException, XmlPullParserException, ErrorResponseException, InternalException, InvalidArgumentException {
+	private String saveImageToS3(String userId, GalleryEntity image) throws Exception {
 		String imageObjectName = StringUtils.join(userId, "/", Long.toHexString(Instant.now().toEpochMilli()),
 			"-", UUID.randomUUID().toString());
-		minioClient.putObject(GALLERY_BUCKET_NAME, imageObjectName, image.getImage(), image.getFormat());
-		return minioClient.getObjectUrl(GALLERY_BUCKET_NAME, imageObjectName);
+		PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+			.bucket(GALLERY_BUCKET_NAME)
+			.object(imageObjectName)
+			.contentType(image.getFormat())
+			.stream(image.getImage(), image.getSize(), -1)
+			.build();
+		ObjectWriteResponse resp = minioClient.putObject(putObjectArgs);
+		return S3ClientUtils.getObjectUrl(s3ClientProperties, resp.bucket(), resp.object());
 	}
 }

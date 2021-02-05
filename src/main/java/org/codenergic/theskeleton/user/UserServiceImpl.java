@@ -33,6 +33,8 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
+import org.codenergic.theskeleton.core.data.S3ClientProperties;
+import org.codenergic.theskeleton.core.data.S3ClientUtils;
 import org.codenergic.theskeleton.core.security.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +48,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.minio.MinioClient;
+import io.minio.ObjectWriteResponse;
+import io.minio.PutObjectArgs;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,16 +61,18 @@ class UserServiceImpl implements UserService {
 	private final UserAuthorityService<? extends GrantedAuthority> userAuthorityService;
 	private final UserOAuth2ClientApprovalRepository clientApprovalRepository;
 	private final SessionRegistry sessionRegistry;
+	private final S3ClientProperties s3ClientProperties;
 
 	public UserServiceImpl(MinioClient minioClient, PasswordEncoder passwordEncoder, UserRepository userRepository,
 						   UserAuthorityService<? extends GrantedAuthority> userAuthorityService, UserOAuth2ClientApprovalRepository clientApprovalRepository,
-						   SessionRegistry sessionRegistry) {
+						   SessionRegistry sessionRegistry, S3ClientProperties s3ClientProperties) {
 		this.minioClient = minioClient;
 		this.passwordEncoder = passwordEncoder;
 		this.userRepository = userRepository;
 		this.userAuthorityService = userAuthorityService;
 		this.clientApprovalRepository = clientApprovalRepository;
 		this.sessionRegistry = sessionRegistry;
+		this.s3ClientProperties = s3ClientProperties;
 	}
 
 	@Override
@@ -209,13 +215,23 @@ class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public UserEntity updateUserPicture(String username, InputStream image, String contentType) throws Exception {
+	public UserEntity updateUserPicture(String username, InputStream image, String contentType, long contentLength) throws Exception {
 		UserEntity user = findUserByUsername(username)
 			.orElseThrow(() -> new UsernameNotFoundException(username));
+
 		String imageObjectName = StringUtils.join(user.getId(), "/", Long.toHexString(Instant.now().toEpochMilli()),
 			"-", UUID.randomUUID().toString());
-		minioClient.putObject(PICTURE_BUCKET_NAME, imageObjectName, image, contentType);
-		user.setPictureUrl(minioClient.getObjectUrl(PICTURE_BUCKET_NAME, imageObjectName));
+
+		PutObjectArgs putObjectArgs = PutObjectArgs.builder()
+			.bucket(PICTURE_BUCKET_NAME)
+			.object(imageObjectName)
+			.contentType(contentType)
+			.stream(image, contentLength, -1)
+			.build();
+		ObjectWriteResponse resp = minioClient.putObject(putObjectArgs);
+		String pictureUrl = S3ClientUtils.getObjectUrl(s3ClientProperties, resp.bucket(), resp.object());
+		user.setPictureUrl(pictureUrl);
+
 		return user;
 	}
 }

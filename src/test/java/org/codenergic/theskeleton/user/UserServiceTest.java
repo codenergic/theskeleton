@@ -10,6 +10,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import org.codenergic.theskeleton.client.OAuth2ClientEntity;
+import org.codenergic.theskeleton.core.data.S3ClientProperties;
 import org.codenergic.theskeleton.core.security.ImmutableUser;
 import org.codenergic.theskeleton.core.security.User;
 import org.codenergic.theskeleton.privilege.RolePrivilegeRepository;
@@ -29,11 +30,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.approval.Approval;
 
 import io.minio.MinioClient;
+import io.minio.ObjectWriteResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,12 +53,13 @@ public class UserServiceTest {
 	private SessionRegistry sessionRegistry;
 	@Mock
 	private UserAuthorityService<? extends GrantedAuthority> userAuthorityService;
+	private S3ClientProperties s3ClientProperties = new S3ClientProperties();
 	private UserService userService;
 
 	@Before
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		this.userService = new UserServiceImpl(minioClient, passwordEncoder, userRepository, userAuthorityService, clientApprovalRepository, sessionRegistry);
+		this.userService = new UserServiceImpl(minioClient, passwordEncoder, userRepository, userAuthorityService, clientApprovalRepository, sessionRegistry, s3ClientProperties);
 	}
 
 	@Test
@@ -212,12 +214,12 @@ public class UserServiceTest {
 
 	@Test
 	public void testUpdateUserPicture() throws Exception {
-		final InputStream inputStream = ClassLoader.getSystemResourceAsStream("static/logo.png");
-		when(userRepository.findByUsername("user")).thenReturn(Optional.of(new UserEntity()));
-		userService.updateUserPicture("user", inputStream, "image/png");
-		verify(userRepository).findByUsername("user");
-		verify(minioClient).putObject(anyString(), anyString(), any(InputStream.class), eq("image/png"));
-		verify(minioClient).getObjectUrl(anyString(), anyString());
-		inputStream.close();
+		try (InputStream inputStream = ClassLoader.getSystemResourceAsStream("static/logo.png")) {
+			when(minioClient.putObject(any())).thenReturn(new ObjectWriteResponse(null, "bucket", "region", "object", "etag", "version"));
+			when(userRepository.findByUsername("user")).thenReturn(Optional.of(new UserEntity()));
+			userService.updateUserPicture("user", inputStream, "image/png", 0);
+			verify(userRepository).findByUsername("user");
+			verify(minioClient).putObject(any());
+		}
 	}
 }

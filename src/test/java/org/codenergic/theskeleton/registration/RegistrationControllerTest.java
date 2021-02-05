@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-@WebMvcTest(controllers = {RegistrationController.class}, secure = false)
+@WebMvcTest(controllers = {RegistrationController.class})
 @InjectUserDetailsService
 public class RegistrationControllerTest {
 	@Autowired

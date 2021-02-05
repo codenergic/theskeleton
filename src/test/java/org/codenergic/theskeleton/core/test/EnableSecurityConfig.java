@@ -16,16 +16,17 @@
 
 package org.codenergic.theskeleton.core.test;
 
-import org.springframework.context.annotation.Import;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.codenergic.theskeleton.core.security.SecurityConfig;
+import org.codenergic.theskeleton.core.security.WebSessionConfig;
+import org.springframework.context.annotation.Import;
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@EnableSecurityConfig
-@Import({TestSecurityConfig.class})
-public @interface InjectUserDetailsService {
+@Import({SecurityConfig.class, WebSessionConfig.class})
+public @interface EnableSecurityConfig {
 }

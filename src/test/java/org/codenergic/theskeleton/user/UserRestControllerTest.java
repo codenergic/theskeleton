@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.codenergic.theskeleton.client.OAuth2ClientEntity;
 import org.codenergic.theskeleton.core.test.EnableRestDocs;
+import org.codenergic.theskeleton.core.test.EnableSecurityConfig;
 import org.codenergic.theskeleton.tokenstore.TokenStoreService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +37,7 @@ import com.google.common.collect.ImmutableMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -49,8 +51,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-@WebMvcTest(controllers = { UserRestController.class }, secure = false)
+@WebMvcTest(controllers = { UserRestController.class })
 @EnableRestDocs
+@EnableSecurityConfig
 public class UserRestControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
@@ -69,7 +72,7 @@ public class UserRestControllerTest {
 			.setId("user123")
 			.setUsername("user")
 			.setEmail("user@server");
-		when(userService.updateUserPicture(eq("user123"), any(), eq("image/png"))).thenReturn(user);
+		when(userService.updateUserPicture(eq("user123"), any(), eq("image/png"), anyLong())).thenReturn(user);
 		InputStream image = ClassLoader.getSystemResourceAsStream("static/logo.png");
 		MockHttpServletRequestBuilder request = put("/api/users/user123/picture")
 			.content(IOUtils.toByteArray(image))
@@ -81,7 +84,7 @@ public class UserRestControllerTest {
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getContentAsByteArray())
 			.isEqualTo(objectMapper.writeValueAsBytes(userMapper.toUserData(user)));
-		verify(userService).updateUserPicture(eq("user123"), any(), eq("image/png"));
+		verify(userService).updateUserPicture(eq("user123"), any(), eq("image/png"), anyLong());
 		image.close();
 	}
 

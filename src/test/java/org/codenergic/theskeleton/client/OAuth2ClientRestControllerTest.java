@@ -56,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-@WebMvcTest(controllers = {OAuth2ClientRestController.class}, secure = false)
+@WebMvcTest(controllers = {OAuth2ClientRestController.class})
 @EnableRestDocs
 @InjectUserDetailsService
 public class OAuth2ClientRestControllerTest {

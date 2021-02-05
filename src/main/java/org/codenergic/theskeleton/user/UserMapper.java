@@ -30,7 +30,7 @@ public interface UserMapper {
 	UserEntity toUser(UserRestData userData);
 
 	@Mapping(target = "authorities", ignore = true)
-	@Mapping(target = "nonLocked", source = "accountNonLocked")
+	@Mapping(target = "isNonLocked", source = "accountNonLocked")
 	@Mapping(target = "password", ignore = true)
 	UserRestData toUserData(UserEntity user);
 }

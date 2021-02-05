@@ -24,20 +24,20 @@
 
 	<properties>
 		<bootstrap.version>4.1.0</bootstrap.version>
-		<commons-lang3.version>3.8.1</commons-lang3.version>
+		<commons-lang3.version>3.11</commons-lang3.version>
 		<fauxflake-core.version>1.1.0</fauxflake-core.version>
-		<guava.version>26.0-jre</guava.version>
-		<immutables.version>2.7.1</immutables.version>
-		<jacoco.version>0.8.2</jacoco.version>
-		<mapstruct.version>1.3.0.Beta1</mapstruct.version>
-		<maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
-		<maven-git-commit-id-plugin.version>2.2.5</maven-git-commit-id-plugin.version>
-		<maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
-		<minio.version>5.0.1</minio.version>
-		<spring-boot.version>2.0.5.RELEASE</spring-boot.version>
+		<guava.version>30.1-jre</guava.version>
+		<immutables.version>2.8.8</immutables.version>
+		<jacoco.version>0.8.6</jacoco.version>
+		<mapstruct.version>1.4.1.Final</mapstruct.version>
+		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+		<maven-git-commit-id-plugin.version>4.0.3</maven-git-commit-id-plugin.version>
+		<maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+		<minio.version>8.0.3</minio.version>
+		<spring-boot.version>2.4.2</spring-boot.version>
 		<spring-boot-email.version>0.6.3</spring-boot-email.version>
-		<spring-restdocs.version>2.0.2.RELEASE</spring-restdocs.version>
-		<spring-security-oauth-version>2.0.5.RELEASE</spring-security-oauth-version>
+		<spring-restdocs.version>2.0.5.RELEASE</spring-restdocs.version>
+		<spring-security-oauth-version>2.5.0.RELEASE</spring-security-oauth-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
@@ -84,7 +84,7 @@
 		<dependency>
 			<groupId>org.springframework.security.oauth.boot</groupId>
 			<artifactId>spring-security-oauth2-autoconfigure</artifactId>
-			<version>${spring-security-oauth-version}</version>
+			<version>${spring-boot.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.session</groupId>
@@ -136,6 +136,10 @@
 			<artifactId>hibernate-ehcache</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 			<optional>true</optional>
@@ -179,6 +183,10 @@
 				<exclusion>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-starter-data-redis</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate-validator</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -235,7 +243,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct-jdk8</artifactId>
+			<artifactId>mapstruct</artifactId>
 			<version>${mapstruct.version}</version>
 		</dependency>
 	</dependencies>

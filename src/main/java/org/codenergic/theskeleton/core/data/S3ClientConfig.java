@@ -15,7 +15,8 @@
  */
 package org.codenergic.theskeleton.core.data;
 
-import java.util.ArrayList;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -28,9 +29,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
-import io.minio.errors.InvalidEndpointException;
-import io.minio.errors.InvalidPortException;
 
 @Configuration
 class S3ClientConfig {
@@ -42,9 +43,9 @@ class S3ClientConfig {
 			.peek(bucket -> logger.info("Checking bucket [{}]", bucket.name))
 			.peek(bucket -> {
 				try {
-					if (!minioClient.bucketExists(bucket.name)) {
+					if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket.name).build())) {
 						logger.info("Bucket doesn't exists, creating one");
-						minioClient.makeBucket(bucket.name);
+						minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket.name).build());
 						logger.info("Bucket created");
 					} else {
 						logger.info("Bucket already exists");
@@ -58,8 +59,11 @@ class S3ClientConfig {
 	}
 
 	@Bean
-	public MinioClient s3Client(S3ClientProperties clientProps) throws InvalidEndpointException, InvalidPortException {
-		return new MinioClient(clientProps.endpoint, clientProps.accessKey, clientProps.secretKey);
+	public MinioClient s3Client(S3ClientProperties clientProps) throws MalformedURLException {
+		return MinioClient.builder()
+			.endpoint(URI.create(clientProps.endpoint).toURL())
+			.credentials(clientProps.accessKey, clientProps.secretKey)
+			.build();
 	}
 
 	@Bean
@@ -68,35 +72,4 @@ class S3ClientConfig {
 		return new S3ClientProperties();
 	}
 
-	public static class S3ClientProperties {
-		private String accessKey;
-		private List<S3BucketProperties> buckets = new ArrayList<>();
-		private String endpoint;
-		private String secretKey;
-
-		public List<S3BucketProperties> getBuckets() {
-			return buckets;
-		}
-
-		public void setAccessKey(String accessKey) {
-			this.accessKey = accessKey;
-		}
-
-		public void setEndpoint(String endpoint) {
-			this.endpoint = endpoint;
-		}
-
-		public void setSecretKey(String secretKey) {
-			this.secretKey = secretKey;
-		}
-	}
-
-	public static class S3BucketProperties {
-		private String name;
-
-		public S3BucketProperties setName(String name) {
-			this.name = name;
-			return this;
-		}
-	}
 }

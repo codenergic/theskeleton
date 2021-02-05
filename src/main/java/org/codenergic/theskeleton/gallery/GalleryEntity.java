@@ -33,6 +33,8 @@ public class GalleryEntity extends AbstractAuditingEntity {
 	private transient InputStream image;
 	@Transient
 	private String format;
+	@Transient
+	private long size;
 
 	public String getFormat() {
 		return format;
@@ -58,6 +60,15 @@ public class GalleryEntity extends AbstractAuditingEntity {
 
 	public GalleryEntity setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+		return this;
+	}
+
+	public long getSize() {
+		return size;
+	}
+
+	public GalleryEntity setSize(long size) {
+		this.size = size;
 		return this;
 	}
 }

@@ -74,5 +74,5 @@ public interface UserService extends UserDetailsService {
 	UserEntity updateUserPassword(@NotNull String username, @NotNull String rawPassword);
 
 	@PreAuthorize("isAuthenticated() and principal.username == #username")
-	UserEntity updateUserPicture(String username, InputStream image, String contentType) throws Exception;
+	UserEntity updateUserPicture(String username, InputStream image, String contentType, long contentLength) throws Exception;
 }

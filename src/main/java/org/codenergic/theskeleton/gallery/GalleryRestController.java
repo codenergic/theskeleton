@@ -50,6 +50,7 @@ public class GalleryRestController {
 		try (InputStream inputStream = request.getInputStream()) {
 			GalleryEntity gallery = galleryService.saveImage(userEntity.getId(), new GalleryEntity()
 				.setImage(inputStream)
+				.setSize(request.getContentLengthLong())
 				.setFormat(request.getContentType()));
 			return galleryMapper.toGalleryData(gallery);
 		}

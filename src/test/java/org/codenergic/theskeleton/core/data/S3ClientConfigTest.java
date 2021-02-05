@@ -26,20 +26,21 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
-import io.minio.errors.InvalidBucketNameException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class S3ClientConfigTest {
-	private S3ClientConfig s3ClientConfig = new S3ClientConfig();
-	private S3ClientConfig.S3ClientProperties s3ClientProperties = new S3ClientConfig.S3ClientProperties();
+	private final S3ClientConfig s3ClientConfig = new S3ClientConfig();
+	private final S3ClientProperties s3ClientProperties = new S3ClientProperties();
+
 	@Mock
 	private MinioClient minioClient;
 	@Mock
@@ -52,7 +53,7 @@ public class S3ClientConfigTest {
 		s3ClientProperties.setSecretKey("");
 		s3ClientProperties.setEndpoint("");
 		Stream.of("test1", "test2").forEach(bucketName -> {
-			S3ClientConfig.S3BucketProperties bucketProperties = new S3ClientConfig.S3BucketProperties();
+			S3BucketProperties bucketProperties = new S3BucketProperties();
 			bucketProperties.setName(bucketName);
 			s3ClientProperties.getBuckets().add(bucketProperties);
 		});
@@ -67,13 +68,13 @@ public class S3ClientConfigTest {
 			callable.call();
 			return null;
 		});
-		when(minioClient.bucketExists(eq("test1"))).thenReturn(true);
-		when(minioClient.bucketExists(eq("test2"))).thenReturn(false);
+		when(minioClient.bucketExists(eq(BucketExistsArgs.builder().bucket("test1").build()))).thenReturn(true);
+		when(minioClient.bucketExists(eq(BucketExistsArgs.builder().bucket("test2").build()))).thenReturn(false);
 		s3ClientConfig.createBuckets(minioClient, executorService, s3ClientProperties);
-		verify(minioClient, times(2)).bucketExists(anyString());
-		verify(minioClient).makeBucket(eq("test2"));
+		verify(minioClient, times(2)).bucketExists(any());
+		verify(minioClient).makeBucket(eq(MakeBucketArgs.builder().bucket("test2").build()));
 		verify(executorService).schedule(argumentCaptor.capture(), anyLong(), any());
-		when(minioClient.bucketExists(anyString())).thenThrow(InvalidBucketNameException.class);
+		when(minioClient.bucketExists(any())).thenThrow(RuntimeException.class);
 		s3ClientConfig.createBuckets(minioClient, executorService, s3ClientProperties);
 	}
 }

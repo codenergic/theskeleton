@@ -30,6 +30,7 @@ import org.codenergic.theskeleton.user.UserEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
@@ -43,7 +44,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-@WebMvcTest(controllers = {RegistrationRestController.class}, secure = false)
+@WebMvcTest(controllers = {RegistrationRestController.class})
 @EnableRestDocs
 @InjectUserDetailsService
 public class RegistrationRestControllerTest {
