@@ -33,7 +33,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -70,7 +69,6 @@ public class OAuth2ClientRestControllerTest {
 	private final OAuth2ClientMapper oAuth2ClientMapper = OAuth2ClientMapper.newInstance();
 
 	@Test
-	@WithMockUser("user123")
 	public void testDeleteClient() throws Exception {
 		mockMvc.perform(delete("/api/clients/client123")
 			.contentType(MediaType.APPLICATION_JSON))
@@ -79,7 +77,6 @@ public class OAuth2ClientRestControllerTest {
 	}
 
 	@Test
-	@WithMockUser("user123")
 	public void testFindClientById() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
 			.setId("client123")
@@ -103,7 +100,6 @@ public class OAuth2ClientRestControllerTest {
 	}
 
 	@Test
-	@WithMockUser("user123")
 	public void testFindClients() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
 			.setId("client123")
@@ -129,7 +125,6 @@ public class OAuth2ClientRestControllerTest {
 	}
 
 	@Test
-	@WithMockUser("user123")
 	public void testGenerateClientSecret() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
 			.setId("client123");
@@ -147,7 +142,6 @@ public class OAuth2ClientRestControllerTest {
 	}
 
 	@Test
-	@WithMockUser("user123")
 	public void testSaveClient() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
 			.setId("client123")
@@ -189,7 +183,6 @@ public class OAuth2ClientRestControllerTest {
 	}
 
 	@Test
-	@WithMockUser("user123")
 	public void testUpdateClient() throws Exception {
 		final OAuth2ClientEntity client = new OAuth2ClientEntity()
 			.setId("client123");

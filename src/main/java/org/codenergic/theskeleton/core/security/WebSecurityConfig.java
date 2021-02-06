@@ -18,7 +18,6 @@ package org.codenergic.theskeleton.core.security;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.codenergic.theskeleton.user.UserService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -32,11 +31,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.social.security.SpringSocialConfigurer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -46,12 +45,12 @@ import org.springframework.web.filter.CorsFilter;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @ConditionalOnWebApplication
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-	private final UserService userService;
+	private final UserDetailsService userService;
 	private final PasswordEncoder passwordEncoder;
 	private final RememberMeServices rememberMeServices;
 	private final SessionRegistry sessionRegistry;
 
-	public WebSecurityConfig(UserService userService, PasswordEncoder passwordEncoder,
+	public WebSecurityConfig(UserDetailsService userService, PasswordEncoder passwordEncoder,
 							 RememberMeServices rememberMeServices, SessionRegistry sessionRegistry) {
 		this.userService = userService;
 		this.passwordEncoder = passwordEncoder;
@@ -103,15 +102,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.csrf()
 				.requireCsrfProtectionMatcher(new AntPathRequestMatcher("/oauth/authorize"))
 				.disable()
-			.cors().and()
-			.apply(new SpringSocialConfigurer());
+			.cors();
 	}
 
 	/**
 	 * <a href="https://github.com/spring-projects/spring-boot/issues/5834#issuecomment-296370088">See explanation here</a>
 	 */
 	@Bean
-	public FilterRegistrationBean corsFilterBean() {
+	public FilterRegistrationBean<CorsFilter> corsFilterBean() {
 		final CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Collections.singletonList("*"));
 		configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
@@ -123,7 +121,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
-		FilterRegistrationBean corsFilter = new FilterRegistrationBean(new CorsFilter(source));
+		FilterRegistrationBean<CorsFilter> corsFilter = new FilterRegistrationBean<>(new CorsFilter(source));
 		corsFilter.setOrder(Ordered.HIGHEST_PRECEDENCE);
 		return corsFilter;
 	}

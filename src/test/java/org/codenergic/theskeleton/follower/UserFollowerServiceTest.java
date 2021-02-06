@@ -27,7 +27,7 @@ public class UserFollowerServiceTest {
 	private List<UserFollowerEntity> userFollowerEntities;
 
 	@Before
-	public void init() throws Exception {
+	public void init() {
 		MockitoAnnotations.initMocks(this);
 		userFollowerService = new UserFollowerServiceImpl(userFollowerRepository);
 
@@ -42,7 +42,7 @@ public class UserFollowerServiceTest {
 	@Test
 	public void testFindUserFollowers() {
 		when(userFollowerRepository.findByUserId(eq("123"), any())).thenReturn(new PageImpl<>(userFollowerEntities));
-		Page<UserEntity> users = userFollowerService.findUserFollowers("123", new PageRequest(0, 10));
+		Page<UserEntity> users = userFollowerService.findUserFollowers("123", PageRequest.of(0, 10));
 		assertThat(users.getTotalElements()).isEqualTo(10);
 		assertThat(users.getContent()).first().hasFieldOrPropertyWithValue("id", "80123");
 		verify(userFollowerRepository).findByUserId(eq("123"), any());
@@ -51,7 +51,7 @@ public class UserFollowerServiceTest {
 	@Test
 	public void testFindUserFollowings() {
 		when(userFollowerRepository.findByFollowerId(eq("123"), any())).thenReturn(new PageImpl<>(userFollowerEntities));
-		Page<UserEntity> users = userFollowerService.findUserFollowings("123", new PageRequest(0, 10));
+		Page<UserEntity> users = userFollowerService.findUserFollowings("123", PageRequest.of(0, 10));
 		assertThat(users.getTotalElements()).isEqualTo(10);
 		assertThat(users.getContent()).first().hasFieldOrPropertyWithValue("id", "0123");
 		verify(userFollowerRepository).findByFollowerId(eq("123"), any());

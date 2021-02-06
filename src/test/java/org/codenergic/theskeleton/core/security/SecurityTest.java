@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.codenergic.theskeleton.client.OAuth2ClientService;
 import org.codenergic.theskeleton.core.security.SecurityTest.SecurityTestConfiguration;
-import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,8 +33,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.approval.ApprovalStore;
 import org.springframework.security.oauth2.provider.token.UserAuthenticationConverter;
-import org.springframework.social.connect.UsersConnectionRepository;
-import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -104,16 +101,6 @@ public class SecurityTest {
 		@Bean
 		public OAuth2ClientService mockOAuth2ClientService() {
 			return mock(OAuth2ClientService.class);
-		}
-
-		@Bean
-		public UsersConnectionRepository usersConnectionRepository() {
-			return mock(UsersConnectionRepository.class);
-		}
-
-		@Bean
-		public SocialUserDetailsService socialUserDetailsService() {
-			return mock(SocialUserDetailsService.class);
 		}
 	}
 }

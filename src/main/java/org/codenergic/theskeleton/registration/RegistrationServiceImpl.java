@@ -25,8 +25,6 @@ import org.codenergic.theskeleton.user.UserEntity;
 import org.codenergic.theskeleton.user.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.jwt.crypto.sign.InvalidSignatureException;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionSignUp;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
@@ -34,7 +32,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 @Service
 @Transactional(readOnly = true)
-class RegistrationServiceImpl implements RegistrationService, ConnectionSignUp {
+class RegistrationServiceImpl implements RegistrationService {
 	private final UserRepository userRepository;
 	private final TokenStoreService tokenStoreService;
 	private final PasswordEncoder passwordEncoder;
@@ -97,11 +95,5 @@ class RegistrationServiceImpl implements RegistrationService, ConnectionSignUp {
 		} catch (InvalidSignatureException e) {
 			throw new RegistrationException("Invalid Token");
 		}
-	}
-
-	@Override
-	@Transactional
-	public String execute(Connection<?> connection) {
-		throw new UnsupportedOperationException();
 	}
 }

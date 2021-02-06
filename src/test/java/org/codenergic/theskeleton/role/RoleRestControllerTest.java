@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @EnableSpringDataWebSupport
-@WebMvcTest(controllers = { RoleRestController.class }, secure = false)
+@WebMvcTest(controllers = { RoleRestController.class })
 @EnableRestDocs
 @InjectUserDetailsService
 public class RoleRestControllerTest {

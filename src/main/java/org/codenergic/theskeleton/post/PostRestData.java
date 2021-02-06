@@ -18,9 +18,9 @@ package org.codenergic.theskeleton.post;
 import java.util.Date;
 
 import javax.annotation.Nullable;
+import javax.validation.constraints.NotBlank;
 
 import org.codenergic.theskeleton.core.data.RestData;
-import org.hibernate.validator.constraints.NotBlank;
 import org.immutables.value.Value;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

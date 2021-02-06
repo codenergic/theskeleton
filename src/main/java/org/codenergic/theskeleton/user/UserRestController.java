@@ -141,7 +141,7 @@ public class UserRestController {
 	@PutMapping(path = "/{username}/picture", consumes = "image/*")
 	public UserRestData updateUserPicture(@User.Inject User user, HttpServletRequest request) throws Exception {
 		try (InputStream image = request.getInputStream()) {
-			UserEntity u = userService.updateUserPicture(user.getUsername(), image, request.getContentType());
+			UserEntity u = userService.updateUserPicture(user.getUsername(), image, request.getContentType(), request.getContentLengthLong());
 			return userMapper.toUserData(u);
 		}
 	}

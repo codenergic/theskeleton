@@ -18,8 +18,6 @@ package org.codenergic.theskeleton.user;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionData;
 
 @Mapper
 public interface UserMapper {
@@ -32,15 +30,7 @@ public interface UserMapper {
 	UserEntity toUser(UserRestData userData);
 
 	@Mapping(target = "authorities", ignore = true)
-	@Mapping(target = "nonLocked", source = "accountNonLocked")
+	@Mapping(target = "isNonLocked", source = "accountNonLocked")
 	@Mapping(target = "password", ignore = true)
 	UserRestData toUserData(UserEntity user);
-
-	@Mapping(target = "displayName", source = "connection.displayName")
-	@Mapping(target = "imageUrl", source = "connection.imageUrl")
-	@Mapping(target = "profileUrl", source = "connection.profileUrl")
-	@Mapping(target = "profileId", source = "connectionData.providerUserId")
-	@Mapping(target = "provider", source = "connectionData.providerId")
-	UserSocialRestData toUserSocialData(Connection<?> connection, ConnectionData connectionData);
-
 }

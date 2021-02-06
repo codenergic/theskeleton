@@ -29,23 +29,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SecurityConfigTest {
 	private SecurityConfig securityConfig = new SecurityConfig();
 
-	@Test
-	public void testAccessTokenConverter() throws Exception {
-		ResourceLoader resourceLoader = new DefaultResourceLoader();
-		JwtAccessTokenConverter hmacTokenConverter = (JwtAccessTokenConverter) securityConfig.accessTokenConverter("", resourceLoader);
-		assertThat(hmacTokenConverter.getKey()).containsKeys("alg", "value");
-		assertThat(hmacTokenConverter.getKey()).containsEntry("alg", "HMACSHA256");
-		assertThat(hmacTokenConverter.getKey().get("value")).hasSize(6);
-		JwtAccessTokenConverter hmacTokenConverter2 = (JwtAccessTokenConverter) securityConfig.accessTokenConverter("1234", resourceLoader);
-		assertThat(hmacTokenConverter2.getKey()).containsKeys("alg", "value");
-		assertThat(hmacTokenConverter2.getKey()).containsEntry("alg", "HMACSHA256");
-		assertThat(hmacTokenConverter2.getKey().get("value")).hasSize(4);
-		JwtAccessTokenConverter rsaTokenConverter = (JwtAccessTokenConverter) securityConfig.accessTokenConverter("classpath:/jwt-signing-key.pem", resourceLoader);
-		rsaTokenConverter.afterPropertiesSet();
-		assertThat(rsaTokenConverter.isPublic()).isTrue();
-		assertThat(rsaTokenConverter.getKey()).containsKeys("alg", "value");
-		assertThat(rsaTokenConverter.getKey()).containsEntry("alg", "SHA256withRSA");
-	}
+//	@Test
+//	public void testAccessTokenConverter() throws Exception {
+//		ResourceLoader resourceLoader = new DefaultResourceLoader();
+//		JwtAccessTokenConverter hmacTokenConverter = (JwtAccessTokenConverter) securityConfig.accessTokenConverter("", resourceLoader);
+//		assertThat(hmacTokenConverter.getKey()).containsKeys("alg", "value");
+//		assertThat(hmacTokenConverter.getKey()).containsEntry("alg", "HMACSHA256");
+//		assertThat(hmacTokenConverter.getKey().get("value")).hasSize(6);
+//		JwtAccessTokenConverter hmacTokenConverter2 = (JwtAccessTokenConverter) securityConfig.accessTokenConverter("1234", resourceLoader);
+//		assertThat(hmacTokenConverter2.getKey()).containsKeys("alg", "value");
+//		assertThat(hmacTokenConverter2.getKey()).containsEntry("alg", "HMACSHA256");
+//		assertThat(hmacTokenConverter2.getKey().get("value")).hasSize(4);
+//		JwtAccessTokenConverter rsaTokenConverter = (JwtAccessTokenConverter) securityConfig.accessTokenConverter("classpath:/jwt-signing-key.pem", resourceLoader);
+//		rsaTokenConverter.afterPropertiesSet();
+//		assertThat(rsaTokenConverter.isPublic()).isTrue();
+//		assertThat(rsaTokenConverter.getKey()).containsKeys("alg", "value");
+//		assertThat(rsaTokenConverter.getKey()).containsEntry("alg", "SHA256withRSA");
+//	}
 
 	/**
 	 * Just make coverage happy

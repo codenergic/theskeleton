@@ -12,7 +12,6 @@ logging:
   level:
     org.codenergic.theskeleton: DEBUG
 management:
-  context-path: /manage
   info:
     git:
       mode: full
@@ -23,19 +22,7 @@ s3:
     secret-key: supersecret123
     buckets:
       - name: profile-pictures
-        policies:
-          - prefix: '*'
-            policy: READ_ONLY
       - name: galleries
-        policies:
-          - prefix: '*'
-            policy: READ_ONLY
-security:
-  jwt:
-    signing-key: VNcRqdXpj9nHZQqtmf5l
-  oauth2:
-    resource:
-      filter-order: 3
 spring:
   datasource:
     url: jdbc:h2:~/.theskeleton-0.13.0;AUTO_SERVER=TRUE
@@ -60,8 +47,6 @@ spring:
           use_second_level_cache: true
         jdbc:
           time_zone: UTC
-  thymeleaf:
-    cache: false
   mail:
     host: localhost
     port: 1025
@@ -76,6 +61,11 @@ spring:
           starttls:
             enable: false
             required: false
+  security:
+    filter:
+      order: 3
+    jwt:
+      signing-key: VNcRqdXpj9nHZQqtmf5l
   social:
     facebook:
       app-id: 897090537127510
@@ -83,5 +73,7 @@ spring:
     google:
       app-id: 1031466054059-efbl8kv8luoegprdsdubkq4kba3qvcuo.apps.googleusercontent.com
       app-secret: pTj_xuAmNSmx0nOhTTsMpCZN
+  thymeleaf:
+    cache: false
 email:
     baseurl: http://localhost:8080

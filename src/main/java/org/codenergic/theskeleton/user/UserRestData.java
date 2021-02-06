@@ -18,11 +18,11 @@ package org.codenergic.theskeleton.user;
 import java.util.Set;
 
 import javax.annotation.Nullable;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 import org.codenergic.theskeleton.core.data.RestData;
 import org.codenergic.theskeleton.core.web.ValidationConstants;
-import org.hibernate.validator.constraints.NotBlank;
 import org.immutables.value.Value;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
